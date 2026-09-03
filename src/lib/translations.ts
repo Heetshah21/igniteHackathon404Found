@@ -5,6 +5,7 @@ export const translations = {
     forRural: 'Empowering Bharat’s Future',
     nav: {
       dashboard: 'Dashboard',
+      simulator: 'Try Career Simulator',
       roadmap: 'Career Roadmap',
       scholarships: 'Scholarships',
       resources: 'Courses & Resources',
@@ -46,6 +47,7 @@ export const translations = {
     forRural: 'ग्रामीण और महत्वाकांक्षी छात्रों के लिए',
     nav: {
       dashboard: 'डैशबोर्ड',
+      simulator: 'करियर सिमुलेटर (Try Career)',
       roadmap: 'करियर रोडमैप',
       scholarships: 'छात्रवृत्तियां (Scholarships)',
       resources: 'मुफ्त कोर्स व संसाधन',
@@ -87,6 +89,7 @@ export const translations = {
     forRural: 'महाराष्ट्रातील ग्रामीण व होतकरू विद्यार्थ्यांसाठी',
     nav: {
       dashboard: 'डॅशबोर्ड',
+      simulator: 'करिअर सिम्युलेटर (Try Career)',
       roadmap: 'करिअर रोडमॅप',
       scholarships: 'शिष्यवृत्ती (Scholarships)',
       resources: 'मोफत कोर्सेस व साधने',
