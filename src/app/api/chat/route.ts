@@ -128,11 +128,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
-    const geminiKey = process.env.GEMINI_API_KEY || process.env.AI_API_KEY;
-
-    if (geminiKey) {
-      try {
-        const studentContext = `
+    try {
+      const studentContext = `
 You are CAREERMitra AI, a compassionate, highly knowledgeable educational and career guidance assistant dedicated to helping rural, Tier-2/3, and underserved students in India (especially Maharashtra and Bharat).
 Your tone is friendly, inspiring, structured, clear, and easy to understand.
 Always provide realistic timelines, state-specific entrance paths (like DSE lateral entry in Maharashtra), and mention free learning resources when relevant.
@@ -150,41 +147,39 @@ Current Student Context:
 - Skills: ${profile?.skills?.join(', ') || 'Python basics'}
 `;
 
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [
-                {
-                  role: 'user',
-                  parts: [
-                    { text: studentContext },
-                    { text: `Student Question: ${message}` },
-                  ],
-                },
-              ],
-            }),
-          }
-        );
+      const ollamaResponse = await fetch(
+        `${process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434'}/api/chat`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: process.env.OLLAMA_MODEL || 'qwen2.5:7b',
+            stream: false,
+            messages: [
+              {
+                role: 'system',
+                content: `${studentContext}
+Answer clearly and practically. Focus on Indian education, careers, scholarships, exams, and Maharashtra pathways.`,
+              },
+              { role: 'user', content: message },
+            ],
+          }),
+        }
+      );
 
-        const data = await response.json();
-        const reply =
-          data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-          generateMockResponse(message, profile);
-
-        return NextResponse.json({ reply });
-      } catch (aiErr) {
-        console.warn('AI API failed, falling back to mock response engine', aiErr);
-        const reply = generateMockResponse(message, profile);
-        return NextResponse.json({ reply });
+      if (!ollamaResponse.ok) {
+        throw new Error(`Ollama request failed: ${ollamaResponse.status}`);
       }
-    }
 
-    // No API key provided: use intelligent structured mock engine
-    const reply = generateMockResponse(message, profile);
-    return NextResponse.json({ reply });
+      const data = await ollamaResponse.json();
+      const reply = data?.message?.content || generateMockResponse(message, profile);
+
+      return NextResponse.json({ reply });
+    } catch (aiErr) {
+      console.warn('Ollama API failed, falling back to mock response engine', aiErr);
+      const reply = generateMockResponse(message, profile);
+      return NextResponse.json({ reply });
+    }
   } catch (error) {
     console.error('Chat API error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
