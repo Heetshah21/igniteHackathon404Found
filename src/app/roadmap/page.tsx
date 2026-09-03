@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStudent } from '@/context/StudentContext';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { careers } from '@/data/careers';
-import { roadmaps } from '@/data/roadmaps';
+import { getCareers } from '@/lib/data/careers';
+import { getRoadmaps } from '@/lib/data/roadmaps';
+import { Career, Roadmap } from '@/types';
 import { translations } from '@/lib/translations';
 import {
   Compass,
@@ -23,20 +24,29 @@ export default function RoadmapPage() {
   const { profile, updateProfile, language } = useStudent();
   const t = translations[language];
 
+  const [dbCareers, setDbCareers] = useState<Career[]>([]);
+  const [dbRoadmaps, setDbRoadmaps] = useState<Roadmap[]>([]);
+
+  useEffect(() => {
+    getCareers().then(setDbCareers);
+    getRoadmaps().then(setDbRoadmaps);
+  }, []);
+
   // Selected career
   const [selectedCareerId, setSelectedCareerId] = useState<string>(
     profile?.career_goal_id || 'software-engineer'
   );
 
   const selectedCareer = useMemo(() => {
-    return careers.find((c) => c.id === selectedCareerId) || careers[0];
-  }, [selectedCareerId]);
+    if (dbCareers.length === 0) return { id: 'software-engineer', title: 'Software Engineer', slug: 'software-engineer', description: '', branch: [], icon: '💻' };
+    return dbCareers.find((c) => c.id === selectedCareerId) || dbCareers[0];
+  }, [dbCareers, selectedCareerId]);
 
   // Roadmaps for the selected career
   const careerRoadmaps = useMemo(() => {
-    const list = roadmaps.filter((r) => r.career_id === selectedCareer.id);
-    return list.length > 0 ? list : [roadmaps[0]];
-  }, [selectedCareer.id]);
+    const list = dbRoadmaps.filter((r) => r.career_id === selectedCareer.id);
+    return list.length > 0 ? list : dbRoadmaps;
+  }, [dbRoadmaps, selectedCareer.id]);
 
   const [activePathwayIndex, setActivePathwayIndex] = useState(0);
 
@@ -87,7 +97,7 @@ export default function RoadmapPage() {
             Select Career to Explore Pathways:
           </label>
           <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-thin">
-            {careers.map((career) => {
+            {dbCareers.map((career: Career) => {
               const isSelected = selectedCareerId === career.id;
               return (
                 <button
@@ -185,16 +195,17 @@ export default function RoadmapPage() {
             <div className="flex items-center gap-2">
               <span className="text-xl">🗺️</span>
               <h3 className="text-lg font-extrabold text-slate-900">
-                {activeRoadmap.title}
+                {activeRoadmap?.title || 'Career Pathway'}
               </h3>
             </div>
-            <p className="text-xs text-slate-500 mt-1">{activeRoadmap.description}</p>
+            <p className="text-xs text-slate-500 mt-1">{activeRoadmap?.description || 'Detailed steps for your career roadmap'}</p>
           </div>
 
           {/* Vertical Timeline with visual connectors */}
           <div className="relative pl-6 sm:pl-10 space-y-8 before:absolute before:left-3 sm:before:left-5 before:top-3 before:bottom-3 before:w-0.5 before:bg-gradient-to-b before:from-emerald-500 before:via-teal-400 before:to-indigo-600">
-            {activeRoadmap.steps.map((step, idx) => {
-              const isLast = idx === activeRoadmap.steps.length - 1;
+            {(activeRoadmap?.steps || []).map((step, idx) => {
+              const stepsCount = activeRoadmap?.steps?.length || 0;
+              const isLast = idx === stepsCount - 1;
               const isFirst = idx === 0;
 
               return (

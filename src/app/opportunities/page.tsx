@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStudent } from '@/context/StudentContext';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { opportunities } from '@/data/opportunities';
+import { getOpportunities } from '@/lib/data/opportunities';
+import { Opportunity } from '@/types';
 import { matchOpportunities } from '@/lib/recommendations/matcher';
 import { translations } from '@/lib/translations';
 import {
@@ -24,16 +25,21 @@ export default function OpportunitiesPage() {
   const { profile, language } = useStudent();
   const t = translations[language];
 
+  const [dbOpportunities, setDbOpportunities] = useState<Opportunity[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('All');
 
+  useEffect(() => {
+    getOpportunities().then(setDbOpportunities);
+  }, []);
+
   // Scored recommendations based on student profile
   const scoredOpportunities = useMemo(() => {
-    return matchOpportunities(opportunities, profile || {});
-  }, [profile]);
+    return matchOpportunities(dbOpportunities, profile || {});
+  }, [dbOpportunities, profile]);
 
   const filteredOpportunities = useMemo(() => {
-    return opportunities.filter((opp) => {
+    return dbOpportunities.filter((opp) => {
       // Search
       if (searchTerm.trim()) {
         const term = searchTerm.toLowerCase();

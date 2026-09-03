@@ -30,25 +30,44 @@ const SUGGESTED_QUESTIONS = [
 ];
 
 export default function ChatPage() {
-  const { profile, language } = useStudent();
+  const { user, profile, language } = useStudent();
   const t = translations[language];
+
+  const [mounted, setMounted] = useState(false);
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'init-1',
       role: 'assistant',
-      content: `Hello **${profile?.name || 'Rahul'}**! 👋 I am **CAREERMitra AI**, your personalized career & education mentor.
+      content: `Hello **${profile?.name || user?.email?.split('@')[0] || 'Student'}**! 👋 I am **CAREERMitra AI**, your personalized career & education mentor.
 
-I can see you are in **${profile?.education_level || '12th'} ${profile?.branch || 'Science'}** aiming for **${profile?.career_goal || 'Software Engineer'}** in **${profile?.state || 'Maharashtra'}**.
+I can see you are in **${profile?.education_level || 'School/College'} ${profile?.branch ? `(${profile.branch})` : ''}** aiming for **${profile?.career_goal || 'your target career goal'}** in **${profile?.state || 'India'}**.
 
 How can I help guide your journey today? Click any suggested question below or type your doubt!`,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: '',
     },
   ]);
 
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === 'init-1' && !msg.timestamp
+          ? {
+              ...msg,
+              timestamp: new Date().toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              }),
+            }
+          : msg
+      )
+    );
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -197,11 +216,11 @@ How can I help guide your journey today? Click any suggested question below or t
                       {msg.content}
                     </div>
                     <div
-                      className={`text-[10px] text-right font-medium ${
+                      className={`text-[10px] text-right font-medium min-h-[15px] ${
                         isUser ? 'text-emerald-200' : 'text-slate-400'
                       }`}
                     >
-                      {msg.timestamp}
+                      {mounted ? msg.timestamp : ''}
                     </div>
                   </div>
                 </div>

@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useStudent } from '@/context/StudentContext';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { careers } from '@/data/careers';
-import { roadmaps } from '@/data/roadmaps';
-import { resources } from '@/data/resources';
-import { scholarships } from '@/data/scholarships';
-import { opportunities } from '@/data/opportunities';
+import { getCareers } from '@/lib/data/careers';
+import { getRoadmaps } from '@/lib/data/roadmaps';
+import { getResources } from '@/lib/data/resources';
+import { getScholarships } from '@/lib/data/scholarships';
+import { getOpportunities } from '@/lib/data/opportunities';
+import { Career, Roadmap, Resource, Scholarship, Opportunity } from '@/types';
 import { generateNextSteps } from '@/lib/recommendations/nextSteps';
 import { matchResources, matchScholarships, matchOpportunities } from '@/lib/recommendations/matcher';
 import { translations } from '@/lib/translations';
@@ -32,23 +33,38 @@ import {
 } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { profile, language } = useStudent();
+  const { user, profile, language } = useStudent();
   const t = translations[language];
+
+  const [dbCareers, setDbCareers] = useState<Career[]>([]);
+  const [dbRoadmaps, setDbRoadmaps] = useState<Roadmap[]>([]);
+  const [dbResources, setDbResources] = useState<Resource[]>([]);
+  const [dbScholarships, setDbScholarships] = useState<Scholarship[]>([]);
+  const [dbOpportunities, setDbOpportunities] = useState<Opportunity[]>([]);
+
+  useEffect(() => {
+    getCareers().then(setDbCareers);
+    getRoadmaps().then(setDbRoadmaps);
+    getResources().then(setDbResources);
+    getScholarships().then(setDbScholarships);
+    getOpportunities().then(setDbOpportunities);
+  }, []);
 
   // Current student career info
   const currentCareer = useMemo(() => {
+    if (dbCareers.length === 0) return { id: 'software-engineer', title: 'Software Engineer', slug: 'software-engineer', description: '', branch: [], icon: '💻' };
     return (
-      careers.find((c) => c.id === profile?.career_goal_id) ||
-      careers.find((c) => c.slug === 'software-engineer') ||
-      careers[0]
+      dbCareers.find((c) => c.id === profile?.career_goal_id) ||
+      dbCareers.find((c) => c.slug === 'software-engineer') ||
+      dbCareers[0]
     );
-  }, [profile?.career_goal_id]);
+  }, [dbCareers, profile?.career_goal_id]);
 
   // Roadmaps for the student's career
   const careerRoadmaps = useMemo(() => {
-    const list = roadmaps.filter((r) => r.career_id === currentCareer.id);
-    return list.length > 0 ? list : [roadmaps[0]];
-  }, [currentCareer.id]);
+    const list = dbRoadmaps.filter((r) => r.career_id === currentCareer.id);
+    return list.length > 0 ? list : dbRoadmaps;
+  }, [dbRoadmaps, currentCareer.id]);
 
   const primaryRoadmap = careerRoadmaps[0];
 
@@ -59,19 +75,19 @@ export default function DashboardPage() {
 
   // Personalized recommendations
   const recommendedResources = useMemo(() => {
-    const matched = matchResources(resources, profile || {});
+    const matched = matchResources(dbResources, profile || {});
     return matched.slice(0, 4);
-  }, [profile]);
+  }, [dbResources, profile]);
 
   const matchedScholarships = useMemo(() => {
-    const matched = matchScholarships(scholarships, profile || {});
+    const matched = matchScholarships(dbScholarships, profile || {});
     return matched.slice(0, 3);
-  }, [profile]);
+  }, [dbScholarships, profile]);
 
   const recommendedOpportunities = useMemo(() => {
-    const matched = matchOpportunities(opportunities, profile || {});
+    const matched = matchOpportunities(dbOpportunities, profile || {});
     return matched.slice(0, 3);
-  }, [profile]);
+  }, [dbOpportunities, profile]);
 
   return (
     <AppLayout>
@@ -87,13 +103,18 @@ export default function DashboardPage() {
                 <span>Personalized Career Navigation Active</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                {t.dashboard.welcome}, {profile?.name || 'Rahul'} 👋
+                {t.dashboard.welcome}, {profile?.name || user?.email?.split('@')[0] || 'Student'} 👋
               </h1>
               <p className="text-emerald-100/90 text-sm font-medium flex flex-wrap items-center gap-2">
-                <span>📚 {profile?.education_level || '12th'} {profile?.branch ? `(${profile.branch.toUpperCase()})` : ''}</span>
-                <span>•</span>
-                <span>📍 {profile?.location || 'Maharashtra'}, {profile?.state || 'India'}</span>
-                <span>•</span>
+                {profile?.education_level && (
+                  <span>📚 {profile.education_level} {profile.branch ? `(${profile.branch.toUpperCase()})` : ''}</span>
+                )}
+                {profile?.location && (
+                  <>
+                    {profile.education_level && <span>•</span>}
+                    <span>📍 {profile.location}, {profile?.state || 'India'}</span>
+                  </>
+                )}
                 <span className="bg-emerald-500/30 px-2 py-0.5 rounded text-emerald-200 font-bold">
                   🎯 Goal: {currentCareer.title}
                 </span>
@@ -189,7 +210,7 @@ export default function DashboardPage() {
                 </h2>
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                {primaryRoadmap.title} • {primaryRoadmap.description}
+                {primaryRoadmap?.title || 'Career Pathway'} • {primaryRoadmap?.description || 'Detailed steps for your career goal'}
               </p>
             </div>
             <Link
@@ -204,9 +225,10 @@ export default function DashboardPage() {
           {/* Step-by-Step Pathway Cards */}
           <div className="relative">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-              {primaryRoadmap.steps.map((step, idx) => {
+              {(primaryRoadmap?.steps || []).map((step, idx) => {
+                const stepsList = primaryRoadmap?.steps || [];
                 const isFirst = idx === 0;
-                const isLast = idx === primaryRoadmap.steps.length - 1;
+                const isLast = idx === stepsList.length - 1;
                 return (
                   <div
                     key={step.id}
@@ -223,7 +245,7 @@ export default function DashboardPage() {
                         <span
                           className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
                             isLast
-                              ? 'bg-white/20 text-white'
+                              ? 'bg-emerald-400/30 text-emerald-100'
                               : 'bg-emerald-100 text-emerald-800'
                           }`}
                         >
@@ -231,8 +253,8 @@ export default function DashboardPage() {
                         </span>
                         {step.duration && (
                           <span
-                            className={`text-[10px] font-semibold ${
-                              isLast ? 'text-emerald-100' : 'text-slate-500'
+                            className={`text-[10px] font-medium ${
+                              isLast ? 'text-emerald-100/80' : 'text-slate-500'
                             }`}
                           >
                             ⏱️ {step.duration}

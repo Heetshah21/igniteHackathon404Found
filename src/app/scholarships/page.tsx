@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStudent } from '@/context/StudentContext';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { scholarships } from '@/data/scholarships';
+import { getScholarships } from '@/lib/data/scholarships';
+import { Scholarship } from '@/types';
 import { matchScholarships } from '@/lib/recommendations/matcher';
 import { translations } from '@/lib/translations';
 import {
@@ -24,15 +25,20 @@ export default function ScholarshipsPage() {
   const { profile, language } = useStudent();
   const t = translations[language];
 
+  const [dbScholarships, setDbScholarships] = useState<Scholarship[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterState, setFilterState] = useState<string>('all');
   const [filterEducation, setFilterEducation] = useState<string>('all');
   const [showOnlyEligible, setShowOnlyEligible] = useState(false);
 
+  useEffect(() => {
+    getScholarships().then(setDbScholarships);
+  }, []);
+
   // Evaluate all scholarships against current student profile
   const evaluatedScholarships = useMemo(() => {
-    return matchScholarships(scholarships, profile || {});
-  }, [profile]);
+    return matchScholarships(dbScholarships, profile || {});
+  }, [dbScholarships, profile]);
 
   // Filter list
   const filteredList = useMemo(() => {
@@ -160,7 +166,7 @@ export default function ScholarshipsPage() {
               <span>Show only scholarships I qualify for (100% Match)</span>
             </label>
             <span className="text-slate-500 font-medium">
-              Showing {filteredList.length} of {scholarships.length} scholarships
+              Showing {filteredList.length} of {dbScholarships.length} scholarships
             </span>
           </div>
         </div>

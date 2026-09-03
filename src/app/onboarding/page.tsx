@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStudent } from '@/context/StudentContext';
-import { careers } from '@/data/careers';
+import { getCareers } from '@/lib/data/careers';
+import { Career } from '@/types';
 import {
   Compass,
   ArrowRight,
@@ -110,6 +111,11 @@ export default function OnboardingPage() {
   ]);
 
   const [careerGoalId, setCareerGoalId] = useState('software-engineer');
+  const [dbCareers, setDbCareers] = useState<Career[]>([]);
+
+  useEffect(() => {
+    getCareers().then(setDbCareers);
+  }, []);
 
   useEffect(() => {
     if (profile) {
@@ -137,10 +143,10 @@ export default function OnboardingPage() {
     }
   };
 
-  const handleFinish = () => {
-    const selectedCareer = careers.find((c) => c.id === careerGoalId);
+  const handleFinish = async () => {
+    const selectedCareer = dbCareers.find((c: Career) => c.id === careerGoalId);
 
-    updateProfile({
+    await updateProfile({
       name: name.trim() || 'Student',
       location: location.trim() || 'Maharashtra',
       state,
@@ -213,7 +219,7 @@ export default function OnboardingPage() {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Rahul Sharma"
+                    placeholder="e.g. Alex Smith"
                     className="w-full px-3.5 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-400 text-sm"
                   />
                 </div>
@@ -456,7 +462,7 @@ export default function OnboardingPage() {
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-96 overflow-y-auto pr-1">
-                {careers.map((career) => {
+                {dbCareers.map((career) => {
                   const isSelected = careerGoalId === career.id;
                   return (
                     <button

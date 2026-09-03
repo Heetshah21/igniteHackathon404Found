@@ -22,12 +22,6 @@ import {
 
 export default function HomePage() {
   const router = useRouter();
-  const { resetToDemo } = useStudent();
-
-  const handleLaunchDemo = () => {
-    resetToDemo();
-    router.push('/dashboard');
-  };
 
   const featureCards = [
     {
@@ -94,13 +88,13 @@ export default function HomePage() {
           >
             Sign In
           </Link>
-          <button
-            onClick={handleLaunchDemo}
+          <Link
+            href="/signup"
             className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer"
           >
-            <Zap className="w-3.5 h-3.5 fill-current" />
-            <span>Launch Hackathon Demo</span>
-          </button>
+            <Users className="w-3.5 h-3.5" />
+            <span>Create Account</span>
+          </Link>
         </div>
       </header>
 
@@ -129,14 +123,14 @@ export default function HomePage() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <button
-            onClick={handleLaunchDemo}
+          <Link
+            href="/login"
             className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/30 hover:scale-105 transition flex items-center justify-center gap-2 group cursor-pointer"
           >
             <Sparkles className="w-4 h-4 text-emerald-950" />
-            <span>Start Judge Demo Flow (Rahul Sharma)</span>
+            <span>Sign In to Student Dashboard</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
+          </Link>
 
           <Link
             href="/signup"
