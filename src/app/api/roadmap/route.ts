@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { roadmaps } from '@/data/roadmaps';
+import { getRoadmaps } from '@/lib/data/roadmaps';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const careerId = searchParams.get('careerId');
 
-  if (careerId) {
-    const list = roadmaps.filter((r) => r.career_id === careerId);
-    return NextResponse.json({ roadmaps: list });
-  }
+  const list = await getRoadmaps(careerId || undefined);
 
-  return NextResponse.json({ roadmaps });
+  return NextResponse.json({ roadmaps: list });
 }

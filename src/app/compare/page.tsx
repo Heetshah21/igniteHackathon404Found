@@ -21,9 +21,21 @@ export default function ComparePage() {
   const { language } = useStudent();
   const t = translations[language];
 
-  const [activeComparisonId, setActiveComparisonId] = useState<string>(comparisons[0].id);
+  const [activeComparisonId, setActiveComparisonId] = useState<string>(
+    (comparisons && comparisons[0]?.id) || 'aiml-vs-ds'
+  );
   const activeComparison = useMemo(() => {
-    return comparisons.find((c) => c.id === activeComparisonId) || comparisons[0];
+    return (
+      (comparisons ?? []).find((c) => c?.id === activeComparisonId) ||
+      comparisons?.[0] || {
+        id: 'default-comparison',
+        title: 'Comparison',
+        option_a: 'Option A',
+        option_b: 'Option B',
+        categories: [],
+        quiz: [],
+      }
+    );
   }, [activeComparisonId]);
 
   // Quiz state: stores { questionIndex: 'a' | 'b' }
@@ -41,18 +53,19 @@ export default function ComparePage() {
   const scores = useMemo(() => {
     let scoreA = 0;
     let scoreB = 0;
+    const quizList = activeComparison?.quiz ?? [];
 
-    activeComparison.quiz.forEach((q, idx) => {
+    quizList.forEach((q, idx) => {
       const ans = quizAnswers[idx];
       if (ans === 'a') {
-        scoreA += q.option_a_points;
+        scoreA += q?.option_a_points ?? 0;
       } else if (ans === 'b') {
-        scoreB += q.option_b_points;
+        scoreB += q?.option_b_points ?? 0;
       }
     });
 
     const totalAnswered = Object.keys(quizAnswers).length;
-    const isCompleted = totalAnswered === activeComparison.quiz.length;
+    const isCompleted = quizList.length > 0 && totalAnswered === quizList.length;
 
     let recommendation = '';
     if (isCompleted) {
@@ -67,6 +80,7 @@ export default function ComparePage() {
 
     return { scoreA, scoreB, isCompleted, recommendation, totalAnswered };
   }, [activeComparison, quizAnswers]);
+
 
   return (
     <AppLayout>
@@ -129,10 +143,10 @@ export default function ComparePage() {
                 <AudioButton
                   id={`cmp-speech-${activeComparison.id}`}
                   text={{
-                    en: `Comparison between ${activeComparison.option_a} and ${activeComparison.option_b}. ${activeComparison.categories
+                    en: `Comparison between ${activeComparison.option_a} and ${activeComparison.option_b}. ${(activeComparison.categories ?? [])
                       .map((c) => `${c.label}: ${activeComparison.option_a} is ${c.option_a_value}, while ${activeComparison.option_b} is ${c.option_b_value}`)
                       .join('. ')}`,
-                    hi: `${activeComparison.option_a} और ${activeComparison.option_b} के बीच तुलना। ${activeComparison.categories
+                    hi: `${activeComparison.option_a} और ${activeComparison.option_b} के बीच तुलना। ${(activeComparison.categories ?? [])
                       .map((c) => `${c.label}: ${activeComparison.option_a} में ${c.option_a_value}, जबकि ${activeComparison.option_b} में ${c.option_b_value}`)
                       .join('। ')}`,
                   }}
@@ -172,7 +186,7 @@ export default function ComparePage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {activeComparison.categories.map((cat, idx) => (
+                {(activeComparison.categories ?? []).map((cat, idx) => (
                   <tr key={idx} className="hover:bg-slate-50/80 transition">
                     <td className="py-3.5 px-4 font-bold text-slate-800">
                       {cat.label}
@@ -189,6 +203,7 @@ export default function ComparePage() {
             </table>
           </div>
         </div>
+
 
         {/* Interactive Fit Quiz: "Which is better for you?" */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5] space-y-6">

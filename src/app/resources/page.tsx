@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStudent } from '@/context/StudentContext';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { resources } from '@/data/resources';
+import { getResources } from '@/lib/data/resources';
+import { Resource } from '@/types';
 import { matchResources } from '@/lib/recommendations/matcher';
 import { translations } from '@/lib/translations';
 import { AudioButton } from '@/components/common/AudioButton';
@@ -48,32 +49,38 @@ export default function ResourcesPage() {
   const { profile, language, setLanguage } = useStudent();
   const t = translations[language];
 
+  const [dbResources, setDbResources] = useState<Resource[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('All');
   const [selectedType, setSelectedType] = useState<string>('All');
 
+  useEffect(() => {
+    getResources().then(setDbResources);
+  }, []);
+
   // Scored resources matched with student profile
   const scoredResources = useMemo(() => {
-    return matchResources(resources, profile || {});
-  }, [profile]);
+    return matchResources(dbResources, profile || {});
+  }, [dbResources, profile]);
 
   // Combined and filtered
   const filteredResources = useMemo(() => {
-    return resources.filter((res) => {
+    return (dbResources ?? []).filter((res) => {
+      if (!res) return false;
       // Search
       if (searchTerm.trim()) {
         const term = searchTerm.toLowerCase();
-        const matchesTitle = res.title.toLowerCase().includes(term);
+        const matchesTitle = res.title?.toLowerCase().includes(term) ?? false;
         const matchesDesc = res.description?.toLowerCase().includes(term) || false;
         const matchesSubject = res.subject?.toLowerCase().includes(term) || false;
-        const matchesTags = res.tags.some((t) => t.toLowerCase().includes(term));
+        const matchesTags = (res.tags ?? []).some((t) => t?.toLowerCase().includes(term));
         if (!matchesTitle && !matchesDesc && !matchesSubject && !matchesTags) return false;
       }
 
       // Category
       if (selectedCategory !== 'All') {
-        if (res.subject !== selectedCategory && !res.tags.includes(selectedCategory.toLowerCase())) {
+        if (res.subject !== selectedCategory && !(res.tags ?? []).includes(selectedCategory.toLowerCase())) {
           return false;
         }
       }
@@ -90,7 +97,8 @@ export default function ResourcesPage() {
 
       return true;
     });
-  }, [searchTerm, selectedCategory, selectedLanguage, selectedType]);
+  }, [dbResources, searchTerm, selectedCategory, selectedLanguage, selectedType]);
+
 
   const typeIcon = (type: string) => {
     switch (type) {

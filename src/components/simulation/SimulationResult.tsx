@@ -102,21 +102,21 @@ export const SimulationResult: React.FC<SimulationResultProps> = ({ evaluation, 
 
         {/* Skill Percentage Bars Grid */}
         <div className="space-y-4">
-          {evaluation.skillInsights.map((skill, idx) => (
+          {(evaluation?.skillInsights ?? []).map((skill, idx) => (
             <div key={idx} className="space-y-1.5">
               <div className="flex justify-between items-center text-xs font-bold text-slate-800">
                 <span className="flex items-center gap-1.5">
-                  <span>{skill.name}</span>
+                  <span>{skill?.name}</span>
                   <span className="text-[11px] font-normal text-slate-500">
-                    — {skill.description}
+                    — {skill?.description}
                   </span>
                 </span>
-                <span className="text-blue-700 font-black text-sm">{skill.score}%</span>
+                <span className="text-blue-700 font-black text-sm">{skill?.score ?? 0}%</span>
               </div>
               <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden p-0.5 border border-slate-200/60">
                 <div
                   className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-1000 shadow-xs"
-                  style={{ width: `${skill.score}%` }}
+                  style={{ width: `${skill?.score ?? 0}%` }}
                 />
               </div>
             </div>
@@ -133,7 +133,7 @@ export const SimulationResult: React.FC<SimulationResultProps> = ({ evaluation, 
             <span>Your Strengths</span>
           </h3>
           <ul className="space-y-2 text-xs text-emerald-950">
-            {evaluation.strengths.map((str, idx) => (
+            {(evaluation?.strengths ?? []).map((str, idx) => (
               <li key={idx} className="flex items-start gap-2">
                 <span className="text-emerald-600 font-bold">✓</span>
                 <span>{str}</span>
@@ -149,7 +149,7 @@ export const SimulationResult: React.FC<SimulationResultProps> = ({ evaluation, 
             <span>Areas to Develop</span>
           </h3>
           <ul className="space-y-2 text-xs text-blue-950">
-            {evaluation.areasToDevelop.map((area, idx) => (
+            {(evaluation?.areasToDevelop ?? []).map((area, idx) => (
               <li key={idx} className="flex items-start gap-2">
                 <span className="text-blue-600 font-bold">→</span>
                 <span>{area}</span>
@@ -158,6 +158,7 @@ export const SimulationResult: React.FC<SimulationResultProps> = ({ evaluation, 
           </ul>
         </div>
       </div>
+
 
       {/* What This Means Narrative Card */}
       <div className="p-6 rounded-3xl bg-white/80 backdrop-blur-xl border border-white shadow-md space-y-2">

@@ -16,27 +16,31 @@ export function matchResources(
   resources: Resource[],
   profile: Partial<StudentProfile>
 ): ScoredItem<Resource>[] {
-  return resources
+  const safeResources = resources ?? [];
+  const safeProfile = profile ?? {};
+
+  return safeResources
     .map(resource => {
+      if (!resource) return { item: resource, score: 0, reasons: [] };
       let score = 0;
       const reasons: string[] = [];
 
       // Branch match
-      if (profile.branch && resource.branch.includes(profile.branch)) {
+      if (safeProfile.branch && (resource.branch ?? []).includes(safeProfile.branch)) {
         score += WEIGHTS.branch;
         reasons.push('Matches your branch');
       }
 
       // Career match
-      if (profile.career_goal_id && resource.careers.includes(profile.career_goal_id)) {
+      if (safeProfile.career_goal_id && (resource.careers ?? []).includes(safeProfile.career_goal_id)) {
         score += WEIGHTS.career;
         reasons.push('Relevant to your career goal');
       }
 
       // Interest match
-      if (profile.interests) {
-        for (const interest of profile.interests) {
-          if (resource.tags.some(t => t.toLowerCase().includes(interest.toLowerCase())) ||
+      if (safeProfile.interests) {
+        for (const interest of safeProfile.interests) {
+          if ((resource.tags ?? []).some(t => t?.toLowerCase().includes(interest.toLowerCase())) ||
               resource.subject?.toLowerCase().includes(interest.toLowerCase())) {
             score += WEIGHTS.interest;
             reasons.push(`Matches your interest: ${interest}`);
@@ -46,10 +50,10 @@ export function matchResources(
       }
 
       // Skill match
-      if (profile.skills) {
-        for (const skill of profile.skills) {
-          if (resource.tags.some(t => t.toLowerCase().includes(skill.toLowerCase())) ||
-              resource.title.toLowerCase().includes(skill.toLowerCase())) {
+      if (safeProfile.skills) {
+        for (const skill of safeProfile.skills) {
+          if ((resource.tags ?? []).some(t => t?.toLowerCase().includes(skill.toLowerCase())) ||
+              resource.title?.toLowerCase().includes(skill.toLowerCase())) {
             score += WEIGHTS.skill;
             reasons.push(`Related to your skill: ${skill}`);
             break;
@@ -73,14 +77,18 @@ export function matchScholarships(
   scholarships: Scholarship[],
   profile: Partial<StudentProfile>
 ): ScoredItem<Scholarship>[] {
-  return scholarships
+  const safeScholarships = scholarships ?? [];
+  const safeProfile = profile ?? {};
+
+  return safeScholarships
     .map(scholarship => {
-      const result = evaluateEligibility(scholarship.eligibility, profile);
-      const reasons: string[] = result.matchedRules.map(r => r.label);
+      if (!scholarship) return { item: scholarship, score: 0, reasons: [] };
+      const result = evaluateEligibility(scholarship.eligibility ?? [], safeProfile);
+      const reasons: string[] = (result?.matchedRules ?? []).map(r => r?.label ?? '');
 
       return {
         item: scholarship,
-        score: result.score,
+        score: result?.score ?? 0,
         reasons,
         eligibilityResult: result,
       };
@@ -93,24 +101,28 @@ export function matchOpportunities(
   opportunities: Opportunity[],
   profile: Partial<StudentProfile>
 ): ScoredItem<Opportunity>[] {
-  return opportunities
+  const safeOpportunities = opportunities ?? [];
+  const safeProfile = profile ?? {};
+
+  return safeOpportunities
     .map(opp => {
+      if (!opp) return { item: opp, score: 0, reasons: [] };
       let score = 0;
       const reasons: string[] = [];
 
-      if (profile.branch && opp.branches.includes(profile.branch)) {
+      if (safeProfile.branch && (opp.branches ?? []).includes(safeProfile.branch)) {
         score += WEIGHTS.branch;
         reasons.push('Matches your branch');
       }
 
-      if (profile.career_goal_id && opp.careers.includes(profile.career_goal_id)) {
+      if (safeProfile.career_goal_id && (opp.careers ?? []).includes(safeProfile.career_goal_id)) {
         score += WEIGHTS.career;
         reasons.push('Relevant to your career goal');
       }
 
-      if (profile.interests) {
-        for (const interest of profile.interests) {
-          if (opp.tags.some(t => t.toLowerCase().includes(interest.toLowerCase()))) {
+      if (safeProfile.interests) {
+        for (const interest of safeProfile.interests) {
+          if ((opp.tags ?? []).some(t => t?.toLowerCase().includes(interest.toLowerCase()))) {
             score += WEIGHTS.interest;
             reasons.push(`Matches your interest: ${interest}`);
             break;
@@ -123,3 +135,4 @@ export function matchOpportunities(
     .filter(r => r.score > 0)
     .sort((a, b) => b.score - a.score);
 }
+

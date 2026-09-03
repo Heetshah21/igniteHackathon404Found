@@ -1,146 +1,275 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import { StudentProfile } from '@/types';
-
-// Default demo profile representing the hackathon target persona
-export const DEFAULT_DEMO_PROFILE: StudentProfile = {
-  id: 'demo-student-1',
-  email: 'rahul.sharma@example.com',
-  name: 'Rahul Sharma',
-  phone: '+91 98765 43210',
-  location: 'Nashik',
-  state: 'Maharashtra',
-  gender: 'male',
-  education_level: '12th',
-  school_college: 'Shivaji Vidya Mandir Higher Secondary School',
-  branch: 'science',
-  percentage: 82,
-  family_income: '1-2.5-lakh',
-  category: 'OBC',
-  rural_urban: 'rural',
-  interests: ['Technology', 'Programming', 'Artificial Intelligence', 'Mathematics'],
-  skills: ['Python basics', 'C++ fundamentals', 'Logical Reasoning'],
-  career_goal: 'Software Engineer',
-  career_goal_id: 'software-engineer',
-  onboarding_completed: true,
-  created_at: new Date().toISOString(),
-};
+import { getStudentProfileByUserId, updateStudentProfile } from '@/lib/data/students';
 
 interface StudentContextType {
+  user: User | null;
+  session: Session | null;
   profile: StudentProfile | null;
   isLoading: boolean;
-  updateProfile: (data: Partial<StudentProfile>) => void;
-  resetToDemo: () => void;
   isAuthenticated: boolean;
-  login: (email: string, name?: string) => void;
-  logout: () => void;
+  authError: string | null;
+  setAuthError: (err: string | null) => void;
+  updateProfile: (data: Partial<StudentProfile>) => Promise<void>;
+  signIn: (email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
+  signUp: (email: string, password?: string, fullName?: string) => Promise<{ success: boolean; requiresVerification?: boolean; error?: string }>;
+  logout: () => Promise<void>;
   language: 'English' | 'Hindi' | 'Marathi';
   setLanguage: (lang: 'English' | 'Hindi' | 'Marathi') => void;
 }
 
 const StudentContext = createContext<StudentContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'careermitra_student_profile';
 const LANG_STORAGE_KEY = 'careermitra_language';
-const AUTH_KEY = 'careermitra_is_auth';
 
 export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<StudentProfile | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [authError, setAuthError] = useState<string | null>(null);
   const [language, setLanguageState] = useState<'English' | 'Hindi' | 'Marathi'>('English');
 
+  // Load language preference
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const authStored = localStorage.getItem(AUTH_KEY);
       const langStored = localStorage.getItem(LANG_STORAGE_KEY);
-
       if (langStored === 'Hindi' || langStored === 'Marathi' || langStored === 'English') {
         setLanguageState(langStored);
       }
-
-      if (stored) {
-        setProfile(JSON.parse(stored));
-      } else {
-        // First-time visit: set default demo profile
-        setProfile(DEFAULT_DEMO_PROFILE);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_DEMO_PROFILE));
-      }
-
-      if (authStored !== null) {
-        setIsAuthenticated(authStored === 'true');
-      } else {
-        setIsAuthenticated(true);
-      }
-    } catch (e) {
-      console.error('Failed to load profile from local storage', e);
-      setProfile(DEFAULT_DEMO_PROFILE);
-    } finally {
-      setIsLoading(false);
-    }
+    } catch {}
   }, []);
 
-  const updateProfile = (data: Partial<StudentProfile>) => {
-    setProfile((prev) => {
-      const updated = prev ? { ...prev, ...data, updated_at: new Date().toISOString() } : ({ ...DEFAULT_DEMO_PROFILE, ...data } as StudentProfile);
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      } catch (e) {
-        console.error('Failed to save profile', e);
-      }
-      return updated;
-    });
-  };
+  // Initialize Supabase Auth Session
+  useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setIsLoading(false);
+      return;
+    }
 
-  const resetToDemo = () => {
-    setProfile(DEFAULT_DEMO_PROFILE);
-    setIsAuthenticated(true);
+    const supabase = createClient();
+
+    // Fetch initial session
+    supabase.auth.getSession().then(({ data: { session: initSession } }) => {
+      setSession(initSession);
+      setUser(initSession?.user ?? null);
+      setIsAuthenticated(!!initSession);
+
+      if (initSession?.user) {
+        loadProfileForUser(initSession.user.id, initSession.user.email, initSession.user.user_metadata?.full_name);
+      } else {
+        setProfile(null);
+        setIsLoading(false);
+      }
+    });
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      setIsAuthenticated(!!currentSession);
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        if (currentSession?.user) {
+          await loadProfileForUser(currentSession.user.id, currentSession.user.email, currentSession.user.user_metadata?.full_name);
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setSession(null);
+        setIsAuthenticated(false);
+        setProfile(null);
+      }
+      setIsLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const loadingProfileUserIdRef = React.useRef<string | null>(null);
+
+  const loadProfileForUser = async (userId: string, email?: string, name?: string) => {
+    if (loadingProfileUserIdRef.current === userId) {
+      return;
+    }
+    loadingProfileUserIdRef.current = userId;
+    setIsLoading(true);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_DEMO_PROFILE));
-      localStorage.setItem(AUTH_KEY, 'true');
+      const dbProfile = await getStudentProfileByUserId(userId);
+      if (dbProfile) {
+        setProfile(dbProfile);
+      } else {
+        // Set in-memory initial profile state without premature database writes
+        setProfile({
+          id: userId,
+          user_id: userId,
+          email: email || '',
+          name: name || email?.split('@')[0] || 'Student',
+          interests: [],
+          skills: [],
+          onboarding_completed: false,
+        });
+      }
     } catch (e) {
-      console.error('Failed to reset demo profile', e);
+      console.error('Failed loading profile for user from Supabase:', e);
+    } finally {
+      loadingProfileUserIdRef.current = null;
+      setIsLoading(false);
     }
   };
 
-  const login = (email: string, name?: string) => {
-    setIsAuthenticated(true);
-    try {
-      localStorage.setItem(AUTH_KEY, 'true');
-    } catch (e) {}
+  const updateProfile = async (data: Partial<StudentProfile>) => {
+    if (user && isSupabaseConfigured()) {
+      const updated = await updateStudentProfile(user.id, data);
+      if (updated) {
+        setProfile(updated);
+        return;
+      }
+    }
 
-    updateProfile({
-      email,
-      name: name || email.split('@')[0] || 'Student',
-      onboarding_completed: true,
+    setProfile((prev) => {
+      if (!prev) return null;
+      return { ...prev, ...data, updated_at: new Date().toISOString() };
     });
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
+  const signIn = async (email: string, password?: string): Promise<{ success: boolean; error?: string }> => {
+    setAuthError(null);
+
+    if (!isSupabaseConfigured() || !password) {
+      return { success: false, error: 'Supabase credentials missing or password required.' };
+    }
+
     try {
-      localStorage.setItem(AUTH_KEY, 'false');
-    } catch (e) {}
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        const errMsg = error.message.includes('Invalid login credentials')
+          ? 'Email or password is incorrect.'
+          : error.message.includes('Email not confirmed')
+          ? 'Please verify your email address before logging in.'
+          : error.message;
+        setAuthError(errMsg);
+        return { success: false, error: errMsg };
+      }
+
+      setSession(data.session);
+      setUser(data.user);
+      setIsAuthenticated(true);
+
+      if (data.user) {
+        await loadProfileForUser(data.user.id, data.user.email, data.user.user_metadata?.full_name);
+      }
+
+      return { success: true };
+    } catch (err: any) {
+      const errMsg = err?.message || 'Something went wrong. Please try again.';
+      setAuthError(errMsg);
+      return { success: false, error: errMsg };
+    }
+  };
+
+  const signUp = async (
+    email: string,
+    password?: string,
+    fullName?: string
+  ): Promise<{ success: boolean; requiresVerification?: boolean; error?: string }> => {
+    setAuthError(null);
+
+    if (!isSupabaseConfigured() || !password) {
+      return { success: false, error: 'Supabase credentials missing or password required.' };
+    }
+
+    try {
+      const supabase = createClient();
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName || email.split('@')[0],
+          },
+          emailRedirectTo: `${origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        const errMsg = error.message.includes('User already registered')
+          ? 'An account with this email already exists.'
+          : error.message;
+        setAuthError(errMsg);
+        return { success: false, error: errMsg };
+      }
+
+      if (data.user && !data.session) {
+        // Email confirmation is enabled in Supabase
+        return { success: true, requiresVerification: true };
+      }
+
+      setSession(data.session);
+      setUser(data.user);
+      setIsAuthenticated(true);
+
+      if (data.user) {
+        await loadProfileForUser(data.user.id, data.user.email, fullName);
+      }
+
+      return { success: true, requiresVerification: false };
+    } catch (err: any) {
+      const errMsg = err?.message || 'Something went wrong. Please try again.';
+      setAuthError(errMsg);
+      return { success: false, error: errMsg };
+    }
+  };
+
+  const logout = async () => {
+    if (isSupabaseConfigured()) {
+      try {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+      } catch (e) {
+        console.error('Logout error:', e);
+      }
+    }
+
+    setUser(null);
+    setSession(null);
+    setIsAuthenticated(false);
+    setProfile(null);
   };
 
   const setLanguage = (lang: 'English' | 'Hindi' | 'Marathi') => {
     setLanguageState(lang);
     try {
       localStorage.setItem(LANG_STORAGE_KEY, lang);
-    } catch (e) {}
+    } catch {}
   };
 
   return (
     <StudentContext.Provider
       value={{
+        user,
+        session,
         profile,
         isLoading,
-        updateProfile,
-        resetToDemo,
         isAuthenticated,
-        login,
+        authError,
+        setAuthError,
+        updateProfile,
+        signIn,
+        signUp,
         logout,
         language,
         setLanguage,

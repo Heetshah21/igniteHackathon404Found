@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useStudent } from '@/context/StudentContext';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { HeroRoadmapVisual } from '@/components/home/HeroRoadmapVisual';
@@ -17,18 +16,10 @@ import {
   ArrowRight,
   ShieldCheck,
   Smile,
-  Award,
+  Users,
 } from 'lucide-react';
 
 export default function HomePage() {
-  const router = useRouter();
-  const { resetToDemo } = useStudent();
-
-  const handleLaunchDemo = () => {
-    resetToDemo();
-    router.push('/dashboard');
-  };
-
   const featureCards = [
     {
       title: 'Career Roadmaps',
@@ -77,13 +68,17 @@ export default function HomePage() {
   return (
     <AppLayout>
       <div className="space-y-12 sm:space-y-16 pb-12">
+
         {/* ============================================================ */}
-        {/* HERO SECTION (TWO COLUMNS)                                   */}
+        {/* HERO SECTION                                                 */}
         {/* ============================================================ */}
+
         <section className="pt-2 sm:pt-4">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+
             {/* Left Hero Column */}
             <div className="lg:col-span-6 space-y-5 text-left">
+
               {/* Bharat Badge */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAF2FF] border border-[#CCE0FF] text-[#1769FF] text-xs font-bold shadow-2xs">
                 <Sparkles className="w-3.5 h-3.5 text-[#1769FF]" />
@@ -92,12 +87,14 @@ export default function HomePage() {
 
               {/* Main Headline */}
               <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-black tracking-tight leading-[1.1] text-[#101D35]">
-                Your Career.<br />
-                Your Roadmap.<br />
+                Your Career.
+                <br />
+                Your Roadmap.
+                <br />
                 <span className="text-[#1769FF]">Your Future.</span>
               </h1>
 
-              {/* Subtitle / Description */}
+              {/* Subtitle */}
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-lg font-normal">
                 CareerMitra helps students discover the right career path, compare streams,
                 find scholarships, build resumes, and get AI-powered career guidance — all in one place.
@@ -125,6 +122,7 @@ export default function HomePage() {
               {/* Trust Statistics Row */}
               <div className="border-t border-[#E6EBF5] pt-6 mt-6">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1769FF] flex items-center justify-center">
                       <Smile className="w-5 h-5" />
@@ -180,34 +178,61 @@ export default function HomePage() {
                       </div>
                     </div>
                   </div>
+
                 </div>
               </div>
+
+              {/* Auth CTA */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <Link
+                  href="/login"
+                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/30 hover:scale-105 transition flex items-center justify-center gap-2 group"
+                >
+                  <Sparkles className="w-4 h-4 text-emerald-950" />
+                  <span>Sign In to Student Dashboard</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+
+                <Link
+                  href="/signup"
+                  className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-[#EAF2FF] hover:bg-blue-100 text-[#1769FF] font-bold text-sm border border-blue-100 transition flex items-center justify-center gap-2"
+                >
+                  <Users className="w-4 h-4" />
+                  <span>Create New Student Profile</span>
+                </Link>
+              </div>
+
             </div>
 
-            {/* Right Hero Column: Student Illustration & Floating Career Roadmap */}
+            {/* Right Hero Column */}
             <div className="lg:col-span-6 flex items-center justify-center">
               <HeroRoadmapVisual />
             </div>
+
           </div>
         </section>
 
         {/* ============================================================ */}
         {/* FEATURE SECTION                                              */}
         {/* ============================================================ */}
+
         <section className="space-y-8 pt-4">
+
           <div className="text-center space-y-2 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-black text-[#101D35] tracking-tight">
               Everything You Need to Plan Your Career
             </h2>
+
             <p className="text-slate-500 text-sm sm:text-base font-normal">
               Powerful tools and resources to help you explore, plan and achieve your career goals.
             </p>
           </div>
 
-          {/* 6 Feature Cards Grid */}
+          {/* Feature Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {featureCards.map((feat, idx) => {
               const Icon = feat.icon;
+
               return (
                 <Link
                   key={idx}
@@ -220,9 +245,11 @@ export default function HomePage() {
                     >
                       <Icon className="w-6 h-6" />
                     </div>
+
                     <h3 className="font-extrabold text-base sm:text-lg text-[#101D35] group-hover:text-[#1769FF] transition-colors">
                       {feat.title}
                     </h3>
+
                     <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-normal">
                       {feat.desc}
                     </p>
@@ -236,7 +263,9 @@ export default function HomePage() {
               );
             })}
           </div>
+
         </section>
+
       </div>
     </AppLayout>
   );

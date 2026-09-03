@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStudent } from '@/context/StudentContext';
-import { careers } from '@/data/careers';
+import { getCareers } from '@/lib/data/careers';
+import { Career } from '@/types';
 import {
   Compass,
   ArrowRight,
@@ -110,6 +111,11 @@ export default function OnboardingPage() {
   ]);
 
   const [careerGoalId, setCareerGoalId] = useState('software-engineer');
+  const [dbCareers, setDbCareers] = useState<Career[]>([]);
+
+  useEffect(() => {
+    getCareers().then(setDbCareers);
+  }, []);
 
   useEffect(() => {
     if (profile) {
@@ -137,10 +143,10 @@ export default function OnboardingPage() {
     }
   };
 
-  const handleFinish = () => {
-    const selectedCareer = careers.find((c) => c.id === careerGoalId);
+  const handleFinish = async () => {
+    const selectedCareer = dbCareers.find((c: Career) => c.id === careerGoalId);
 
-    updateProfile({
+    await updateProfile({
       name: name.trim() || 'Student',
       location: location.trim() || 'Maharashtra',
       state,
@@ -271,22 +277,20 @@ export default function OnboardingPage() {
                     <button
                       type="button"
                       onClick={() => setRuralUrban('rural')}
-                      className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition ${
-                        ruralUrban === 'rural'
+                      className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition ${ruralUrban === 'rural'
                           ? 'bg-[#1769FF] text-white border-[#1769FF]'
                           : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
-                      }`}
+                        }`}
                     >
                       🌾 Rural / Semi-Urban
                     </button>
                     <button
                       type="button"
                       onClick={() => setRuralUrban('urban')}
-                      className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition ${
-                        ruralUrban === 'urban'
+                      className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition ${ruralUrban === 'urban'
                           ? 'bg-[#1769FF] text-white border-[#1769FF]'
                           : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
-                      }`}
+                        }`}
                     >
                       🏙️ Urban / Metro
                     </button>
@@ -314,11 +318,10 @@ export default function OnboardingPage() {
                       key={lvl.id}
                       type="button"
                       onClick={() => setEducationLevel(lvl.id)}
-                      className={`p-3 rounded-xl text-left border transition ${
-                        educationLevel === lvl.id
+                      className={`p-3 rounded-xl text-left border transition ${educationLevel === lvl.id
                           ? 'bg-blue-50 border-[#1769FF] text-[#1769FF] shadow-xs'
                           : 'bg-slate-50 border-[#E6EBF5] text-slate-700 hover:bg-slate-100'
-                      }`}
+                        }`}
                     >
                       <div className="font-bold text-xs">{lvl.label}</div>
                       <div className="text-[11px] text-slate-500 mt-0.5">{lvl.desc}</div>
@@ -429,11 +432,10 @@ export default function OnboardingPage() {
                       key={interest}
                       type="button"
                       onClick={() => toggleInterest(interest)}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 ${
-                        isSelected
+                      className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 ${isSelected
                           ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-xs'
                           : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
-                      }`}
+                        }`}
                     >
                       {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
                       <span>{interest}</span>
@@ -456,18 +458,17 @@ export default function OnboardingPage() {
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-96 overflow-y-auto pr-1">
-                {careers.map((career) => {
+                {dbCareers.map((career) => {
                   const isSelected = careerGoalId === career.id;
                   return (
                     <button
                       key={career.id}
                       type="button"
                       onClick={() => setCareerGoalId(career.id)}
-                      className={`p-3.5 rounded-xl text-left border transition ${
-                        isSelected
+                      className={`p-3.5 rounded-xl text-left border transition ${isSelected
                           ? 'bg-[#EAF2FF] border-[#1769FF] text-[#101D35] shadow-xs ring-1 ring-[#1769FF]'
                           : 'bg-slate-50 border-[#E6EBF5] text-slate-700 hover:bg-slate-100'
-                      }`}
+                        }`}
                     >
                       <div className="text-2xl mb-1">{career.icon}</div>
                       <div className="font-bold text-xs text-[#101D35]">{career.title}</div>

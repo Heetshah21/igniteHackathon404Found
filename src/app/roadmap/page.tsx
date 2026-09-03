@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStudent } from '@/context/StudentContext';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { careers } from '@/data/careers';
-import { roadmaps } from '@/data/roadmaps';
+import { getCareers } from '@/lib/data/careers';
+import { getRoadmaps } from '@/lib/data/roadmaps';
+import { Career, Roadmap } from '@/types';
 import { translations } from '@/lib/translations';
 import { AudioButton } from '@/components/common/AudioButton';
 import { getRoadmapSpeech } from '@/lib/speech/hindiContent';
@@ -25,20 +26,29 @@ export default function RoadmapPage() {
   const { profile, updateProfile, language } = useStudent();
   const t = translations[language];
 
+  const [dbCareers, setDbCareers] = useState<Career[]>([]);
+  const [dbRoadmaps, setDbRoadmaps] = useState<Roadmap[]>([]);
+
+  useEffect(() => {
+    getCareers().then(setDbCareers);
+    getRoadmaps().then(setDbRoadmaps);
+  }, []);
+
   // Selected career
   const [selectedCareerId, setSelectedCareerId] = useState<string>(
     profile?.career_goal_id || 'software-engineer'
   );
 
   const selectedCareer = useMemo(() => {
-    return careers.find((c) => c.id === selectedCareerId) || careers[0];
-  }, [selectedCareerId]);
+    if (dbCareers.length === 0) return { id: 'software-engineer', title: 'Software Engineer', slug: 'software-engineer', description: '', branch: [], icon: '💻' };
+    return dbCareers.find((c) => c.id === selectedCareerId) || dbCareers[0];
+  }, [dbCareers, selectedCareerId]);
 
   // Roadmaps for the selected career
   const careerRoadmaps = useMemo(() => {
-    const list = roadmaps.filter((r) => r.career_id === selectedCareer.id);
-    return list.length > 0 ? list : [roadmaps[0]];
-  }, [selectedCareer.id]);
+    const list = dbRoadmaps.filter((r) => r.career_id === selectedCareer.id);
+    return list.length > 0 ? list : dbRoadmaps;
+  }, [dbRoadmaps, selectedCareer.id]);
 
   const [activePathwayIndex, setActivePathwayIndex] = useState(0);
 
@@ -50,22 +60,27 @@ export default function RoadmapPage() {
     });
   };
 
-  const activeRoadmap = careerRoadmaps[activePathwayIndex] || careerRoadmaps[0];
+  const activeRoadmap = careerRoadmaps[activePathwayIndex] || careerRoadmaps[0] || {
+    id: 'default-roadmap',
+    title: 'Career Pathway',
+    description: 'Educational roadmap steps',
+    steps: [],
+  };
 
   const careerSpeechText = useMemo(() => {
     return {
-      en: `${selectedCareer.title}. ${selectedCareer.description}. Average salary package: ${selectedCareer.avg_salary}. Job growth: ${selectedCareer.growth}. Difficulty level: ${selectedCareer.difficulty}.`,
-      hi: `${selectedCareer.title}। ${selectedCareer.description}। औसत पैकेज: ${selectedCareer.avg_salary}। विकास: ${selectedCareer.growth}। कठिनाई स्तर: ${selectedCareer.difficulty}।`,
+      en: `${selectedCareer?.title || 'Career'}. ${selectedCareer?.description || ''}. Average salary package: ${selectedCareer?.avg_salary || 'Competitive'}. Job growth: ${selectedCareer?.growth || 'High'}. Difficulty level: ${selectedCareer?.difficulty || 'Moderate'}.`,
+      hi: `${selectedCareer?.title || 'करियर'}। ${selectedCareer?.description || ''}। औसत पैकेज: ${selectedCareer?.avg_salary || 'उत्कृष्ट'}। विकास: ${selectedCareer?.growth || 'उच्च'}। कठिनाई स्तर: ${selectedCareer?.difficulty || 'मध्यम'}।`,
     };
   }, [selectedCareer]);
 
   const activeRoadmapSpeech = useMemo(() => {
     return getRoadmapSpeech(
-      selectedCareer.title,
-      activeRoadmap.title,
-      activeRoadmap.steps
+      selectedCareer?.title || 'Career',
+      activeRoadmap?.title || 'Pathway',
+      activeRoadmap?.steps || []
     );
-  }, [selectedCareer.title, activeRoadmap]);
+  }, [selectedCareer?.title, activeRoadmap]);
 
   return (
     <AppLayout>
@@ -80,22 +95,23 @@ export default function RoadmapPage() {
                   <span>Feature 2 • Multi-Pathway Educational Roadmaps</span>
                 </div>
                 <AudioButton
-                  id={`roadmap-career-speech-${selectedCareer.id}`}
+                  id={`roadmap-career-speech-${selectedCareer?.id || 'goal'}`}
                   text={careerSpeechText}
                   label="Listen to Career"
                   variant="badge"
                   size="xs"
                   className="bg-blue-50 hover:bg-blue-100 text-[#1769FF] border-blue-200"
-                  ariaLabel={`Listen to ${selectedCareer.title} overview`}
+                  ariaLabel={`Listen to ${selectedCareer?.title || 'career'} overview`}
                 />
               </div>
               <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#101D35]">
-                Career Roadmap: {selectedCareer.title}
+                Career Roadmap: {selectedCareer?.title || 'Career'}
               </h1>
               <p className="text-slate-600 text-xs sm:text-sm max-w-2xl">
-                Discover multiple proven educational paths from 10th/12th/Diploma to reaching your destination as a {selectedCareer.title}.
+                Discover multiple proven educational paths from 10th/12th/Diploma to reaching your destination as a {selectedCareer?.title || 'professional'}.
               </p>
             </div>
+
 
 
 
@@ -117,7 +133,7 @@ export default function RoadmapPage() {
             Select Career to Explore Pathways:
           </label>
           <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-thin">
-            {careers.map((career) => {
+            {dbCareers.map((career: Career) => {
               const isSelected = selectedCareerId === career.id;
               return (
                 <button
@@ -126,11 +142,10 @@ export default function RoadmapPage() {
                     setSelectedCareerId(career.id);
                     setActivePathwayIndex(0);
                   }}
-                  className={`px-3.5 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 border shrink-0 ${
-                    isSelected
-                      ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-sm'
-                      : 'bg-white text-slate-700 border-[#E6EBF5] hover:bg-slate-50 hover:border-slate-300'
-                  }`}
+                  className={`px-3.5 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 border shrink-0 ${isSelected
+                    ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-sm'
+                    : 'bg-white text-slate-700 border-[#E6EBF5] hover:bg-slate-50 hover:border-slate-300'
+                    }`}
                 >
                   <span className="text-base">{career.icon}</span>
                   <span>{career.title}</span>
@@ -183,26 +198,24 @@ export default function RoadmapPage() {
                 <button
                   key={r.id}
                   onClick={() => setActivePathwayIndex(idx)}
-                  className={`p-4 rounded-2xl text-left border transition ${
-                    isActive
-                      ? 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-400 ring-2 ring-emerald-500/20 shadow-sm'
-                      : 'bg-white border-slate-200 hover:bg-slate-50'
-                  }`}
+                  className={`p-4 rounded-2xl text-left border transition ${isActive
+                    ? 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-400 ring-2 ring-emerald-500/20 shadow-sm'
+                    : 'bg-white border-slate-200 hover:bg-slate-50'
+                    }`}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span
-                      className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${
-                        isActive ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'
-                      }`}
+                      className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${isActive ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'
+                        }`}
                     >
                       Pathway #{idx + 1}
                     </span>
                     <span className="text-xs font-semibold text-slate-500">
-                      {r.steps.length} Steps
+                      {r?.steps?.length || 0} Steps
                     </span>
                   </div>
-                  <h4 className="font-bold text-sm text-slate-900 mt-1">{r.title}</h4>
-                  <p className="text-xs text-slate-500 mt-1 line-clamp-2">{r.description}</p>
+                  <h4 className="font-bold text-sm text-slate-900 mt-1">{r?.title || 'Pathway'}</h4>
+                  <p className="text-xs text-slate-500 mt-1 line-clamp-2">{r?.description || ''}</p>
                 </button>
               );
             })}
@@ -216,80 +229,78 @@ export default function RoadmapPage() {
               <div className="flex items-center gap-2">
                 <span className="text-xl">🗺️</span>
                 <h3 className="text-lg font-extrabold text-slate-900">
-                  {activeRoadmap.title}
+                  {activeRoadmap?.title || 'Career Pathway'}
                 </h3>
               </div>
-              <p className="text-xs text-slate-500 mt-1">{activeRoadmap.description}</p>
+
+              <p className="text-xs text-slate-500 mt-1">
+                {activeRoadmap?.description || 'Detailed steps for your career roadmap'}
+              </p>
             </div>
 
             <AudioButton
-              id={`roadmap-pathway-speech-${activeRoadmap.id}`}
+              id={`roadmap-pathway-speech-${activeRoadmap?.id || 'default'}`}
               text={activeRoadmapSpeech}
               label="Listen to Full Roadmap"
               variant="secondary"
               size="sm"
-              ariaLabel={`Listen to full roadmap for ${activeRoadmap.title}`}
+              ariaLabel={`Listen to full roadmap for ${activeRoadmap?.title || 'career pathway'}`}
             />
           </div>
-
           {/* Vertical Timeline with visual connectors */}
           <div className="relative pl-6 sm:pl-10 space-y-8 before:absolute before:left-3 sm:before:left-5 before:top-3 before:bottom-3 before:w-0.5 before:bg-gradient-to-b before:from-emerald-500 before:via-teal-400 before:to-indigo-600">
-            {activeRoadmap.steps.map((step, idx) => {
-              const isLast = idx === activeRoadmap.steps.length - 1;
+            {(activeRoadmap?.steps ?? []).map((step, idx) => {
+              const stepsCount = activeRoadmap?.steps?.length || 0;
+              const isLast = idx === stepsCount - 1;
               const isFirst = idx === 0;
 
               const stageSpeech = {
-                en: `Stage ${idx + 1}: ${step.title}. ${step.duration ? `Duration: ${step.duration}.` : ''} ${step.description}. ${step.requirements?.length ? `Prerequisites: ${step.requirements.join(', ')}.` : ''} ${step.tips?.length ? `Tip: ${step.tips[0]}` : ''}`,
-                hi: `चरण ${idx + 1}: ${step.title}। ${step.duration ? `समय: ${step.duration}।` : ''} ${step.description}। ${step.requirements?.length ? `योग्यता: ${step.requirements.join(', ')}।` : ''} ${step.tips?.length ? `सुझाव: ${step.tips[0]}` : ''}`,
+                en: `Stage ${idx + 1}: ${step?.title || ''}. ${step?.duration ? `Duration: ${step.duration}.` : ''} ${step?.description || ''}. ${step?.requirements?.length ? `Prerequisites: ${step.requirements.join(', ')}.` : ''} ${step?.tips?.length ? `Tip: ${step.tips[0]}` : ''}`,
+                hi: `चरण ${idx + 1}: ${step?.title || ''}। ${step?.duration ? `समय: ${step.duration}।` : ''} ${step?.description || ''}। ${step?.requirements?.length ? `योग्यता: ${step.requirements.join(', ')}।` : ''} ${step?.tips?.length ? `सुझाव: ${step.tips[0]}` : ''}`,
               };
 
               return (
-                <div key={step.id} className="relative group">
+                <div key={step?.id || idx} className="relative group">
                   {/* Timeline bullet node */}
                   <div
-                    className={`absolute -left-6 sm:-left-10 top-0.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-bold text-xs border-2 shadow-xs transition-transform group-hover:scale-110 ${
-                      isLast
-                        ? 'bg-emerald-600 text-white border-white ring-4 ring-emerald-100'
-                        : isFirst
+                    className={`absolute -left-6 sm:-left-10 top-0.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-bold text-xs border-2 shadow-xs transition-transform group-hover:scale-110 ${isLast
+                      ? 'bg-emerald-600 text-white border-white ring-4 ring-emerald-100'
+                      : isFirst
                         ? 'bg-teal-500 text-white border-white ring-2 ring-teal-100'
                         : 'bg-white text-slate-700 border-slate-300'
-                    }`}
+                      }`}
                   >
                     {idx + 1}
                   </div>
 
                   {/* Step Card Content */}
                   <div
-                    className={`p-5 rounded-2xl border transition ${
-                      isLast
-                        ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-emerald-400 shadow-lg'
-                        : 'bg-slate-50/80 border-slate-200/80 hover:bg-white hover:border-emerald-300 hover:shadow-xs'
-                    }`}
+                    className={`p-5 rounded-2xl border transition ${isLast
+                      ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-emerald-400 shadow-lg'
+                      : 'bg-slate-50/80 border-slate-200/80 hover:bg-white hover:border-emerald-300 hover:shadow-xs'
+                      }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${
-                            isLast ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800'
-                          }`}
+                          className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${isLast ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800'
+                            }`}
                         >
                           Stage {idx + 1}
                         </span>
                         <h4
-                          className={`font-extrabold text-base sm:text-lg ${
-                            isLast ? 'text-white' : 'text-slate-900'
-                          }`}
+                          className={`font-extrabold text-base sm:text-lg ${isLast ? 'text-white' : 'text-slate-900'
+                            }`}
                         >
-                          {step.title}
+                          {step?.title}
                         </h4>
                       </div>
 
                       <div className="flex items-center gap-2 self-start sm:self-auto">
-                        {step.duration && (
+                        {step?.duration && (
                           <div
-                            className={`inline-flex items-center gap-1 text-xs font-semibold ${
-                              isLast ? 'text-emerald-100' : 'text-slate-500'
-                            }`}
+                            className={`inline-flex items-center gap-1 text-xs font-semibold ${isLast ? 'text-emerald-100' : 'text-slate-500'
+                              }`}
                           >
                             <Clock className="w-3.5 h-3.5" />
                             <span>{step.duration}</span>
@@ -297,7 +308,7 @@ export default function RoadmapPage() {
                         )}
 
                         <AudioButton
-                          id={`roadmap-stage-${step.id}`}
+                          id={`roadmap-stage-${step?.id || idx}`}
                           text={stageSpeech}
                           label="Listen"
                           variant={isLast ? 'badge' : 'ghost'}
@@ -307,38 +318,35 @@ export default function RoadmapPage() {
                               ? 'bg-white/20 text-white border-white/30 hover:bg-white/30'
                               : 'text-slate-600 hover:bg-slate-200/60'
                           }
-                          ariaLabel={`Listen to Stage ${idx + 1}: ${step.title}`}
+                          ariaLabel={`Listen to Stage ${idx + 1}: ${step?.title || ''}`}
                         />
                       </div>
                     </div>
 
                     <p
-                      className={`text-xs sm:text-sm mt-2 leading-relaxed ${
-                        isLast ? 'text-emerald-50' : 'text-slate-600'
-                      }`}
+                      className={`text-xs sm:text-sm mt-2 leading-relaxed ${isLast ? 'text-emerald-50' : 'text-slate-600'
+                        }`}
                     >
-                      {step.description}
+                      {step?.description}
                     </p>
 
 
                     {/* Requirements */}
-                    {step.requirements && step.requirements.length > 0 && (
+                    {step?.requirements && step.requirements.length > 0 && (
                       <div className="mt-3 flex flex-wrap items-center gap-1.5">
                         <span
-                          className={`text-[11px] font-bold ${
-                            isLast ? 'text-emerald-100' : 'text-slate-500'
-                          }`}
+                          className={`text-[11px] font-bold ${isLast ? 'text-emerald-100' : 'text-slate-500'
+                            }`}
                         >
                           Prerequisites:
                         </span>
                         {step.requirements.map((req, rIdx) => (
                           <span
                             key={rIdx}
-                            className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${
-                              isLast
-                                ? 'bg-white/15 text-white'
-                                : 'bg-slate-200 text-slate-800'
-                            }`}
+                            className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${isLast
+                              ? 'bg-white/15 text-white'
+                              : 'bg-slate-200 text-slate-800'
+                              }`}
                           >
                             {req}
                           </span>
@@ -347,13 +355,12 @@ export default function RoadmapPage() {
                     )}
 
                     {/* Pro Tips */}
-                    {step.tips && step.tips.length > 0 && (
+                    {step?.tips && step.tips.length > 0 && (
                       <div
-                        className={`mt-3 p-3 rounded-xl text-xs space-y-1 ${
-                          isLast
-                            ? 'bg-black/15 text-emerald-100 border border-white/10'
-                            : 'bg-emerald-50/70 text-emerald-900 border border-emerald-200/60'
-                        }`}
+                        className={`mt-3 p-3 rounded-xl text-xs space-y-1 ${isLast
+                          ? 'bg-black/15 text-emerald-100 border border-white/10'
+                          : 'bg-emerald-50/70 text-emerald-900 border border-emerald-200/60'
+                          }`}
                       >
                         <div className="font-bold flex items-center gap-1.5">
                           <span>💡 Pro-Tips for Rural & First-Gen Students:</span>
@@ -372,6 +379,7 @@ export default function RoadmapPage() {
           </div>
         </div>
       </div>
-    </AppLayout>
+
+    </AppLayout >
   );
 }
