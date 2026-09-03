@@ -1,31 +1,49 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useStudent } from '@/context/StudentContext';
-import { GraduationCap, Sparkles, ArrowRight, Lock, Mail } from 'lucide-react';
+import {
+  GraduationCap,
+  Lock,
+  Mail,
+  AlertCircle,
+} from 'lucide-react';
+import { getSafeRedirectUrl } from '@/lib/auth/safe-redirect';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
-  const { login, resetToDemo } = useStudent();
+  const searchParams = useSearchParams();
+  const nextParam = searchParams.get('next');
+  const errorParam = searchParams.get('error');
+
+  const { signIn, authError, setAuthError } = useStudent();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(
+    errorParam === 'auth_callback_failed' ? 'Authentication callback failed. Please try signing in again.' : null
+  );
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      login(email || 'student@careermitra.org');
-      router.push('/dashboard');
-    }, 400);
+    setLocalError(null);
+    setAuthError(null);
+
+    const res = await signIn(email, password);
+    setIsLoading(false);
+
+    if (res.success) {
+      const destination = getSafeRedirectUrl(nextParam);
+      router.push(destination);
+    } else {
+      setLocalError(res.error || 'Email or password is incorrect.');
+    }
   };
 
-  const handleQuickDemo = () => {
-    resetToDemo();
-    router.push('/dashboard');
-  };
+  const displayErr = localError || authError;
 
   return (
     <div className="min-h-screen bg-[#F7F9FE] flex flex-col justify-center py-12 sm:px-6 lg:px-8 px-4 text-[#101D35]">
@@ -48,17 +66,6 @@ export default function LoginPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-6 shadow-xs rounded-3xl sm:px-10 border border-[#E6EBF5]">
-          {/* Quick Demo Button */}
-          <button
-            type="button"
-            onClick={handleQuickDemo}
-            className="w-full mb-6 flex items-center justify-center gap-2 py-3 px-4 border border-[#CCE0FF] rounded-xl shadow-2xs text-sm font-bold text-[#1769FF] bg-[#EAF2FF] hover:bg-blue-100/70 transition group cursor-pointer"
-          >
-            <Sparkles className="w-4 h-4 text-[#1769FF]" />
-            <span>⚡ Explore with Demo Student (Rahul Sharma)</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
-
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#E6EBF5]" />
@@ -67,6 +74,13 @@ export default function LoginPage() {
               <span className="bg-white px-3 text-slate-400 font-semibold">Or sign in with email</span>
             </div>
           </div>
+
+          {displayErr && (
+            <div className="mb-4 p-3 rounded-xl bg-rose-500/20 border border-rose-400/40 text-rose-200 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+              <span>{displayErr}</span>
+            </div>
+          )}
 
           <form className="space-y-4" onSubmit={handleLogin}>
             <div>
@@ -87,9 +101,14 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#101D35] mb-1">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-bold text-[#101D35]">
+                  Password
+                </label>
+                <Link href="/forgot-password" className="text-xs text-[#1769FF] hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
                 <input
@@ -121,5 +140,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-900 flex items-center justify-center text-white text-sm">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

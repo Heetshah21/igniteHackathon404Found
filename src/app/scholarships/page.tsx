@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStudent } from '@/context/StudentContext';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { scholarships } from '@/data/scholarships';
+import { getScholarships } from '@/lib/data/scholarships';
+import { Scholarship } from '@/types';
 import { matchScholarships } from '@/lib/recommendations/matcher';
 import { translations } from '@/lib/translations';
 import { AudioButton } from '@/components/common/AudioButton';
@@ -27,25 +28,31 @@ export default function ScholarshipsPage() {
   const { profile, language } = useStudent();
   const t = translations[language];
 
+  const [dbScholarships, setDbScholarships] = useState<Scholarship[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterState, setFilterState] = useState<string>('all');
   const [filterEducation, setFilterEducation] = useState<string>('all');
   const [showOnlyEligible, setShowOnlyEligible] = useState(false);
 
+  useEffect(() => {
+    getScholarships().then(setDbScholarships);
+  }, []);
+
   // Evaluate all scholarships against current student profile
   const evaluatedScholarships = useMemo(() => {
-    return matchScholarships(scholarships, profile || {});
-  }, [profile]);
+    return matchScholarships(dbScholarships, profile || {});
+  }, [dbScholarships, profile]);
 
   // Filter list
   const filteredList = useMemo(() => {
     return evaluatedScholarships.filter(({ item, eligibilityResult }) => {
+      if (!item) return false;
       // Search
       if (searchTerm.trim()) {
         const term = searchTerm.toLowerCase();
-        const matchesName = item.name.toLowerCase().includes(term);
-        const matchesProvider = item.provider.toLowerCase().includes(term);
-        const matchesTags = item.tags.some((t) => t.toLowerCase().includes(term));
+        const matchesName = item.name?.toLowerCase().includes(term) ?? false;
+        const matchesProvider = item.provider?.toLowerCase().includes(term) ?? false;
+        const matchesTags = (item.tags ?? []).some((t) => t?.toLowerCase().includes(term));
         if (!matchesName && !matchesProvider && !matchesTags) return false;
       }
 
@@ -75,6 +82,7 @@ export default function ScholarshipsPage() {
       return true;
     });
   }, [evaluatedScholarships, searchTerm, filterState, filterEducation, showOnlyEligible]);
+
 
   const eligibleCount = evaluatedScholarships.filter((s) => s.eligibilityResult?.eligible).length;
 
@@ -163,7 +171,7 @@ export default function ScholarshipsPage() {
               <span>Show only scholarships I qualify for (100% Match)</span>
             </label>
             <span className="text-slate-500 font-medium">
-              Showing {filteredList.length} of {scholarships.length} scholarships
+              Showing {filteredList.length} of {dbScholarships.length} scholarships
             </span>
           </div>
         </div>

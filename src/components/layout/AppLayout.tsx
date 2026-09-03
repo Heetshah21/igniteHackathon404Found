@@ -21,12 +21,13 @@ import {
   X,
   Sparkles,
   Briefcase,
+  LogOut,
 } from 'lucide-react';
 
 import { AudioLanguageSelector } from '@/components/common/AudioLanguageSelector';
 
 export const Navbar: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSidebar }) => {
-  const { profile, language, setLanguage, resetToDemo } = useStudent();
+  const { profile, language, setLanguage } = useStudent();
   const t = translations[language];
   const [langMenuOpen, setLangMenuOpen] = useState(false);
 
@@ -88,9 +89,8 @@ export const Navbar: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSid
                   <button
                     key={lang}
                     onClick={() => setLanguage(lang)}
-                    className={`w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-emerald-50 hover:text-emerald-700 ${
-                      language === lang ? 'bg-emerald-50 text-emerald-700 font-bold' : 'text-slate-700'
-                    }`}
+                    className={`w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-emerald-50 hover:text-emerald-700 ${language === lang ? 'bg-emerald-50 text-emerald-700 font-bold' : 'text-slate-700'
+                      }`}
                   >
                     {lang === 'Hindi' ? 'हिंदी (Hindi)' : lang === 'Marathi' ? 'मराठी (Marathi)' : 'English'}
                   </button>
@@ -99,16 +99,6 @@ export const Navbar: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSid
             )}
           </div>
 
-          {/* Reset Demo Student */}
-          <button
-            onClick={resetToDemo}
-            className="hidden md:flex items-center gap-1 text-xs text-slate-600 hover:text-emerald-700 px-2 py-1.5 rounded-lg border border-dashed border-slate-300 hover:border-emerald-400 hover:bg-emerald-50/50 transition"
-            title="Reset to Demo Student (Rahul from Maharashtra)"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Demo</span>
-          </button>
-
           {/* Student Profile Quick View Badge */}
           {profile && (
             <Link
@@ -116,15 +106,15 @@ export const Navbar: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSid
               className="flex items-center gap-2 pl-2 pr-3 py-1 rounded-full border border-emerald-200 bg-emerald-50/80 hover:bg-emerald-100/90 transition text-left"
             >
               <div className="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
-                {profile.name?.charAt(0) || 'R'}
+                {profile.name?.charAt(0) || 'S'}
               </div>
               <div className="hidden sm:block text-xs">
                 <div className="font-semibold text-slate-800 leading-tight flex items-center gap-1">
-                  <span>{profile.name?.split(' ')[0] || 'Rahul'}</span>
+                  <span>{profile.name?.split(' ')[0] || 'Student'}</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
                 </div>
                 <div className="text-[10px] text-slate-500 font-medium leading-none truncate max-w-[110px]">
-                  {profile.education_level || '12th'} • {profile.state || 'MH'}
+                  {profile.education_level || 'Profile'} {profile.state ? `• ${profile.state}` : ''}
                 </div>
               </div>
             </Link>
@@ -137,7 +127,7 @@ export const Navbar: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSid
 
 export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
-  const { language, profile } = useStudent();
+  const { language, profile, logout } = useStudent();
   const t = translations[language];
 
   const navItems = [
@@ -163,9 +153,8 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
       )}
 
       <aside
-        className={`fixed top-16 bottom-0 left-0 z-40 w-64 bg-white border-r border-slate-200 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${
-          isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
-        }`}
+        className={`fixed top-16 bottom-0 left-0 z-40 w-64 bg-white border-r border-slate-200 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+          }`}
       >
         <div className="p-4 space-y-1 overflow-y-auto">
           {/* Student Status Summary Card */}
@@ -176,15 +165,19 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
                 <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Active</span>
               </div>
               <p className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
-                🎯 {profile.career_goal || 'Software Engineer'}
+                🎯 {profile.career_goal || 'Set Goal'}
               </p>
               <div className="mt-2 text-[11px] text-slate-600 flex flex-wrap gap-1">
-                <span className="px-1.5 py-0.5 bg-white rounded border border-slate-200">
-                  {profile.education_level} {profile.branch ? `• ${profile.branch}` : ''}
-                </span>
-                <span className="px-1.5 py-0.5 bg-white rounded border border-slate-200">
-                  📍 {profile.location || 'Maharashtra'}
-                </span>
+                {profile.education_level && (
+                  <span className="px-1.5 py-0.5 bg-white rounded border border-slate-200">
+                    {profile.education_level} {profile.branch ? `• ${profile.branch}` : ''}
+                  </span>
+                )}
+                {profile.state && (
+                  <span className="px-1.5 py-0.5 bg-white rounded border border-slate-200">
+                    📍 {profile.state}
+                  </span>
+                )}
               </div>
             </div>
           )}
@@ -202,29 +195,26 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
                   key={item.href}
                   href={item.href}
                   onClick={onClose}
-                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-all group ${
-                    isActive
+                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-all group ${isActive
                       ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/30'
                       : item.highlight
-                      ? 'bg-gradient-to-r from-pink-50 to-indigo-50 text-slate-800 hover:bg-pink-100 border border-pink-200/60'
-                      : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-                  }`}
+                        ? 'bg-gradient-to-r from-pink-50 to-indigo-50 text-slate-800 hover:bg-pink-100 border border-pink-200/60'
+                        : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <Icon
-                      className={`w-4 h-4 transition-transform group-hover:scale-110 ${
-                        isActive ? 'text-white' : item.color
-                      }`}
+                      className={`w-4 h-4 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : item.color
+                        }`}
                     />
                     <span>{item.label}</span>
                   </div>
                   {item.badge && (
                     <span
-                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
-                        isActive
+                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${isActive
                           ? 'bg-emerald-700 text-emerald-100'
                           : 'bg-emerald-100 text-emerald-800'
-                      }`}
+                        }`}
                     >
                       {item.badge}
                     </span>
@@ -238,8 +228,8 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
           </nav>
         </div>
 
-        {/* Bottom profile / onboarding settings link */}
-        <div className="p-4 border-t border-slate-200 bg-slate-50/50">
+        {/* Bottom profile / onboarding settings & Sign Out */}
+        <div className="p-4 border-t border-slate-200 bg-slate-50/50 space-y-2">
           <Link
             href="/onboarding"
             onClick={onClose}
@@ -251,6 +241,17 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
               <div className="text-[10px] text-slate-500">Change branch, state, marks</div>
             </div>
           </Link>
+
+          <button
+            onClick={() => {
+              onClose();
+              logout();
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition cursor-pointer"
+          >
+            <LogOut className="w-4 h-4 text-rose-500" />
+            <span className="font-bold">{t.nav.logout}</span>
+          </button>
         </div>
       </aside>
     </>

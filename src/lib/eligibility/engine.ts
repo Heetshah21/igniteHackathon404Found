@@ -4,11 +4,14 @@ export function evaluateEligibility(
   rules: EligibilityRule[],
   profile: Partial<StudentProfile>
 ): EligibilityResult {
+  const safeRules = rules || [];
+  const safeProfile = profile || {};
   const matchedRules: EligibilityRule[] = [];
   const failedRules: EligibilityRule[] = [];
 
-  for (const rule of rules) {
-    const profileValue = getProfileField(profile, rule.field);
+  for (const rule of safeRules) {
+    if (!rule) continue;
+    const profileValue = getProfileField(safeProfile, rule.field);
     
     if (profileValue === undefined || profileValue === null || profileValue === '') {
       // If field not provided, we can't evaluate — skip (don't count as failed)
@@ -24,7 +27,7 @@ export function evaluateEligibility(
   }
 
   const totalEvaluated = matchedRules.length + failedRules.length;
-  const score = totalEvaluated > 0 ? (matchedRules.length / rules.length) * 100 : 0;
+  const score = totalEvaluated > 0 ? (matchedRules.length / (safeRules.length || 1)) * 100 : 0;
 
   return {
     eligible: failedRules.length === 0 && matchedRules.length > 0,

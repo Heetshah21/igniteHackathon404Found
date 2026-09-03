@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { scholarships } from '@/data/scholarships';
-import { evaluateEligibility } from '@/lib/eligibility/engine';
+import { getScholarships } from '@/lib/data/scholarships';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const state = searchParams.get('state');
 
-  if (state && state !== 'all') {
-    const filtered = scholarships.filter(
-      (s) => !s.states || s.states.length === 0 || s.states.includes(state)
-    );
-    return NextResponse.json({ scholarships: filtered });
-  }
+  const filtered = await getScholarships(state || undefined);
 
-  return NextResponse.json({ scholarships });
+  return NextResponse.json({ scholarships: filtered });
 }

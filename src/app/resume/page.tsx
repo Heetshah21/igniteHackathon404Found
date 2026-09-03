@@ -23,63 +23,47 @@ import {
 } from 'lucide-react';
 
 export default function ResumePage() {
-  const { profile, language } = useStudent();
+  const { user, profile, language } = useStudent();
   const t = translations[language];
   const printRef = useRef<HTMLDivElement>(null);
 
   const [resumeData, setResumeData] = useState<ResumeData>({
-    full_name: 'Rahul Sharma',
-    email: 'rahul.sharma@example.com',
-    phone: '+91 98765 43210',
-    location: 'Nashik, Maharashtra, India',
-    career_objective:
-      'Motivated and ambitious student aspiring to become a Software Engineer. Passionate about software development, problem solving, and building impactful technology for community betterment.',
+    full_name: profile?.name || user?.email?.split('@')[0] || '',
+    email: profile?.email || user?.email || '',
+    phone: profile?.phone || '',
+    location: profile?.location ? `${profile.location}, ${profile.state || 'India'}` : '',
+    career_objective: profile?.career_goal
+      ? `Motivated and ambitious student aiming to build a career as a ${profile.career_goal}. Passionate about continuous learning, problem solving, and professional development.`
+      : 'Motivated student seeking opportunities to apply knowledge, learn core skills, and contribute effectively to impactful projects.',
     education: [
       {
-        degree: 'Higher Secondary Certificate (12th Science - PCM)',
-        institution: 'Shivaji Vidya Mandir Higher Secondary School, Nashik',
+        degree: profile?.education_level ? `${profile.education_level} ${profile.branch ? `(${profile.branch})` : ''}` : 'Secondary / Higher Secondary Education',
+        institution: profile?.school_college || 'School / Institution Name',
         year: '2024 - 2026',
-        score: '82.4%',
-      },
-      {
-        degree: 'Secondary School Certificate (10th Standard)',
-        institution: 'Zilla Parishad High School',
-        year: '2024',
-        score: '86.0%',
+        score: profile?.percentage ? `${profile.percentage}%` : '80%',
       },
     ],
-    skills: [
-      'Python Programming',
-      'C++ Fundamentals',
-      'Data Structures & Algorithms',
-      'HTML5 / CSS3 Basics',
-      'Git Version Control',
-      'Problem Solving & Logic',
+    skills: profile?.skills && profile.skills.length > 0 ? profile.skills : [
+      'Problem Solving',
+      'Team Collaboration',
+      'Logical Thinking',
+      'Computer Fundamentals',
     ],
     projects: [
       {
-        title: 'Community Crop Disease Detector',
+        title: 'Academic / Personal Project',
         description:
-          'Created a Python-based image recognition prototype to identify leaf diseases for local farmers, reducing manual inspection time.',
-        technologies: ['Python', 'OpenCV', 'Streamlit'],
-      },
-      {
-        title: 'Student Expense Tracker Web App',
-        description:
-          'Built a responsive web tool for hostel and rural students to manage monthly allowances and educational expenses.',
+          'Developed a web/software project addressing practical problems with modern design and functional features.',
         technologies: ['HTML', 'CSS', 'JavaScript'],
       },
     ],
     certifications: [
-      'Python for Beginners — freeCodeCamp Certification',
-      'Google Digital Garage — Fundamentals of Digital Marketing',
+      'Foundational Skill Certification',
     ],
     achievements: [
-      'Secured 1st rank in District Science Exhibition 2025',
-      'Participated in Smart India Hackathon Regional Junior Track',
-      'Recipient of Maharashtra EBC Merit Support',
+      'Active participant in academic competitions and team projects',
     ],
-    interests: ['Artificial Intelligence', 'Open Source Software', 'Cricket', 'Rural Innovation'],
+    interests: profile?.interests && profile.interests.length > 0 ? profile.interests : ['Technology', 'Learning'],
   });
 
   // Pre-fill from active student profile
@@ -90,8 +74,12 @@ export default function ResumePage() {
         full_name: profile.name || prev.full_name,
         email: profile.email || prev.email,
         phone: profile.phone || prev.phone,
-        location: `${profile.location || 'Nashik'}, ${profile.state || 'Maharashtra'}, India`,
-        career_objective: `Motivated student with a background in ${profile.education_level || '12th'} ${profile.branch || 'Science'}, aiming to build a career as a ${profile.career_goal || 'Software Engineer'}. Seeking opportunities to learn and apply technical skills.`,
+        location: profile.location ? `${profile.location}, ${profile.state || 'India'}` : prev.location,
+        career_objective: profile.career_goal
+          ? `Motivated student with a background in ${profile.education_level || 'Education'} ${profile.branch ? `(${profile.branch})` : ''}, aiming to build a career as a ${profile.career_goal}. Seeking opportunities to learn and apply technical skills.`
+          : prev.career_objective,
+        skills: profile.skills && profile.skills.length > 0 ? profile.skills : prev.skills,
+        interests: profile.interests && profile.interests.length > 0 ? profile.interests : prev.interests,
       }));
     }
   }, [profile]);
@@ -469,21 +457,21 @@ export default function ResumePage() {
                 )}
 
                 {/* Education */}
-                {resumeData.education.length > 0 && (
+                {(resumeData.education ?? []).length > 0 && (
                   <div className="space-y-2">
                     <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5">
                       Education
                     </h2>
                     <div className="space-y-2 pt-1">
-                      {resumeData.education.map((edu, idx) => (
+                      {(resumeData.education ?? []).map((edu, idx) => (
                         <div key={idx} className="flex justify-between items-start text-xs">
                           <div>
-                            <div className="font-bold text-slate-900">{edu.degree}</div>
-                            <div className="text-slate-600">{edu.institution}</div>
+                            <div className="font-bold text-slate-900">{edu?.degree}</div>
+                            <div className="text-slate-600">{edu?.institution}</div>
                           </div>
                           <div className="text-right text-slate-600 shrink-0 font-medium">
-                            <div>{edu.year}</div>
-                            {edu.score && <div className="font-bold text-slate-800">{edu.score}</div>}
+                            <div>{edu?.year}</div>
+                            {edu?.score && <div className="font-bold text-slate-800">{edu.score}</div>}
                           </div>
                         </div>
                       ))}
@@ -492,37 +480,37 @@ export default function ResumePage() {
                 )}
 
                 {/* Technical Skills */}
-                {resumeData.skills.length > 0 && (
+                {(resumeData.skills ?? []).length > 0 && (
                   <div className="space-y-1">
                     <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5">
                       Skills & Competencies
                     </h2>
                     <div className="text-xs text-slate-700 leading-relaxed pt-1">
                       <span className="font-bold">Key Skills: </span>
-                      {resumeData.skills.join(', ')}
+                      {(resumeData.skills ?? []).join(', ')}
                     </div>
                   </div>
                 )}
 
                 {/* Projects */}
-                {resumeData.projects.length > 0 && (
+                {(resumeData.projects ?? []).length > 0 && (
                   <div className="space-y-2">
                     <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5">
                       Projects
                     </h2>
                     <div className="space-y-2.5 pt-1">
-                      {resumeData.projects.map((proj, idx) => (
+                      {(resumeData.projects ?? []).map((proj, idx) => (
                         <div key={idx} className="text-xs space-y-0.5">
                           <div className="flex justify-between items-baseline">
-                            <span className="font-bold text-slate-900">{proj.title}</span>
-                            {proj.technologies && (
+                            <span className="font-bold text-slate-900">{proj?.title}</span>
+                            {proj?.technologies && (
                               <span className="text-[11px] text-slate-500 font-medium">
-                                [{proj.technologies.join(', ')}]
+                                [{(proj.technologies ?? []).join(', ')}]
                               </span>
                             )}
                           </div>
                           <p className="text-slate-700 leading-relaxed">
-                            • {proj.description}
+                            • {proj?.description}
                           </p>
                         </div>
                       ))}
@@ -531,13 +519,13 @@ export default function ResumePage() {
                 )}
 
                 {/* Certifications & Achievements */}
-                {resumeData.certifications.length > 0 && (
+                {(resumeData.certifications ?? []).length > 0 && (
                   <div className="space-y-1">
                     <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5">
                       Certifications & Courses
                     </h2>
                     <ul className="text-xs text-slate-700 space-y-1 pt-1 list-disc list-inside">
-                      {resumeData.certifications.map((cert, idx) => (
+                      {(resumeData.certifications ?? []).map((cert, idx) => (
                         <li key={idx}>{cert}</li>
                       ))}
                     </ul>
@@ -545,13 +533,13 @@ export default function ResumePage() {
                 )}
 
                 {/* Achievements */}
-                {resumeData.achievements.length > 0 && (
+                {(resumeData.achievements ?? []).length > 0 && (
                   <div className="space-y-1">
                     <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5">
                       Achievements & Honors
                     </h2>
                     <ul className="text-xs text-slate-700 space-y-1 pt-1 list-disc list-inside">
-                      {resumeData.achievements.map((ach, idx) => (
+                      {(resumeData.achievements ?? []).map((ach, idx) => (
                         <li key={idx}>{ach}</li>
                       ))}
                     </ul>
@@ -560,6 +548,7 @@ export default function ResumePage() {
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </AppLayout>

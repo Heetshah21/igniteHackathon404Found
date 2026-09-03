@@ -22,16 +22,17 @@ export function getProfileSummarySpeech(profile: Partial<StudentProfile>): Multi
  * Generates bilingual speech text for the "Next Best Action" steps.
  */
 export function getNextStepsSpeech(
-  steps: Array<{ title: string; description: string }>
+  steps?: Array<{ title: string; description: string }>
 ): MultilingualText {
-  const enSteps = steps
+  const safeSteps = steps || [];
+  const enSteps = safeSteps
     .slice(0, 5)
-    .map((s, idx) => `Step ${idx + 1}: ${s.title}. ${s.description}`)
+    .map((s, idx) => `Step ${idx + 1}: ${s?.title || ''}. ${s?.description || ''}`)
     .join(' ');
 
-  const hiSteps = steps
+  const hiSteps = safeSteps
     .slice(0, 5)
-    .map((s, idx) => `कदम ${idx + 1}: ${s.title}। ${s.description}`)
+    .map((s, idx) => `कदम ${idx + 1}: ${s?.title || ''}। ${s?.description || ''}`)
     .join(' ');
 
   return {
@@ -44,29 +45,34 @@ export function getNextStepsSpeech(
  * Generates bilingual speech text for an entire Career Roadmap.
  */
 export function getRoadmapSpeech(
-  careerTitle: string,
-  pathwayTitle: string,
-  steps: Array<{ title: string; description: string; duration?: string }>
+  careerTitle?: string,
+  pathwayTitle?: string,
+  steps?: Array<{ title: string; description: string; duration?: string }>
 ): MultilingualText {
-  const enSteps = steps
+  const cTitle = careerTitle || 'Career';
+  const pTitle = pathwayTitle || 'Pathway';
+  const safeSteps = steps || [];
+
+  const enSteps = safeSteps
     .map(
       (s, idx) =>
-        `Stage ${idx + 1}: ${s.title}${s.duration ? `, duration ${s.duration}` : ''}. ${s.description}`
+        `Stage ${idx + 1}: ${s?.title || ''}${s?.duration ? `, duration ${s.duration}` : ''}. ${s?.description || ''}`
     )
     .join('. ');
 
-  const hiSteps = steps
+  const hiSteps = safeSteps
     .map(
       (s, idx) =>
-        `चरण ${idx + 1}: ${s.title}${s.duration ? `, समय अवधि ${s.duration}` : ''}। ${s.description}`
+        `चरण ${idx + 1}: ${s?.title || ''}${s?.duration ? `, समय अवधि ${s.duration}` : ''}। ${s?.description || ''}`
     )
     .join('। ');
 
   return {
-    en: `Career roadmap for ${careerTitle}, following the ${pathwayTitle}. ${enSteps}. You will then begin your professional career as a ${careerTitle}.`,
-    hi: `${careerTitle} बनने के लिए करियर रोडमैप, ${pathwayTitle} के अनुसार। ${hiSteps}। इसके बाद आप ${careerTitle} के रूप में अपना पेशेवर करियर शुरू कर सकते हैं।`,
+    en: `Career roadmap for ${cTitle}, following the ${pTitle}. ${enSteps}. You will then begin your professional career as a ${cTitle}.`,
+    hi: `${cTitle} बनने के लिए करियर रोडमैप, ${pTitle} के अनुसार। ${hiSteps}। इसके बाद आप ${cTitle} के रूप में अपना पेशेवर करियर शुरू कर सकते हैं।`,
   };
 }
+
 
 /**
  * Generates bilingual speech text for a Scholarship card.

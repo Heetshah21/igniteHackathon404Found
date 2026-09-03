@@ -5,6 +5,7 @@
 // Student Profile
 export interface StudentProfile {
   id: string;
+  user_id?: string;
   email: string;
   name: string;
   phone?: string;
