@@ -4,6 +4,7 @@ import { roadmaps } from '../src/data/roadmaps';
 import { resources } from '../src/data/resources';
 import { scholarships } from '../src/data/scholarships';
 import { opportunities } from '../src/data/opportunities';
+import { comparisons } from '../src/data/comparisons';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -57,6 +58,14 @@ async function seedData() {
     .upsert(opportunities, { onConflict: 'id' });
   if (opportunitiesErr) console.error('Error importing opportunities:', opportunitiesErr);
   else console.log('✅ Opportunities imported successfully.');
+
+  // 6. Seed Comparisons
+  console.log(`Importing ${comparisons.length} comparisons...`);
+  const { error: comparisonsErr } = await supabase
+    .from('comparisons')
+    .upsert(comparisons, { onConflict: 'id' });
+  if (comparisonsErr) console.error('Error importing comparisons:', comparisonsErr);
+  else console.log('✅ Comparisons imported successfully.');
 
   console.log('🎉 Data Import Completed!');
 }
