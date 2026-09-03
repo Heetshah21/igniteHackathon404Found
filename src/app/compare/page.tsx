@@ -70,16 +70,16 @@ export default function ComparePage() {
     <AppLayout>
       <div className="space-y-8 pb-12">
         {/* Header Banner */}
-        <div className="rounded-3xl bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 p-6 sm:p-8 text-white shadow-xl border border-purple-500/20">
+        <div className="rounded-3xl bg-white p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5]">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-300 text-xs font-semibold">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold">
               <GitCompare className="w-3.5 h-3.5" />
               <span>Feature 5 • Career & Stream Head-to-Head Comparison</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#101D35]">
               Compare Education Streams & Careers
             </h1>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
+            <p className="text-slate-600 text-xs sm:text-sm max-w-2xl">
               Confused between two paths? Compare pros, cons, salary ranges, mathematics requirements, and take the deterministic &quot;Which is better for you?&quot; quiz.
             </p>
           </div>
@@ -102,8 +102,8 @@ export default function ComparePage() {
                   }}
                   className={`px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 border shrink-0 ${
                     isSelected
-                      ? 'bg-purple-700 text-white border-purple-600 shadow-md scale-105'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
+                      ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-sm'
+                      : 'bg-white text-slate-700 border-[#E6EBF5] hover:bg-slate-50 hover:border-slate-300'
                   }`}
                 >
                   <span>⚖️</span>
@@ -171,17 +171,17 @@ export default function ComparePage() {
         </div>
 
         {/* Interactive Fit Quiz: "Which is better for you?" */}
-        <div className="bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-purple-500/30 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5] space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E6EBF5] pb-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/30 border border-purple-400/30 text-purple-300 text-xs font-semibold mb-1">
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF2FF] border border-[#CCE0FF] text-[#1769FF] text-xs font-bold mb-1">
+                <Sparkles className="w-3.5 h-3.5 text-[#1769FF]" />
                 <span>Deterministic Scoring Engine</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-extrabold">
+              <h2 className="text-xl sm:text-2xl font-black text-[#101D35]">
                 Which is better for you?
               </h2>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs sm:text-sm text-slate-500">
                 Answer these 6 quick questions to discover which path aligns best with your strengths and interests.
               </p>
             </div>
@@ -189,7 +189,7 @@ export default function ComparePage() {
             {Object.keys(quizAnswers).length > 0 && (
               <button
                 onClick={handleResetQuiz}
-                className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs text-slate-300 font-semibold border border-white/20 transition cursor-pointer"
+                className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-xs text-slate-700 font-semibold border border-[#E6EBF5] transition cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset Quiz</span>
@@ -204,40 +204,40 @@ export default function ComparePage() {
               return (
                 <div
                   key={idx}
-                  className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3"
+                  className="p-4 rounded-2xl bg-slate-50 border border-[#E6EBF5] space-y-3"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-purple-300">
+                    <span className="text-xs font-bold text-[#1769FF]">
                       Question #{idx + 1}
                     </span>
                     {currentAns && (
-                      <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded flex items-center gap-1">
+                      <span className="text-[10px] font-bold text-[#0B7A48] bg-[#DDF7EA] px-2 py-0.5 rounded-md flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3" />
                         Answered
                       </span>
                     )}
                   </div>
-                  <p className="text-sm sm:text-base font-semibold text-white">
+                  <p className="text-sm sm:text-base font-bold text-[#101D35]">
                     {q.question}
                   </p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                     <button
                       onClick={() => handleAnswer(idx, 'a')}
-                      className={`p-3 rounded-xl text-left text-xs font-bold border transition ${
+                      className={`p-3 rounded-xl text-left text-xs font-bold border transition cursor-pointer ${
                         currentAns === 'a'
-                          ? 'bg-purple-600 text-white border-purple-400 shadow-md ring-2 ring-purple-400/40'
-                          : 'bg-white/10 text-slate-200 border-white/10 hover:bg-white/20'
+                          ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-xs'
+                          : 'bg-white text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
                       }`}
                     >
                       👍 Prefer {activeComparison.option_a}
                     </button>
                     <button
                       onClick={() => handleAnswer(idx, 'b')}
-                      className={`p-3 rounded-xl text-left text-xs font-bold border transition ${
+                      className={`p-3 rounded-xl text-left text-xs font-bold border transition cursor-pointer ${
                         currentAns === 'b'
-                          ? 'bg-indigo-600 text-white border-indigo-400 shadow-md ring-2 ring-indigo-400/40'
-                          : 'bg-white/10 text-slate-200 border-white/10 hover:bg-white/20'
+                          ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-xs'
+                          : 'bg-white text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
                       }`}
                     >
                       👍 Prefer {activeComparison.option_b}
@@ -249,33 +249,33 @@ export default function ComparePage() {
           </div>
 
           {/* Score Result Box */}
-          <div className="p-6 rounded-2xl bg-white/10 border border-white/20 space-y-4">
+          <div className="p-6 rounded-2xl bg-slate-50 border border-[#E6EBF5] space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
                 Fit Score Result ({scores.totalAnswered} / {activeComparison.quiz.length} Answered)
               </span>
               <div className="flex items-center gap-4 text-xs font-bold">
-                <span className="text-purple-300">
+                <span className="text-[#1769FF]">
                   {activeComparison.option_a}: {scores.scoreA} pts
                 </span>
-                <span className="text-indigo-300">
+                <span className="text-purple-600">
                   {activeComparison.option_b}: {scores.scoreB} pts
                 </span>
               </div>
             </div>
 
             {scores.isCompleted ? (
-              <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-600/90 to-teal-700/90 border border-emerald-400 text-white space-y-2 animate-in zoom-in-95">
-                <div className="flex items-center gap-2 font-extrabold text-base">
-                  <Trophy className="w-5 h-5 text-amber-300 animate-bounce" />
+              <div className="p-4 rounded-xl bg-[#DDF7EA] border border-emerald-300 text-[#0B7A48] space-y-1 animate-in zoom-in-95">
+                <div className="flex items-center gap-2 font-black text-base">
+                  <Trophy className="w-5 h-5 text-emerald-700" />
                   <span>Recommendation Result:</span>
                 </div>
-                <p className="text-sm font-semibold text-emerald-100">
+                <p className="text-sm font-bold text-[#0B7A48]">
                   {scores.recommendation}
                 </p>
               </div>
             ) : (
-              <p className="text-xs text-slate-400 italic">
+              <p className="text-xs text-slate-500 italic">
                 Answer all {activeComparison.quiz.length} questions above to unlock your personalized recommendation result.
               </p>
             )}

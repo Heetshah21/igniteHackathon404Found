@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased bg-slate-50 text-slate-900 font-sans">
+      <body className="antialiased bg-[#F7F9FE] text-[#101D35] font-sans">
         <StudentProvider>{children}</StudentProvider>
       </body>
     </html>

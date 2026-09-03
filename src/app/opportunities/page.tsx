@@ -57,23 +57,23 @@ export default function OpportunitiesPage() {
     <AppLayout>
       <div className="space-y-8 pb-12">
         {/* Header Banner */}
-        <div className="rounded-3xl bg-gradient-to-r from-orange-900 via-amber-950 to-slate-900 p-6 sm:p-8 text-white shadow-xl border border-orange-500/20">
+        <div className="rounded-3xl bg-white p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5]">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 border border-orange-400/30 text-orange-300 text-xs font-semibold">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-700 text-xs font-bold">
               <Trophy className="w-3.5 h-3.5" />
               <span>Feature 3 • Hackathons, Internships & Competitions</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#101D35]">
               Student Opportunities & Competitions
             </h1>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
+            <p className="text-slate-600 text-xs sm:text-sm max-w-2xl">
               Gain practical industry exposure, win national prizes, and build your resume with curated hackathons, GSoC, fellowships, and internships.
             </p>
           </div>
         </div>
 
         {/* Search & Filter Bar */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs space-y-4">
+        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#E6EBF5] shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Search Input */}
             <div className="relative flex-1">
@@ -83,7 +83,7 @@ export default function OpportunitiesPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search Smart India Hackathon, GSoC, Internshala, MLH..."
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-orange-400 focus:bg-white transition"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-slate-900 placeholder-slate-400 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-400 focus:bg-white transition"
               />
             </div>
 
@@ -95,10 +95,10 @@ export default function OpportunitiesPage() {
                   <button
                     key={type}
                     onClick={() => setSelectedType(type)}
-                    className={`px-3 py-2 rounded-xl text-xs font-bold uppercase transition border whitespace-nowrap ${
+                    className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition border ${
                       isSelected
-                        ? 'bg-orange-600 text-white border-orange-600 shadow-xs'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                        ? 'bg-[#1769FF] text-white border-[#1769FF]'
+                        : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
                     }`}
                   >
                     {type}

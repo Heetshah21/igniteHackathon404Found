@@ -124,24 +124,24 @@ How can I help guide your journey today? Click any suggested question below or t
     <AppLayout>
       <div className="space-y-6 pb-12">
         {/* Header Banner */}
-        <div className="rounded-3xl bg-gradient-to-r from-pink-900 via-rose-950 to-slate-900 p-6 text-white shadow-xl border border-pink-500/20">
+        <div className="rounded-3xl bg-white p-6 text-[#101D35] shadow-xs border border-[#E6EBF5]">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/20 border border-pink-400/30 text-pink-300 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-50 border border-pink-200 text-pink-700 text-xs font-bold">
                 <Bot className="w-3.5 h-3.5" />
                 <span>Feature 6 • Dedicated Career & Education AI Mentor</span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#101D35]">
                 CAREERMitra AI Assistant
               </h1>
-              <p className="text-slate-300 text-xs">
+              <p className="text-slate-600 text-xs">
                 Context-aware guidance for Indian education pathways, state entrance exams, DSE lateral entry, and scholarships.
               </p>
             </div>
 
             <button
               onClick={handleClear}
-              className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs text-slate-300 font-semibold border border-white/20 transition cursor-pointer"
+              className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-xs text-slate-700 font-semibold border border-[#E6EBF5] transition cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset Chat</span>

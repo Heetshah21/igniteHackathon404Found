@@ -162,18 +162,18 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F7F9FE] text-[#101D35] flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto w-full">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF2FF] border border-[#CCE0FF] text-[#1769FF] text-xs font-bold mb-3">
             <Compass className="w-3.5 h-3.5" />
             <span>Personalized Student Onboarding</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#101D35]">
             Set Up Your Career Profile
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-slate-400">
+          <p className="mt-1 text-xs sm:text-sm text-slate-500">
             Tell us about your background so we can recommend the best roadmaps, scholarships, and opportunities for you.
           </p>
         </div>
@@ -181,32 +181,32 @@ export default function OnboardingPage() {
         {/* Step Progress Bar */}
         <div className="mb-8">
           <div className="flex items-center justify-between text-xs font-semibold text-slate-400 mb-2">
-            <span className={step >= 1 ? 'text-emerald-400 font-bold' : ''}>1. Personal</span>
-            <span className={step >= 2 ? 'text-emerald-400 font-bold' : ''}>2. Education</span>
-            <span className={step >= 3 ? 'text-emerald-400 font-bold' : ''}>3. Interests</span>
-            <span className={step >= 4 ? 'text-emerald-400 font-bold' : ''}>4. Aspirations</span>
+            <span className={step >= 1 ? 'text-[#1769FF] font-bold' : ''}>1. Personal</span>
+            <span className={step >= 2 ? 'text-[#1769FF] font-bold' : ''}>2. Education</span>
+            <span className={step >= 3 ? 'text-[#1769FF] font-bold' : ''}>3. Interests</span>
+            <span className={step >= 4 ? 'text-[#1769FF] font-bold' : ''}>4. Aspirations</span>
           </div>
-          <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+          <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300"
+              className="h-full bg-[#1769FF] transition-all duration-300"
               style={{ width: `${(step / 4) * 100}%` }}
             />
           </div>
         </div>
 
         {/* Card Container */}
-        <div className="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm">
+        <div className="bg-white border border-[#E6EBF5] rounded-3xl p-6 sm:p-8 shadow-xs">
           {/* STEP 1: Personal Details */}
           {step === 1 && (
             <div className="space-y-5 animate-in fade-in slide-in-from-right-2">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+              <div className="flex items-center gap-2 text-[#1769FF] font-bold text-sm">
                 <User className="w-4 h-4" />
                 <span>Step 1 of 4: Personal Background</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-[#101D35] mb-1">
                     Full Name *
                   </label>
                   <input
@@ -214,12 +214,12 @@ export default function OnboardingPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Rahul Sharma"
-                    className="w-full px-3.5 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-400 text-sm"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-[#101D35] mb-1">
                     City / Village / District *
                   </label>
                   <input
@@ -227,18 +227,18 @@ export default function OnboardingPage() {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="e.g., Nashik / Kolhapur / Pune"
-                    className="w-full px-3.5 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-400 text-sm"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-[#101D35] mb-1">
                     State *
                   </label>
                   <select
                     value={state}
                     onChange={(e) => setState(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-400 text-sm"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
                   >
                     {INDIAN_STATES.map((s) => (
                       <option key={s} value={s}>
@@ -249,13 +249,13 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-[#101D35] mb-1">
                     Gender
                   </label>
                   <select
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-400 text-sm"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
                   >
                     <option value="male">Male</option>
                     <option value="female">Female (Eligible for Pragati & Girl Scholarships)</option>
@@ -264,17 +264,17 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-[#101D35] mb-1">
                     Area Type
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setRuralUrban('rural')}
-                      className={`py-2 px-3 rounded-xl text-xs font-semibold border transition ${
+                      className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition ${
                         ruralUrban === 'rural'
-                          ? 'bg-emerald-600 text-white border-emerald-400'
-                          : 'bg-slate-900/50 text-slate-400 border-slate-700 hover:bg-slate-700'
+                          ? 'bg-[#1769FF] text-white border-[#1769FF]'
+                          : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
                       }`}
                     >
                       🌾 Rural / Semi-Urban
@@ -282,10 +282,10 @@ export default function OnboardingPage() {
                     <button
                       type="button"
                       onClick={() => setRuralUrban('urban')}
-                      className={`py-2 px-3 rounded-xl text-xs font-semibold border transition ${
+                      className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition ${
                         ruralUrban === 'urban'
-                          ? 'bg-emerald-600 text-white border-emerald-400'
-                          : 'bg-slate-900/50 text-slate-400 border-slate-700 hover:bg-slate-700'
+                          ? 'bg-[#1769FF] text-white border-[#1769FF]'
+                          : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
                       }`}
                     >
                       🏙️ Urban / Metro
@@ -299,13 +299,13 @@ export default function OnboardingPage() {
           {/* STEP 2: Education Details */}
           {step === 2 && (
             <div className="space-y-5 animate-in fade-in slide-in-from-right-2">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+              <div className="flex items-center gap-2 text-[#1769FF] font-bold text-sm">
                 <GraduationCap className="w-4 h-4" />
                 <span>Step 2 of 4: Current Education & Academic Status</span>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-2">
+                <label className="block text-xs font-bold text-[#101D35] mb-2">
                   Current Education Level *
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -316,12 +316,12 @@ export default function OnboardingPage() {
                       onClick={() => setEducationLevel(lvl.id)}
                       className={`p-3 rounded-xl text-left border transition ${
                         educationLevel === lvl.id
-                          ? 'bg-emerald-950/60 border-emerald-400 text-emerald-300 shadow-xs'
-                          : 'bg-slate-900/50 border-slate-700 text-slate-300 hover:bg-slate-700/50'
+                          ? 'bg-blue-50 border-[#1769FF] text-[#1769FF] shadow-xs'
+                          : 'bg-slate-50 border-[#E6EBF5] text-slate-700 hover:bg-slate-100'
                       }`}
                     >
                       <div className="font-bold text-xs">{lvl.label}</div>
-                      <div className="text-[11px] text-slate-400 mt-0.5">{lvl.desc}</div>
+                      <div className="text-[11px] text-slate-500 mt-0.5">{lvl.desc}</div>
                     </button>
                   ))}
                 </div>
@@ -329,7 +329,7 @@ export default function OnboardingPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-[#101D35] mb-1">
                     School / College Name
                   </label>
                   <input
@@ -337,18 +337,18 @@ export default function OnboardingPage() {
                     value={schoolCollege}
                     onChange={(e) => setSchoolCollege(e.target.value)}
                     placeholder="e.g. Govt Higher Secondary School"
-                    className="w-full px-3.5 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-400 text-sm"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-[#101D35] mb-1">
                     Academic Stream / Branch *
                   </label>
                   <select
                     value={branch}
                     onChange={(e) => setBranch(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-400 text-sm"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
                   >
                     {STREAMS.map((st) => (
                       <option key={st.id} value={st.id}>
@@ -359,7 +359,7 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-[#101D35] mb-1">
                     Percentage / CGPA (%) *
                   </label>
                   <input
@@ -369,18 +369,18 @@ export default function OnboardingPage() {
                     value={percentage}
                     onChange={(e) => setPercentage(e.target.value)}
                     placeholder="82"
-                    className="w-full px-3.5 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-400 text-sm"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-[#101D35] mb-1">
                     Family Annual Income (For Scholarships)
                   </label>
                   <select
                     value={familyIncome}
                     onChange={(e) => setFamilyIncome(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-400 text-sm"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
                   >
                     {INCOME_OPTIONS.map((inc) => (
                       <option key={inc.id} value={inc.id}>
@@ -391,13 +391,13 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-[#101D35] mb-1">
                     Category (Optional)
                   </label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-400 text-sm"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
                   >
                     <option value="General">General / Open</option>
                     <option value="OBC">OBC</option>
@@ -413,11 +413,11 @@ export default function OnboardingPage() {
           {/* STEP 3: Interests */}
           {step === 3 && (
             <div className="space-y-5 animate-in fade-in slide-in-from-right-2">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+              <div className="flex items-center gap-2 text-[#1769FF] font-bold text-sm">
                 <Heart className="w-4 h-4" />
                 <span>Step 3 of 4: Select Your Interests</span>
               </div>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-500">
                 Choose the subjects and areas you find exciting. This fine-tunes your recommendations and career fit.
               </p>
 
@@ -429,10 +429,10 @@ export default function OnboardingPage() {
                       key={interest}
                       type="button"
                       onClick={() => toggleInterest(interest)}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition flex items-center gap-1.5 ${
+                      className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 ${
                         isSelected
-                          ? 'bg-emerald-600 text-white border-emerald-400 shadow-xs'
-                          : 'bg-slate-900/60 text-slate-300 border-slate-700 hover:bg-slate-700'
+                          ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-xs'
+                          : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
                       }`}
                     >
                       {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
@@ -447,11 +447,11 @@ export default function OnboardingPage() {
           {/* STEP 4: Career Aspiration */}
           {step === 4 && (
             <div className="space-y-5 animate-in fade-in slide-in-from-right-2">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+              <div className="flex items-center gap-2 text-[#1769FF] font-bold text-sm">
                 <Target className="w-4 h-4" />
                 <span>Step 4 of 4: What is your primary career goal?</span>
               </div>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-500">
                 Pick your dream destination. We will map out the exact step-by-step pathway from where you are today.
               </p>
 
@@ -465,16 +465,16 @@ export default function OnboardingPage() {
                       onClick={() => setCareerGoalId(career.id)}
                       className={`p-3.5 rounded-xl text-left border transition ${
                         isSelected
-                          ? 'bg-emerald-950/80 border-emerald-400 text-emerald-200 shadow-md ring-1 ring-emerald-400'
-                          : 'bg-slate-900/60 border-slate-700 text-slate-300 hover:bg-slate-700/50'
+                          ? 'bg-[#EAF2FF] border-[#1769FF] text-[#101D35] shadow-xs ring-1 ring-[#1769FF]'
+                          : 'bg-slate-50 border-[#E6EBF5] text-slate-700 hover:bg-slate-100'
                       }`}
                     >
                       <div className="text-2xl mb-1">{career.icon}</div>
-                      <div className="font-bold text-xs text-white">{career.title}</div>
-                      <div className="text-[10px] text-slate-400 mt-1 line-clamp-2">
+                      <div className="font-bold text-xs text-[#101D35]">{career.title}</div>
+                      <div className="text-[10px] text-slate-500 mt-1 line-clamp-2">
                         {career.description}
                       </div>
-                      <div className="mt-2 text-[10px] font-semibold text-emerald-400 flex items-center gap-1">
+                      <div className="mt-2 text-[10px] font-bold text-[#0B7A48] flex items-center gap-1">
                         💰 {career.avg_salary}
                       </div>
                     </button>
@@ -485,12 +485,12 @@ export default function OnboardingPage() {
           )}
 
           {/* Navigation Controls */}
-          <div className="mt-8 flex items-center justify-between border-t border-slate-700/80 pt-5">
+          <div className="mt-8 flex items-center justify-between border-t border-[#E6EBF5] pt-5">
             {step > 1 ? (
               <button
                 type="button"
                 onClick={() => setStep(step - 1)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-[#E6EBF5] transition"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back</span>
@@ -503,7 +503,7 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(step + 1)}
-                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-300 transition shadow-md cursor-pointer"
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-[#1769FF] hover:bg-blue-600 transition shadow-sm cursor-pointer"
               >
                 <span>Next Step</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -512,9 +512,9 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={handleFinish}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-extrabold text-slate-900 bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 hover:to-teal-200 transition shadow-lg cursor-pointer"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-[#1769FF] hover:bg-blue-600 transition shadow-sm cursor-pointer"
               >
-                <Sparkles className="w-4 h-4 text-emerald-950" />
+                <Sparkles className="w-4 h-4" />
                 <span>Generate My Career Dashboard</span>
                 <ArrowRight className="w-4 h-4" />
               </button>

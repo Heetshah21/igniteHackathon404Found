@@ -80,25 +80,25 @@ export default function ScholarshipsPage() {
     <AppLayout>
       <div className="space-y-8 pb-12">
         {/* Header Banner */}
-        <div className="rounded-3xl bg-gradient-to-r from-amber-900 via-slate-900 to-amber-950 p-6 sm:p-8 text-white shadow-xl border border-amber-500/20">
+        <div className="rounded-3xl bg-white p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5]">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
                 <GraduationCap className="w-3.5 h-3.5" />
                 <span>Feature 7 • Verified Scholarship Matching Engine</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#101D35]">
                 Personalized Scholarship Finder
               </h1>
-              <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
+              <p className="text-slate-600 text-xs sm:text-sm max-w-2xl">
                 Matched automatically with your profile ({profile?.education_level || '12th'}, {profile?.state || 'Maharashtra'}, {profile?.percentage || 82}% marks, {profile?.category || 'OBC'}).
               </p>
             </div>
 
             <div className="flex items-center gap-3 self-start md:self-auto">
-              <div className="px-4 py-3 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-center">
-                <span className="text-2xl font-black text-amber-300">{eligibleCount}</span>
-                <span className="block text-[11px] text-amber-200 font-bold uppercase">
+              <div className="px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200 text-center">
+                <span className="text-2xl font-black text-amber-700">{eligibleCount}</span>
+                <span className="block text-[11px] text-amber-800 font-bold uppercase">
                   Qualifying Grants
                 </span>
               </div>

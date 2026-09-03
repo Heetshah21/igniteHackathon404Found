@@ -166,30 +166,28 @@ export default function ResumePage() {
     <AppLayout>
       <div className="space-y-8 pb-12">
         {/* Header Banner */}
-        <div className="rounded-3xl bg-gradient-to-r from-teal-900 via-emerald-950 to-slate-900 p-6 sm:p-8 text-white shadow-xl border border-teal-500/20 print:hidden">
+        <div className="rounded-3xl bg-white p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5] print:hidden">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-bold">
                 <FileText className="w-3.5 h-3.5" />
                 <span>Feature 1 • Standard ATS-Friendly Professional Resume</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#101D35]">
                 Single-Page ATS Resume Builder
               </h1>
-              <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
+              <p className="text-slate-600 text-xs sm:text-sm max-w-2xl">
                 Automatically formatted with standard industry ATS keywords, clean single-column structure, and instant PDF print.
               </p>
             </div>
 
-            <div className="flex items-center gap-3 self-start md:self-auto">
-              <button
-                onClick={handlePrint}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md transition cursor-pointer"
-              >
-                <Printer className="w-4 h-4" />
-                <span>Download / Print PDF</span>
-              </button>
-            </div>
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-[#1769FF] hover:bg-blue-600 text-white font-bold text-xs shadow-sm transition self-start md:self-auto cursor-pointer"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Print / Download PDF</span>
+            </button>
           </div>
         </div>
 

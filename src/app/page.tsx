@@ -4,20 +4,20 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useStudent } from '@/context/StudentContext';
+import { AppLayout } from '@/components/layout/AppLayout';
+import { HeroRoadmapVisual } from '@/components/home/HeroRoadmapVisual';
 import {
   Compass,
   GraduationCap,
   BookOpen,
   GitCompare,
   FileText,
-  Trophy,
   Bot,
   Sparkles,
   ArrowRight,
-  CheckCircle2,
-  Users,
   ShieldCheck,
-  Zap,
+  Smile,
+  Award,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -32,186 +32,212 @@ export default function HomePage() {
   const featureCards = [
     {
       title: 'Career Roadmaps',
-      desc: 'Multiple proven pathways from 10th/12th/Diploma to your dream role.',
+      desc: 'Multiple proven pathways from 10th/12th/Diploma to your dream career role.',
       icon: Compass,
-      color: 'from-emerald-500 to-teal-700',
+      accentBg: 'bg-emerald-500',
       href: '/roadmap',
     },
     {
       title: 'Scholarship Finder',
       desc: 'Rule-based matching engine with transparent qualification reasons.',
       icon: GraduationCap,
-      color: 'from-amber-500 to-orange-700',
+      accentBg: 'bg-amber-500',
       href: '/scholarships',
     },
     {
       title: 'Free Resource Hub',
       desc: '100% free courses & playlists in English, Hindi, and Marathi.',
       icon: BookOpen,
-      color: 'from-blue-500 to-indigo-700',
+      accentBg: 'bg-[#1769FF]',
       href: '/resources',
     },
     {
       title: 'Stream Comparison',
       desc: 'Head-to-head metrics & fit quiz: AI/ML vs Data Science, B.Tech vs BCA.',
       icon: GitCompare,
-      color: 'from-purple-500 to-pink-700',
+      accentBg: 'bg-purple-600',
       href: '/compare',
     },
     {
       title: 'ATS Resume Builder',
       desc: 'Single-page, ATS-compliant resume generator ready to print.',
       icon: FileText,
-      color: 'from-teal-500 to-emerald-700',
+      accentBg: 'bg-teal-500',
       href: '/resume',
     },
     {
       title: 'AI Career Assistant',
       desc: 'Context-aware guidance for Indian education systems & DSE entry.',
       icon: Bot,
-      color: 'from-pink-500 to-rose-700',
+      accentBg: 'bg-pink-500',
       href: '/chat',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-emerald-500 selection:text-white overflow-hidden">
-      {/* Top Navigation */}
-      <header className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between border-b border-white/10">
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
-            <Compass className="w-6 h-6 animate-pulse" />
-          </div>
-          <span className="font-black text-2xl tracking-tight">
-            CAREER<span className="text-amber-400">Mitra</span>
-          </span>
-        </div>
+    <AppLayout>
+      <div className="space-y-12 sm:space-y-16 pb-12">
+        {/* ============================================================ */}
+        {/* HERO SECTION (TWO COLUMNS)                                   */}
+        {/* ============================================================ */}
+        <section className="pt-2 sm:pt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left Hero Column */}
+            <div className="lg:col-span-6 space-y-5 text-left">
+              {/* Bharat Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAF2FF] border border-[#CCE0FF] text-[#1769FF] text-xs font-bold shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-[#1769FF]" />
+                <span>Built for Rural & Underserved Students in Bharat</span>
+              </div>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white transition"
-          >
-            Sign In
-          </Link>
-          <button
-            onClick={handleLaunchDemo}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 hover:scale-105 transition flex items-center gap-1.5 cursor-pointer"
-          >
-            <Zap className="w-3.5 h-3.5 fill-current" />
-            <span>Launch Hackathon Demo</span>
-          </button>
-        </div>
-      </header>
+              {/* Main Headline */}
+              <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-black tracking-tight leading-[1.1] text-[#101D35]">
+                Your Career.<br />
+                Your Roadmap.<br />
+                <span className="text-[#1769FF]">Your Future.</span>
+              </h1>
 
-      {/* Hero Section */}
-      <section className="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto text-center space-y-8">
-        {/* Glow Badges */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 text-xs font-bold animate-in fade-in">
-          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-          <span>Built for Rural & Underserved Students in Bharat</span>
-        </div>
+              {/* Subtitle / Description */}
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-lg font-normal">
+                CareerMitra helps students discover the right career path, compare streams,
+                find scholarships, build resumes, and get AI-powered career guidance — all in one place.
+              </p>
 
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-tight max-w-4xl mx-auto">
-          Turn{' '}
-          <span className="text-slate-400 line-through decoration-rose-500/80">
-            &quot;I don&apos;t know what to do next&quot;
-          </span>{' '}
-          into{' '}
-          <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">
-            &quot;I know my exact path to success.&quot;
-          </span>
-        </h1>
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <Link
+                  href="/roadmap"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#1769FF] hover:bg-blue-600 text-white font-bold text-sm shadow-md shadow-blue-500/20 transition group"
+                >
+                  <span>Explore Careers</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
 
-        <p className="text-slate-300 text-sm sm:text-lg max-w-2xl mx-auto font-normal leading-relaxed">
-          CAREERMitra is a personalized career navigation system providing Indian students with clear roadmaps, verified scholarships, free multilingual courses, ATS resumes, and AI guidance.
-        </p>
+                <Link
+                  href="/chat"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white hover:bg-blue-50/50 text-[#1769FF] font-bold text-sm border border-[#1769FF] shadow-xs transition"
+                >
+                  <span>Talk to AI Mentor</span>
+                  <Sparkles className="w-4 h-4 text-[#1769FF]" />
+                </Link>
+              </div>
 
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <button
-            onClick={handleLaunchDemo}
-            className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/30 hover:scale-105 transition flex items-center justify-center gap-2 group cursor-pointer"
-          >
-            <Sparkles className="w-4 h-4 text-emerald-950" />
-            <span>Start Judge Demo Flow (Rahul Sharma)</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
-
-          <Link
-            href="/signup"
-            className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm border border-white/20 transition flex items-center justify-center gap-2"
-          >
-            <Users className="w-4 h-4" />
-            <span>Create New Student Profile</span>
-          </Link>
-        </div>
-
-        {/* Feature Highlights Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pt-16 text-left">
-          {featureCards.map((feat, idx) => {
-            const Icon = feat.icon;
-            return (
-              <Link
-                key={idx}
-                href={feat.href}
-                className="p-6 rounded-3xl bg-white/5 border border-white/10 hover:border-emerald-400/50 hover:bg-white/10 transition group flex flex-col justify-between space-y-4"
-              >
-                <div className="space-y-3">
-                  <div
-                    className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${feat.color} flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}
-                  >
-                    <Icon className="w-6 h-6" />
+              {/* Trust Statistics Row */}
+              <div className="border-t border-[#E6EBF5] pt-6 mt-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1769FF] flex items-center justify-center">
+                      <Smile className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-sm sm:text-base font-black text-[#101D35] leading-none">
+                        10K+
+                      </div>
+                      <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                        Students Guided
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="font-extrabold text-lg text-white group-hover:text-emerald-300 transition-colors">
-                    {feat.title}
-                  </h3>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    {feat.desc}
-                  </p>
-                </div>
 
-                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 pt-2 group-hover:translate-x-1 transition-transform">
-                  <span>Explore Feature</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1769FF] flex items-center justify-center">
+                      <GraduationCap className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-sm sm:text-base font-black text-[#101D35] leading-none">
+                        100+
+                      </div>
+                      <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                        Career Paths
+                      </div>
+                    </div>
+                  </div>
 
-        {/* Rural Student Impact Checklist */}
-        <div className="mt-16 p-8 rounded-3xl bg-gradient-to-br from-emerald-950/60 to-slate-900 border border-emerald-500/30 text-left space-y-4">
-          <div className="flex items-center gap-2 text-emerald-400 font-extrabold text-sm uppercase tracking-wider">
-            <ShieldCheck className="w-5 h-5" />
-            <span>Why CAREERMitra is Different</span>
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1769FF] flex items-center justify-center">
+                      <BookOpen className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-sm sm:text-base font-black text-[#101D35] leading-none">
+                        100%
+                      </div>
+                      <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                        Free Resources
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1769FF] flex items-center justify-center">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-xs sm:text-sm font-bold text-[#101D35] leading-none">
+                        Trusted by
+                      </div>
+                      <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                        Students
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Hero Column: Student Illustration & Floating Career Roadmap */}
+            <div className="lg:col-span-6 flex items-center justify-center">
+              <HeroRoadmapVisual />
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* FEATURE SECTION                                              */}
+        {/* ============================================================ */}
+        <section className="space-y-8 pt-4">
+          <div className="text-center space-y-2 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#101D35] tracking-tight">
+              Everything You Need to Plan Your Career
+            </h2>
+            <p className="text-slate-500 text-sm sm:text-base font-normal">
+              Powerful tools and resources to help you explore, plan and achieve your career goals.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm text-slate-300">
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Multi-pathway roadmaps (including 10th → Diploma → DSE lateral entry)</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Free curated resources in English, Hindi, and Marathi</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Deterministic scholarship eligibility check (Income, State, Marks)</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Instant ATS resume builder optimized for internships & entry jobs</span>
-            </div>
-          </div>
-        </div>
-      </section>
+          {/* 6 Feature Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {featureCards.map((feat, idx) => {
+              const Icon = feat.icon;
+              return (
+                <Link
+                  key={idx}
+                  href={feat.href}
+                  className="p-6 rounded-2xl bg-white border border-[#E6EBF5] hover:border-blue-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group space-y-4"
+                >
+                  <div className="space-y-3">
+                    <div
+                      className={`w-12 h-12 rounded-2xl ${feat.accentBg} flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform`}
+                    >
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <h3 className="font-extrabold text-base sm:text-lg text-[#101D35] group-hover:text-[#1769FF] transition-colors">
+                      {feat.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-normal">
+                      {feat.desc}
+                    </p>
+                  </div>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 py-8 text-center text-xs text-slate-500">
-        <p>CAREERMitra — Hackathon MVP • Empowering Bharat’s Students</p>
-      </footer>
-    </div>
+                  <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#1769FF] pt-2 group-hover:gap-2 transition-all">
+                    <span>Explore Feature</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      </div>
+    </AppLayout>
   );
 }

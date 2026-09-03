@@ -54,17 +54,17 @@ export default function RoadmapPage() {
     <AppLayout>
       <div className="space-y-8 pb-12">
         {/* Header Banner */}
-        <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 p-6 sm:p-8 text-white shadow-xl border border-emerald-500/20">
+        <div className="rounded-3xl bg-white p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5]">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF2FF] border border-[#CCE0FF] text-[#1769FF] text-xs font-bold">
                 <Compass className="w-3.5 h-3.5" />
                 <span>Feature 2 • Multi-Pathway Educational Roadmaps</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#101D35]">
                 Career Roadmap: {selectedCareer.title}
               </h1>
-              <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
+              <p className="text-slate-600 text-xs sm:text-sm max-w-2xl">
                 Discover multiple proven educational paths from 10th/12th/Diploma to reaching your destination as a {selectedCareer.title}.
               </p>
             </div>
@@ -72,7 +72,7 @@ export default function RoadmapPage() {
             {profile?.career_goal_id !== selectedCareer.id && (
               <button
                 onClick={handleSetPrimary}
-                className="self-start md:self-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md transition cursor-pointer"
+                className="self-start md:self-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1769FF] hover:bg-blue-600 text-white font-bold text-xs shadow-sm transition cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>Set as My Primary Goal</span>
@@ -98,8 +98,8 @@ export default function RoadmapPage() {
                   }}
                   className={`px-3.5 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 border shrink-0 ${
                     isSelected
-                      ? 'bg-emerald-700 text-white border-emerald-600 shadow-md scale-105'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
+                      ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-sm'
+                      : 'bg-white text-slate-700 border-[#E6EBF5] hover:bg-slate-50 hover:border-slate-300'
                   }`}
                 >
                   <span className="text-base">{career.icon}</span>

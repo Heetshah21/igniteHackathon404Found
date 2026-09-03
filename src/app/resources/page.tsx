@@ -108,17 +108,17 @@ export default function ResourcesPage() {
     <AppLayout>
       <div className="space-y-8 pb-12">
         {/* Header Banner */}
-        <div className="rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 p-6 sm:p-8 text-white shadow-xl border border-blue-500/20">
+        <div className="rounded-3xl bg-white p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5]">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF2FF] border border-[#CCE0FF] text-[#1769FF] text-xs font-bold">
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>Feature 4 & 3 • 100% Free Multilingual Resource Hub</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#101D35]">
                 Courses & Learning Resources
               </h1>
-              <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
+              <p className="text-slate-600 text-xs sm:text-sm max-w-2xl">
                 Curated free playlists, notes, and full courses in <strong>English, Hindi (हिंदी), and Marathi (मराठी)</strong> to help rural students learn without financial barriers.
               </p>
             </div>
@@ -128,8 +128,8 @@ export default function ResourcesPage() {
                 onClick={() => setSelectedLanguage('Hindi')}
                 className={`px-3 py-2 rounded-xl text-xs font-bold transition border ${
                   selectedLanguage === 'Hindi'
-                    ? 'bg-amber-400 text-slate-950 border-amber-300'
-                    : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                    ? 'bg-[#1769FF] text-white border-[#1769FF]'
+                    : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
                 }`}
               >
                 🇮🇳 हिंदी Resources
@@ -138,8 +138,8 @@ export default function ResourcesPage() {
                 onClick={() => setSelectedLanguage('Marathi')}
                 className={`px-3 py-2 rounded-xl text-xs font-bold transition border ${
                   selectedLanguage === 'Marathi'
-                    ? 'bg-amber-400 text-slate-950 border-amber-300'
-                    : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                    ? 'bg-[#1769FF] text-white border-[#1769FF]'
+                    : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
                 }`}
               >
                 🚩 मराठी Resources
