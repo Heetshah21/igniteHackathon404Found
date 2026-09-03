@@ -23,6 +23,8 @@ import {
   Briefcase,
 } from 'lucide-react';
 
+import { AudioLanguageSelector } from '@/components/common/AudioLanguageSelector';
+
 export const Navbar: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSidebar }) => {
   const { profile, language, setLanguage, resetToDemo } = useStudent();
   const t = translations[language];
@@ -61,8 +63,12 @@ export const Navbar: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSid
         </div>
 
         {/* Right Action Tools */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Quick Language Switcher */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* TTS Audio Language & Speed Control */}
+          <AudioLanguageSelector />
+
+          {/* Quick UI Language Switcher */}
+
           <div className="relative">
             <button
               onClick={() => setLangMenuOpen(!langMenuOpen)}

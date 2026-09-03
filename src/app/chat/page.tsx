@@ -5,6 +5,7 @@ import { useStudent } from '@/context/StudentContext';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ChatMessage } from '@/types';
 import { translations } from '@/lib/translations';
+import { AudioButton } from '@/components/common/AudioButton';
 import {
   Bot,
   Send,
@@ -18,6 +19,7 @@ import {
   RotateCcw,
   CheckCircle2,
 } from 'lucide-react';
+
 
 const SUGGESTED_QUESTIONS = [
   'Can I become a software engineer after diploma?',
@@ -197,13 +199,27 @@ How can I help guide your journey today? Click any suggested question below or t
                       {msg.content}
                     </div>
                     <div
-                      className={`text-[10px] text-right font-medium ${
+                      className={`flex items-center justify-between text-[10px] font-medium pt-1 ${
                         isUser ? 'text-emerald-200' : 'text-slate-400'
                       }`}
                     >
-                      {msg.timestamp}
+                      {!isUser ? (
+                        <AudioButton
+                          id={`chat-msg-${msg.id}`}
+                          text={msg.content}
+                          label="Listen"
+                          variant="ghost"
+                          size="xs"
+                          className="text-slate-500 hover:text-slate-800 p-0 text-[10px]"
+                          ariaLabel="Listen to AI mentor message"
+                        />
+                      ) : (
+                        <span />
+                      )}
+                      <span>{msg.timestamp}</span>
                     </div>
                   </div>
+
                 </div>
               );
             })}

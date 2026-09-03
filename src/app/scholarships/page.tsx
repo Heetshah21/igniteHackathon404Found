@@ -6,6 +6,8 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { scholarships } from '@/data/scholarships';
 import { matchScholarships } from '@/lib/recommendations/matcher';
 import { translations } from '@/lib/translations';
+import { AudioButton } from '@/components/common/AudioButton';
+import { getScholarshipSpeech } from '@/lib/speech/hindiContent';
 import {
   GraduationCap,
   CheckCircle2,
@@ -19,6 +21,7 @@ import {
   AlertCircle,
   HelpCircle,
 } from 'lucide-react';
+
 
 export default function ScholarshipsPage() {
   const { profile, language } = useStudent();
@@ -204,9 +207,25 @@ export default function ScholarshipsPage() {
                       )}
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-extrabold text-slate-900">
-                      {sch.name}
-                    </h3>
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <h3 className="text-base sm:text-lg font-extrabold text-slate-900">
+                        {sch.name}
+                      </h3>
+                      <AudioButton
+                        id={`sch-audio-${sch.id}`}
+                        text={getScholarshipSpeech(
+                          sch.name,
+                          sch.provider,
+                          sch.amount,
+                          sch.deadline,
+                          matchedRules.map((r) => r.label)
+                        )}
+                        label="Listen"
+                        variant="secondary"
+                        size="xs"
+                        ariaLabel={`Listen to scholarship details for ${sch.name}`}
+                      />
+                    </div>
                     <p className="text-xs text-slate-500 font-semibold flex items-center gap-1">
                       <Building className="w-3.5 h-3.5" />
                       <span>Provider: {sch.provider}</span>
@@ -215,6 +234,7 @@ export default function ScholarshipsPage() {
                       {sch.description}
                     </p>
                   </div>
+
 
                   {/* Apply Button & Deadline */}
                   <div className="flex sm:flex-col items-center sm:items-end justify-between gap-3 shrink-0">

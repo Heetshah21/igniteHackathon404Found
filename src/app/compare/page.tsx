@@ -5,6 +5,7 @@ import { useStudent } from '@/context/StudentContext';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { comparisons } from '@/data/comparisons';
 import { translations } from '@/lib/translations';
+import { AudioButton } from '@/components/common/AudioButton';
 import {
   GitCompare,
   Sparkles,
@@ -14,6 +15,7 @@ import {
   ArrowRight,
   RotateCcw,
 } from 'lucide-react';
+
 
 export default function ComparePage() {
   const { language } = useStudent();
@@ -118,12 +120,29 @@ export default function ComparePage() {
 
         {/* Head-to-Head Comparison Table */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
             <div>
-              <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
-                Detailed Parameter Comparison
-              </h2>
-              <p className="text-xs text-slate-500">
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
+                  Detailed Parameter Comparison
+                </h2>
+                <AudioButton
+                  id={`cmp-speech-${activeComparison.id}`}
+                  text={{
+                    en: `Comparison between ${activeComparison.option_a} and ${activeComparison.option_b}. ${activeComparison.categories
+                      .map((c) => `${c.label}: ${activeComparison.option_a} is ${c.option_a_value}, while ${activeComparison.option_b} is ${c.option_b_value}`)
+                      .join('. ')}`,
+                    hi: `${activeComparison.option_a} और ${activeComparison.option_b} के बीच तुलना। ${activeComparison.categories
+                      .map((c) => `${c.label}: ${activeComparison.option_a} में ${c.option_a_value}, जबकि ${activeComparison.option_b} में ${c.option_b_value}`)
+                      .join('। ')}`,
+                  }}
+                  label="Listen to Comparison"
+                  variant="secondary"
+                  size="xs"
+                  ariaLabel={`Listen to comparison between ${activeComparison.option_a} and ${activeComparison.option_b}`}
+                />
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
                 Side-by-side analysis of key attributes and industry requirements
               </p>
             </div>
@@ -137,6 +156,7 @@ export default function ComparePage() {
               </span>
             </div>
           </div>
+
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm">
@@ -265,10 +285,24 @@ export default function ComparePage() {
             </div>
 
             {scores.isCompleted ? (
-              <div className="p-4 rounded-xl bg-[#DDF7EA] border border-emerald-300 text-[#0B7A48] space-y-1 animate-in zoom-in-95">
-                <div className="flex items-center gap-2 font-black text-base">
-                  <Trophy className="w-5 h-5 text-emerald-700" />
-                  <span>Recommendation Result:</span>
+              <div className="p-4 rounded-xl bg-[#DDF7EA] border border-emerald-300 text-[#0B7A48] space-y-2 animate-in zoom-in-95">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div className="flex items-center gap-2 font-black text-base">
+                    <Trophy className="w-5 h-5 text-emerald-700" />
+                    <span>Recommendation Result:</span>
+                  </div>
+                  <AudioButton
+                    id={`quiz-recommendation-${activeComparison.id}`}
+                    text={{
+                      en: `Fit Quiz result: ${scores.recommendation}. Score for ${activeComparison.option_a} was ${scores.scoreA} points, and score for ${activeComparison.option_b} was ${scores.scoreB} points.`,
+                      hi: `फिटनेस क्विज़ परिणाम: ${scores.recommendation}। ${activeComparison.option_a} के लिए ${scores.scoreA} अंक, और ${activeComparison.option_b} के लिए ${scores.scoreB} अंक मिले।`,
+                    }}
+                    label="Listen"
+                    variant="badge"
+                    size="xs"
+                    className="bg-emerald-100 hover:bg-emerald-200 text-[#0B7A48] border-emerald-300"
+                    ariaLabel="Listen to quiz recommendation result"
+                  />
                 </div>
                 <p className="text-sm font-bold text-[#0B7A48]">
                   {scores.recommendation}
@@ -282,6 +316,7 @@ export default function ComparePage() {
           </div>
         </div>
       </div>
+
     </AppLayout>
   );
 }

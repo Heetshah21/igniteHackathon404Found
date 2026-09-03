@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { StudentProvider } from '@/context/StudentContext';
+import { SpeechProvider } from '@/context/SpeechContext';
+import { TextSelectionReader } from '@/components/common/TextSelectionReader';
 
 export const metadata: Metadata = {
   title: 'CAREERMitra — Personalized Career & Education Navigation for Bharat',
@@ -16,8 +18,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased bg-[#F7F9FE] text-[#101D35] font-sans">
-        <StudentProvider>{children}</StudentProvider>
+
+        <StudentProvider>
+          <SpeechProvider>
+            {children}
+            <TextSelectionReader />
+          </SpeechProvider>
+        </StudentProvider>
       </body>
     </html>
   );
 }
+

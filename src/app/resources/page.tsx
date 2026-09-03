@@ -6,6 +6,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { resources } from '@/data/resources';
 import { matchResources } from '@/lib/recommendations/matcher';
 import { translations } from '@/lib/translations';
+import { AudioButton } from '@/components/common/AudioButton';
 import {
   BookOpen,
   Search,
@@ -19,6 +20,7 @@ import {
   Layers,
   Flame,
 } from 'lucide-react';
+
 
 const CATEGORIES = [
   'All',
@@ -246,13 +248,28 @@ export default function ResourcesPage() {
                     </div>
                   </div>
 
-                  <h3 className="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-blue-700 transition-colors line-clamp-2">
-                    {res.title}
-                  </h3>
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-blue-700 transition-colors line-clamp-2">
+                      {res.title}
+                    </h3>
+                    <AudioButton
+                      id={`res-speech-${res.id}`}
+                      text={{
+                        en: `${res.title}. ${res.subject ? `Subject: ${res.subject}.` : ''} Provider: ${res.provider || 'Free Community'}. Language: ${res.language}. ${res.description || ''}`,
+                        hi: `${res.title}। ${res.subject ? `विषय: ${res.subject}।` : ''} प्रदाता: ${res.provider || 'फ्री कम्युनिटी'}। भाषा: ${res.language}। ${res.description || ''}`,
+                      }}
+                      label="Listen"
+                      variant="ghost"
+                      size="xs"
+                      className="text-slate-600 hover:bg-slate-100 shrink-0"
+                      ariaLabel={`Listen to course details for ${res.title}`}
+                    />
+                  </div>
 
                   <p className="text-xs text-slate-500 line-clamp-2">
                     {res.description}
                   </p>
+
 
                   <div className="text-[11px] font-semibold text-slate-400">
                     Provider: <span className="text-slate-700">{res.provider || 'Free Community'}</span>

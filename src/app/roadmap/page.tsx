@@ -6,6 +6,8 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { careers } from '@/data/careers';
 import { roadmaps } from '@/data/roadmaps';
 import { translations } from '@/lib/translations';
+import { AudioButton } from '@/components/common/AudioButton';
+import { getRoadmapSpeech } from '@/lib/speech/hindiContent';
 import {
   Compass,
   CheckCircle2,
@@ -50,6 +52,21 @@ export default function RoadmapPage() {
 
   const activeRoadmap = careerRoadmaps[activePathwayIndex] || careerRoadmaps[0];
 
+  const careerSpeechText = useMemo(() => {
+    return {
+      en: `${selectedCareer.title}. ${selectedCareer.description}. Average salary package: ${selectedCareer.avg_salary}. Job growth: ${selectedCareer.growth}. Difficulty level: ${selectedCareer.difficulty}.`,
+      hi: `${selectedCareer.title}। ${selectedCareer.description}। औसत पैकेज: ${selectedCareer.avg_salary}। विकास: ${selectedCareer.growth}। कठिनाई स्तर: ${selectedCareer.difficulty}।`,
+    };
+  }, [selectedCareer]);
+
+  const activeRoadmapSpeech = useMemo(() => {
+    return getRoadmapSpeech(
+      selectedCareer.title,
+      activeRoadmap.title,
+      activeRoadmap.steps
+    );
+  }, [selectedCareer.title, activeRoadmap]);
+
   return (
     <AppLayout>
       <div className="space-y-8 pb-12">
@@ -57,9 +74,20 @@ export default function RoadmapPage() {
         <div className="rounded-3xl bg-white p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5]">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF2FF] border border-[#CCE0FF] text-[#1769FF] text-xs font-bold">
-                <Compass className="w-3.5 h-3.5" />
-                <span>Feature 2 • Multi-Pathway Educational Roadmaps</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF2FF] border border-[#CCE0FF] text-[#1769FF] text-xs font-bold">
+                  <Compass className="w-3.5 h-3.5" />
+                  <span>Feature 2 • Multi-Pathway Educational Roadmaps</span>
+                </div>
+                <AudioButton
+                  id={`roadmap-career-speech-${selectedCareer.id}`}
+                  text={careerSpeechText}
+                  label="Listen to Career"
+                  variant="badge"
+                  size="xs"
+                  className="bg-blue-50 hover:bg-blue-100 text-[#1769FF] border-blue-200"
+                  ariaLabel={`Listen to ${selectedCareer.title} overview`}
+                />
               </div>
               <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#101D35]">
                 Career Roadmap: {selectedCareer.title}
@@ -68,6 +96,8 @@ export default function RoadmapPage() {
                 Discover multiple proven educational paths from 10th/12th/Diploma to reaching your destination as a {selectedCareer.title}.
               </p>
             </div>
+
+
 
             {profile?.career_goal_id !== selectedCareer.id && (
               <button
@@ -181,14 +211,25 @@ export default function RoadmapPage() {
 
         {/* Active Pathway Detailed Timeline */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-8">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xl">🗺️</span>
-              <h3 className="text-lg font-extrabold text-slate-900">
-                {activeRoadmap.title}
-              </h3>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🗺️</span>
+                <h3 className="text-lg font-extrabold text-slate-900">
+                  {activeRoadmap.title}
+                </h3>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">{activeRoadmap.description}</p>
             </div>
-            <p className="text-xs text-slate-500 mt-1">{activeRoadmap.description}</p>
+
+            <AudioButton
+              id={`roadmap-pathway-speech-${activeRoadmap.id}`}
+              text={activeRoadmapSpeech}
+              label="Listen to Full Roadmap"
+              variant="secondary"
+              size="sm"
+              ariaLabel={`Listen to full roadmap for ${activeRoadmap.title}`}
+            />
           </div>
 
           {/* Vertical Timeline with visual connectors */}
@@ -196,6 +237,11 @@ export default function RoadmapPage() {
             {activeRoadmap.steps.map((step, idx) => {
               const isLast = idx === activeRoadmap.steps.length - 1;
               const isFirst = idx === 0;
+
+              const stageSpeech = {
+                en: `Stage ${idx + 1}: ${step.title}. ${step.duration ? `Duration: ${step.duration}.` : ''} ${step.description}. ${step.requirements?.length ? `Prerequisites: ${step.requirements.join(', ')}.` : ''} ${step.tips?.length ? `Tip: ${step.tips[0]}` : ''}`,
+                hi: `चरण ${idx + 1}: ${step.title}। ${step.duration ? `समय: ${step.duration}।` : ''} ${step.description}। ${step.requirements?.length ? `योग्यता: ${step.requirements.join(', ')}।` : ''} ${step.tips?.length ? `सुझाव: ${step.tips[0]}` : ''}`,
+              };
 
               return (
                 <div key={step.id} className="relative group">
@@ -238,16 +284,32 @@ export default function RoadmapPage() {
                         </h4>
                       </div>
 
-                      {step.duration && (
-                        <div
-                          className={`inline-flex items-center gap-1 text-xs font-semibold self-start sm:self-auto ${
-                            isLast ? 'text-emerald-100' : 'text-slate-500'
-                          }`}
-                        >
-                          <Clock className="w-3.5 h-3.5" />
-                          <span>{step.duration}</span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2 self-start sm:self-auto">
+                        {step.duration && (
+                          <div
+                            className={`inline-flex items-center gap-1 text-xs font-semibold ${
+                              isLast ? 'text-emerald-100' : 'text-slate-500'
+                            }`}
+                          >
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{step.duration}</span>
+                          </div>
+                        )}
+
+                        <AudioButton
+                          id={`roadmap-stage-${step.id}`}
+                          text={stageSpeech}
+                          label="Listen"
+                          variant={isLast ? 'badge' : 'ghost'}
+                          size="xs"
+                          className={
+                            isLast
+                              ? 'bg-white/20 text-white border-white/30 hover:bg-white/30'
+                              : 'text-slate-600 hover:bg-slate-200/60'
+                          }
+                          ariaLabel={`Listen to Stage ${idx + 1}: ${step.title}`}
+                        />
+                      </div>
                     </div>
 
                     <p
@@ -257,6 +319,7 @@ export default function RoadmapPage() {
                     >
                       {step.description}
                     </p>
+
 
                     {/* Requirements */}
                     {step.requirements && step.requirements.length > 0 && (

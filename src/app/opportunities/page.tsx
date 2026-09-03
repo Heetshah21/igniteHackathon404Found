@@ -6,6 +6,8 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { opportunities } from '@/data/opportunities';
 import { matchOpportunities } from '@/lib/recommendations/matcher';
 import { translations } from '@/lib/translations';
+import { AudioButton } from '@/components/common/AudioButton';
+import { getOpportunitySpeech } from '@/lib/speech/hindiContent';
 import {
   Trophy,
   Search,
@@ -17,6 +19,7 @@ import {
   CheckCircle2,
   Sparkles,
 } from 'lucide-react';
+
 
 const TYPES = ['All', 'hackathon', 'internship', 'competition', 'project', 'workshop'];
 
@@ -129,9 +132,27 @@ export default function OpportunitiesPage() {
                     )}
                   </div>
 
-                  <h3 className="font-extrabold text-base text-slate-900 group-hover:text-orange-700 transition-colors">
-                    {opp.title}
-                  </h3>
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-extrabold text-base text-slate-900 group-hover:text-orange-700 transition-colors">
+                      {opp.title}
+                    </h3>
+                    <AudioButton
+                      id={`opp-speech-${opp.id}`}
+                      text={getOpportunitySpeech(
+                        opp.title,
+                        opp.organizer,
+                        opp.type,
+                        opp.description,
+                        opp.stipend,
+                        opp.deadline
+                      )}
+                      label="Listen"
+                      variant="ghost"
+                      size="xs"
+                      className="text-slate-600 hover:bg-slate-100 shrink-0"
+                      ariaLabel={`Listen to opportunity details for ${opp.title}`}
+                    />
+                  </div>
 
                   <p className="text-xs text-slate-500 font-semibold flex items-center gap-1.5">
                     <Building className="w-3.5 h-3.5 text-slate-400" />
@@ -141,6 +162,7 @@ export default function OpportunitiesPage() {
                   <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
                     {opp.description}
                   </p>
+
 
                   <div className="flex flex-wrap gap-1 pt-1">
                     {opp.tags.map((tag, idx) => (
