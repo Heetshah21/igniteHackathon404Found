@@ -154,27 +154,27 @@ export default function ResumePage() {
     <AppLayout>
       <div className="space-y-8 pb-12">
         {/* Header Banner */}
-        <div className="rounded-3xl bg-white p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5] print:hidden">
+        <div className="rounded-2xl bg-white p-6 sm:p-8 text-[#0F1B3D] shadow-[var(--shadow-card)] border border-slate-200 print:hidden">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-bold">
                 <FileText className="w-3.5 h-3.5" />
-                <span>Feature 1 • Standard ATS-Friendly Professional Resume</span>
+                <span>{t.resume.badge}</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#101D35]">
-                Single-Page ATS Resume Builder
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#0F1B3D]">
+                {t.resume.title}
               </h1>
               <p className="text-slate-600 text-xs sm:text-sm max-w-2xl">
-                Automatically formatted with standard industry ATS keywords, clean single-column structure, and instant PDF print.
+                {t.resume.subtitle}
               </p>
             </div>
 
             <button
               onClick={handlePrint}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-[#1769FF] hover:bg-blue-600 text-white font-bold text-xs shadow-sm transition self-start md:self-auto cursor-pointer"
+              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition self-start md:self-auto cursor-pointer"
             >
               <Printer className="w-4 h-4" />
-              <span>Print / Download PDF</span>
+              <span>{t.resume.printResume}</span>
             </button>
           </div>
         </div>
@@ -425,11 +425,12 @@ export default function ResumePage() {
               </div>
 
               {/* The Actual Resume Sheet */}
-              <div
-                ref={printRef}
-                id="resume-document"
-                className="bg-white p-8 sm:p-10 rounded-2xl shadow-xl border border-slate-200 text-slate-900 font-sans space-y-6 text-xs sm:text-sm print:p-0 print:shadow-none print:border-none print:rounded-none"
-              >
+              <div className="overflow-x-auto w-full">
+                <div
+                  ref={printRef}
+                  id="resume-document"
+                  className="bg-white p-4 sm:p-8 md:p-10 rounded-2xl shadow-xl border border-slate-200 text-slate-900 font-sans space-y-6 text-xs sm:text-sm print:p-0 print:shadow-none print:border-none print:rounded-none min-w-0"
+                >
                 {/* Header Section */}
                 <div className="text-center space-y-1.5 border-b-2 border-slate-800 pb-4">
                   <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight uppercase text-slate-950">
@@ -545,6 +546,7 @@ export default function ResumePage() {
                     </ul>
                   </div>
                 )}
+                </div>
               </div>
             </div>
           </div>

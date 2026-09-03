@@ -15,10 +15,10 @@ import {
 
 export const HeroRoadmapVisual: React.FC = () => {
   return (
-    <div className="relative w-full max-w-[560px] mx-auto min-h-[440px] flex items-center justify-center select-none">
+    <div className="relative w-full max-w-[560px] mx-auto min-h-[400px] sm:min-h-[440px] flex items-center justify-center select-none overflow-hidden rounded-3xl">
       {/* Background Orbit Ring */}
-      <div className="absolute w-[400px] h-[400px] sm:w-[460px] sm:h-[460px] rounded-full border border-blue-200/50 -right-4 pointer-events-none" />
-      <div className="absolute w-[320px] h-[320px] sm:w-[380px] sm:h-[380px] rounded-full border border-dashed border-blue-200/40 -right-4 pointer-events-none" />
+      <div className="absolute w-[320px] h-[320px] sm:w-[460px] sm:h-[460px] rounded-full border border-blue-200/50 -right-4 pointer-events-none" />
+      <div className="absolute w-[260px] h-[260px] sm:w-[380px] sm:h-[380px] rounded-full border border-dashed border-blue-200/40 -right-4 pointer-events-none" />
 
       {/* Decorative Floating Accents */}
       <div className="absolute top-8 right-16 text-blue-400 rotate-12 pointer-events-none">

@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased bg-[#F7F9FE] text-[#101D35] font-sans">
+      <body className="antialiased bg-[var(--background)] text-[var(--foreground)] font-['Inter',system-ui,sans-serif]">
 
         <StudentProvider>
           <SpeechProvider>

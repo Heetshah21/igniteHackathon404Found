@@ -1,10 +1,10 @@
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import { ComparisonData } from '@/types';
+import { comparisons as fallbackComparisons } from '@/data/comparisons';
 
 export async function getComparisons(): Promise<ComparisonData[]> {
   if (!isSupabaseConfigured()) {
-    console.warn('Supabase is not configured. Returning empty comparisons array.');
-    return [];
+    return fallbackComparisons;
   }
 
   try {
@@ -15,24 +15,27 @@ export async function getComparisons(): Promise<ComparisonData[]> {
       .order('id', { ascending: true });
 
     if (error) {
-      console.error('Error fetching comparisons from Supabase:', {
-        code: error.code,
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-      });
-      return [];
+      console.warn('Supabase comparisons query notice (using fallback):', error.message);
+      return fallbackComparisons;
+    }
+
+    if (!data || data.length === 0) {
+      return fallbackComparisons;
     }
 
     return (data || []) as ComparisonData[];
   } catch (e) {
-    console.error('Exception in getComparisons:', e);
-    return [];
+    console.warn('Exception in getComparisons (using fallback):', e);
+    return fallbackComparisons;
   }
 }
 
 export async function getComparisonBySlug(slug: string): Promise<ComparisonData | null> {
-  if (!isSupabaseConfigured() || !slug) return null;
+  if (!slug) return null;
+
+  if (!isSupabaseConfigured()) {
+    return fallbackComparisons.find((c) => c.slug === slug) || null;
+  }
 
   try {
     const supabase = createClient();
@@ -42,20 +45,23 @@ export async function getComparisonBySlug(slug: string): Promise<ComparisonData 
       .eq('slug', slug)
       .maybeSingle();
 
-    if (error) {
-      console.error('Error fetching comparison by slug from Supabase:', error);
-      return null;
+    if (error || !data) {
+      return fallbackComparisons.find((c) => c.slug === slug) || null;
     }
 
     return data as ComparisonData | null;
   } catch (e) {
-    console.error('Exception in getComparisonBySlug:', e);
-    return null;
+    console.warn('Exception in getComparisonBySlug:', e);
+    return fallbackComparisons.find((c) => c.slug === slug) || null;
   }
 }
 
 export async function getComparisonById(id: string): Promise<ComparisonData | null> {
-  if (!isSupabaseConfigured() || !id) return null;
+  if (!id) return null;
+
+  if (!isSupabaseConfigured()) {
+    return fallbackComparisons.find((c) => c.id === id) || null;
+  }
 
   try {
     const supabase = createClient();
@@ -65,14 +71,13 @@ export async function getComparisonById(id: string): Promise<ComparisonData | nu
       .eq('id', id)
       .maybeSingle();
 
-    if (error) {
-      console.error('Error fetching comparison by id from Supabase:', error);
-      return null;
+    if (error || !data) {
+      return fallbackComparisons.find((c) => c.id === id) || null;
     }
 
     return data as ComparisonData | null;
   } catch (e) {
-    console.error('Exception in getComparisonById:', e);
-    return null;
+    console.warn('Exception in getComparisonById:', e);
+    return fallbackComparisons.find((c) => c.id === id) || null;
   }
 }

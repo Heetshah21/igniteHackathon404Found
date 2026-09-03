@@ -23,6 +23,8 @@ export interface StudentProfile {
   skills: string[];
   career_goal?: string;
   career_goal_id?: string;
+  marksheet_filename?: string;
+  marksheet_url?: string;
   onboarding_completed: boolean;
   created_at?: string;
   updated_at?: string;
@@ -141,8 +143,12 @@ export interface ComparisonCategory {
 
 export interface ComparisonQuiz {
   question: string;
+  option_a_text?: string;
+  option_b_text?: string;
   option_a_points: number;
   option_b_points: number;
+  option_a_reason?: string;
+  option_b_reason?: string;
 }
 
 // Resume
@@ -200,5 +206,49 @@ export interface ScoredItem<T> {
   score: number;
   reasons: string[];
   eligibilityResult?: EligibilityResult;
+}
+
+// Educational Institution & College
+export interface Institution {
+  id: string;
+  name: string;
+  slug: string;
+  type: string;
+  city: string;
+  district: string;
+  state: string;
+  latitude?: number;
+  longitude?: number;
+  annual_fee?: number;
+  course: string;
+  stream: string;
+  min_qualification?: string;
+  girls_only: boolean;
+  hostel_available: boolean;
+  government: boolean;
+  scholarship_available: boolean;
+  description?: string;
+  website_url?: string;
+  rating?: number;
+  admission_process?: string;
+}
+
+export interface InstitutionPreferenceFilter {
+  girlsOnly?: boolean;
+  governmentOnly?: boolean;
+  hostelAvailable?: boolean;
+  lowFees?: boolean;
+  scholarshipFriendly?: boolean;
+  closestToMe?: boolean;
+}
+
+export interface InstitutionRecommendation {
+  institution: Institution;
+  distanceKm: number;
+  distanceLabel: string;
+  affordabilityBadge: 'Budget-friendly' | 'Comfortable fit' | 'Moderate' | 'May require financial support' | 'Fee information unavailable';
+  matchScore: number;
+  matchReasons: string[];
+  highlights: string[];
 }
 

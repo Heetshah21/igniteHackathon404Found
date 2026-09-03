@@ -145,27 +145,27 @@ How can I help guide your journey today? Click any suggested question below or t
     <AppLayout>
       <div className="space-y-6 pb-12">
         {/* Header Banner */}
-        <div className="rounded-3xl bg-white p-6 text-[#101D35] shadow-xs border border-[#E6EBF5]">
+        <div className="rounded-2xl bg-white p-6 text-[#0F1B3D] shadow-[var(--shadow-card)] border border-slate-200">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-50 border border-pink-200 text-pink-700 text-xs font-bold">
                 <Bot className="w-3.5 h-3.5" />
-                <span>Feature 6 • Dedicated Career & Education AI Mentor</span>
+                <span>{t.chat.badge}</span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#101D35]">
-                CAREERMitra AI Assistant
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#0F1B3D]">
+                {t.chat.title}
               </h1>
               <p className="text-slate-600 text-xs">
-                Context-aware guidance for Indian education pathways, state entrance exams, DSE lateral entry, and scholarships.
+                {t.chat.subtitle}
               </p>
             </div>
 
             <button
               onClick={handleClear}
-              className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-xs text-slate-700 font-semibold border border-[#E6EBF5] transition cursor-pointer"
+              className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-xs text-slate-700 font-semibold border border-slate-200 transition cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset Chat</span>
+              <span>{t.common.reset}</span>
             </button>
           </div>
         </div>
@@ -187,32 +187,32 @@ How can I help guide your journey today? Click any suggested question below or t
         )}
 
         {/* Chat Canvas */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col h-[580px] overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-[var(--shadow-card)] flex flex-col h-[520px] sm:h-[580px] overflow-hidden">
           {/* Messages Scroll Area */}
-          <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4">
+          <div className="flex-1 p-3.5 sm:p-6 overflow-y-auto space-y-4">
             {messages.map((msg) => {
               const isUser = msg.role === 'user';
               return (
                 <div
                   key={msg.id}
-                  className={`flex items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}`}
+                  className={`flex items-start gap-2.5 sm:gap-3 ${isUser ? 'flex-row-reverse' : ''}`}
                 >
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-xs shadow-xs ${isUser
-                        ? 'bg-emerald-600'
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-xs shadow-xs ${isUser
+                        ? 'bg-[#2563EB]'
                         : 'bg-gradient-to-tr from-pink-600 to-indigo-600'
                       }`}
                   >
-                    {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                    {isUser ? <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                   </div>
 
                   <div
-                    className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed space-y-2 ${isUser
-                        ? 'bg-emerald-600 text-white shadow-xs rounded-tr-none'
+                    className={`max-w-[88%] sm:max-w-[75%] rounded-2xl p-3 sm:p-4 text-xs sm:text-sm leading-relaxed space-y-2 break-words ${isUser
+                        ? 'bg-[#2563EB] text-white shadow-xs rounded-tr-none'
                         : 'bg-slate-50 border border-slate-200/80 text-slate-800 rounded-tl-none shadow-xs'
                       }`}
                   >
-                    <div className="whitespace-pre-wrap font-sans">
+                    <div className="whitespace-pre-wrap font-sans break-words">
                       {msg.content}
                     </div>
                     <div

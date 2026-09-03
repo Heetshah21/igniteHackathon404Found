@@ -16,7 +16,7 @@ import {
 
 export default function SignupPage() {
   const router = useRouter();
-  const { signUp, authError, setAuthError } = useStudent();
+  const { signUp, authError, setAuthError, isAuthenticated, profile, isLoading: isAuthLoading } = useStudent();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -25,6 +25,16 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [requiresVerification, setRequiresVerification] = useState(false);
+
+  React.useEffect(() => {
+    if (!isAuthLoading && isAuthenticated && profile) {
+      if (!profile.onboarding_completed) {
+        router.push('/onboarding');
+      } else {
+        router.push('/dashboard');
+      }
+    }
+  }, [isAuthLoading, isAuthenticated, profile, router]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,12 +87,12 @@ export default function SignupPage() {
           href="/"
           className="inline-flex items-center gap-2.5 mb-4 group"
         >
-          <div className="w-11 h-11 rounded-2xl bg-[#1769FF] flex items-center justify-center text-white shadow-sm shadow-blue-500/30 group-hover:scale-105 transition-transform">
-            <GraduationCap className="w-6 h-6" />
+          <div className="w-10 h-10 rounded-xl bg-[#2563EB] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+            <GraduationCap className="w-5 h-5" />
           </div>
 
-          <span className="font-black text-2xl tracking-tight text-[#101D35]">
-            Career<span className="text-[#1769FF]">Mitra</span>
+          <span className="font-black text-2xl tracking-tight text-[#0F1B3D]">
+            Career<span className="text-[#2563EB]">Mitra</span>
           </span>
         </Link>
 
@@ -98,7 +108,7 @@ export default function SignupPage() {
 
       {/* Card */}
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 shadow-xs rounded-3xl sm:px-10 border border-[#E6EBF5]">
+        <div className="bg-white py-8 px-6 rounded-2xl sm:px-10 border border-slate-200 shadow-[var(--shadow-card)]">
           {requiresVerification ? (
             /* Email Verification */
             <div className="text-center space-y-4 py-4">
@@ -120,7 +130,7 @@ export default function SignupPage() {
               <div className="pt-4">
                 <Link
                   href="/login"
-                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-[#1769FF] text-white font-bold text-sm hover:bg-blue-600 transition"
+                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-[#2563EB] text-white font-bold text-sm hover:bg-blue-700 transition shadow-sm"
                 >
                   Back to Sign In
                 </Link>
@@ -152,7 +162,7 @@ export default function SignupPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Rahul Sharma"
-                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
+                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#0F1B3D] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   />
                 </div>
               </div>
@@ -172,7 +182,7 @@ export default function SignupPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="rahul@example.com"
-                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
+                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#0F1B3D] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   />
                 </div>
               </div>
@@ -192,7 +202,7 @@ export default function SignupPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="At least 8 characters"
-                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
+                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#0F1B3D] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   />
                 </div>
               </div>
@@ -212,7 +222,7 @@ export default function SignupPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm password"
-                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
+                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#0F1B3D] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   />
                 </div>
               </div>
@@ -221,7 +231,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-[#1769FF] hover:bg-blue-600 transition shadow-sm cursor-pointer mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-[#2563EB] hover:bg-blue-700 transition shadow-sm cursor-pointer mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>
                   {isLoading
@@ -239,7 +249,7 @@ export default function SignupPage() {
             Already have an account?{' '}
             <Link
               href="/login"
-              className="text-[#1769FF] font-bold hover:underline"
+              className="text-[#2563EB] font-bold hover:underline"
             >
               Sign In
             </Link>

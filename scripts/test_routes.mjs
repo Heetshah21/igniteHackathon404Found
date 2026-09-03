@@ -3,6 +3,7 @@ const routes = [
   '/login',
   '/signup',
   '/onboarding',
+  '/profile',
   '/dashboard',
   '/roadmap',
   '/scholarships',

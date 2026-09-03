@@ -3,6 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { getAllSimulations } from '@/data/simulations';
+import { useStudent } from '@/context/StudentContext';
+import { translations } from '@/lib/translations';
 import {
   Code,
   BarChart3,
@@ -24,16 +26,18 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Scale,
 };
 
-const HOW_IT_WORKS = [
-  { icon: Flag, label: 'Get a Real Situation' },
-  { icon: Search, label: 'Investigate Information' },
-  { icon: Zap, label: 'Make Decisions' },
-  { icon: Eye, label: 'See the Consequences' },
-  { icon: UserCheck, label: 'Reflect & Get Insights' },
-];
-
 export const SimulationHub: React.FC = () => {
+  const { language } = useStudent();
+  const t = translations[language];
   const simulations = getAllSimulations();
+
+  const HOW_IT_WORKS = [
+    { icon: Flag, label: t.simulator.step1 },
+    { icon: Search, label: t.simulator.step2 },
+    { icon: Zap, label: t.simulator.step3 },
+    { icon: Eye, label: t.simulator.step4 },
+    { icon: UserCheck, label: t.simulator.step5 },
+  ];
 
   return (
     <div
@@ -59,7 +63,7 @@ export const SimulationHub: React.FC = () => {
 
         <div className="relative z-10 max-w-2xl mx-auto space-y-4">
           <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900">
-            Career{' '}
+            {t.simulator.title}{' '}
             <span className="text-blue-600">Simulation</span>{' '}
             {/* Toggle pill */}
             <span className="inline-flex items-center ml-1 align-middle">
@@ -72,9 +76,9 @@ export const SimulationHub: React.FC = () => {
             </span>
           </h1>
 
-          <p className="text-blue-700 font-extrabold text-xl tracking-tight">Try Before You Choose.</p>
+          <p className="text-blue-700 font-extrabold text-xl tracking-tight">{t.simulator.tagline}</p>
           <p className="text-slate-600 text-sm sm:text-base font-medium leading-relaxed max-w-lg mx-auto">
-            Experience real career situations, make decisions,<br />and discover the skills you naturally use.
+            {t.simulator.subtitle}
           </p>
         </div>
       </div>
@@ -93,12 +97,12 @@ export const SimulationHub: React.FC = () => {
           </div>
           <button className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 border border-slate-200 bg-white rounded-full px-3 py-1.5 shadow-xs hover:border-blue-300 transition">
             <HelpCircle className="w-3.5 h-3.5 text-blue-500" />
-            How It Works
+            {t.simulator.howItWorks}
           </button>
         </div>
 
         <h2 className="text-center text-base font-bold text-slate-700 mb-6">
-          Choose a career to start your simulation
+          {t.simulator.chooseCareer}
         </h2>
 
         {/* Career Cards Grid */}
@@ -136,7 +140,7 @@ export const SimulationHub: React.FC = () => {
                   {/* Skill Tags */}
                   <div className="space-y-1.5">
                     <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      Skills you&apos;ll use
+                      {t.simulator.skillsUsed}
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {sim.skillsObserved.map((skill, idx) => (
@@ -162,7 +166,7 @@ export const SimulationHub: React.FC = () => {
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-white px-4 py-2 rounded-lg shadow-xs hover:opacity-90 transition"
                     style={{ background: '#1677FF' }}
                   >
-                    Start Simulation
+                    {t.simulator.startSimulation}
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                   </Link>
                 </div>

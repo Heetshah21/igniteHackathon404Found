@@ -68,23 +68,23 @@ export default function OpportunitiesPage() {
     <AppLayout>
       <div className="space-y-8 pb-12">
         {/* Header Banner */}
-        <div className="rounded-3xl bg-white p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5]">
+        <div className="rounded-2xl bg-white p-6 sm:p-8 text-[#0F1B3D] shadow-[var(--shadow-card)] border border-slate-200">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-700 text-xs font-bold">
               <Trophy className="w-3.5 h-3.5" />
-              <span>Feature 3 • Hackathons, Internships & Competitions</span>
+              <span>{t.opportunities.badge}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#101D35]">
-              Student Opportunities & Competitions
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#0F1B3D]">
+              {t.opportunities.title}
             </h1>
             <p className="text-slate-600 text-xs sm:text-sm max-w-2xl">
-              Gain practical industry exposure, win national prizes, and build your resume with curated hackathons, GSoC, fellowships, and internships.
+              {t.opportunities.subtitle}
             </p>
           </div>
         </div>
 
         {/* Search & Filter Bar */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#E6EBF5] shadow-xs space-y-4">
+        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-[var(--shadow-card)] space-y-4">
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Search Input */}
             <div className="relative flex-1">
@@ -93,8 +93,8 @@ export default function OpportunitiesPage() {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search Smart India Hackathon, GSoC, Internshala, MLH..."
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-slate-900 placeholder-slate-400 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-400 focus:bg-white transition"
+                placeholder={t.opportunities.searchPlaceholder}
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#2563EB] focus:bg-white transition"
               />
             </div>
 
@@ -108,11 +108,11 @@ export default function OpportunitiesPage() {
                     onClick={() => setSelectedType(type)}
                     className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition border ${
                       isSelected
-                        ? 'bg-[#1769FF] text-white border-[#1769FF]'
-                        : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
+                        ? 'bg-[#2563EB] text-white border-[#2563EB]'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                     }`}
                   >
-                    {type}
+                    {type === 'All' ? t.common.all : type}
                   </button>
                 );
               })}
@@ -154,7 +154,7 @@ export default function OpportunitiesPage() {
                         opp.stipend,
                         opp.deadline
                       )}
-                      label="Listen"
+                      label={t.common.listen}
                       variant="ghost"
                       size="xs"
                       className="text-slate-600 hover:bg-slate-100 shrink-0"
@@ -164,13 +164,12 @@ export default function OpportunitiesPage() {
 
                   <p className="text-xs text-slate-500 font-semibold flex items-center gap-1.5">
                     <Building className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{opp.organizer}</span>
+                    <span>{t.common.organizer}: {opp.organizer}</span>
                   </p>
 
                   <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
                     {opp.description}
                   </p>
-
 
                   <div className="flex flex-wrap gap-1 pt-1">
                     {opp.tags.map((tag, idx) => (
@@ -189,7 +188,7 @@ export default function OpportunitiesPage() {
                     <div className="text-[11px] font-semibold text-slate-500 flex items-center justify-between">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        <span>Deadline:</span>
+                        <span>{t.common.deadline}:</span>
                       </span>
                       <span className="text-slate-800 font-bold">{opp.deadline}</span>
                     </div>
@@ -201,7 +200,7 @@ export default function OpportunitiesPage() {
                     rel="noopener noreferrer"
                     className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-orange-600 hover:bg-orange-500 transition shadow-xs"
                   >
-                    <span>View Details & Register</span>
+                    <span>{t.opportunities.explore}</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>

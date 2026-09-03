@@ -1,10 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
+/* ============================================================
+   CAREERMitra — Design Token System
+   ============================================================ */
 :root {
-  --background: #F7F9FE;
-  --foreground: #101D35;
-  --primary-blue: #1769FF;
-  --border-subtle: #E6EBF5;
+  /* Core palette */
+  --background: #F8FAFC;
+  --foreground: #0F1B3D;
+
+  /* Primary */
+  --primary-blue: #2563EB;
+  --primary-blue-hover: #1D4FD7;
+  --primary-blue-light: #EFF6FF;
+  --primary-blue-50: #EFF6FF;
+  --primary-blue-100: #DBEAFE;
+  --primary-blue-200: #BFDBFE;
+
+  /* Navy */
+  --navy: #0F1B3D;
+  --navy-light: #1E293B;
+
+  /* Success / Mint */
+  --success: #10B981;
+  --success-light: #ECFDF5;
+  --success-border: #A7F3D0;
+
+  /* Warning / Amber */
+  --amber: #D97706;
+  --amber-light: #FFFBEB;
+  --amber-border: #FDE68A;
+
+  /* Purple accent */
+  --purple: #7C3AED;
+  --purple-light: #F5F3FF;
+
+  /* Orange accent */
+  --orange: #EA580C;
+  --orange-light: #FFF7ED;
+
+  /* Borders */
+  --border-subtle: #E2E8F0;
+  --border-card: #E2E8F0;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --shadow-card-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
 }
 
 @theme inline {
@@ -12,9 +53,50 @@
   --color-foreground: var(--foreground);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+/* ============================================================
+   Base Typography & Viewport
+   ============================================================ */
+html {
+  max-width: 100vw;
+  -webkit-text-size-adjust: 100%;
 }
 
+body {
+  max-width: 100vw;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================================
+   Scrollbar Polish (thin, subtle)
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* ============================================================
+   Focus ring utility
+   ============================================================ */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+  border-radius: 8px;
+}

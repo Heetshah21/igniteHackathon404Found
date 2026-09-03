@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useStudent } from '@/context/StudentContext';
 import { getCareers } from '@/lib/data/careers';
 import { Career } from '@/types';
+import { translations } from '@/lib/translations';
 import {
   Compass,
   ArrowRight,
@@ -19,6 +20,10 @@ import {
   Building,
   Percent,
   Wallet,
+  FileUp,
+  FileCheck,
+  Upload,
+  X,
 } from 'lucide-react';
 
 const INDIAN_STATES = [
@@ -87,8 +92,15 @@ const INCOME_OPTIONS = [
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { profile, updateProfile } = useStudent();
+  const { profile, updateProfile, language, isAuthenticated, isLoading } = useStudent();
+  const t = translations[language];
   const [step, setStep] = useState(1);
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push('/login?next=/onboarding');
+    }
+  }, [isLoading, isAuthenticated, router]);
 
   // Form state
   const [name, setName] = useState('');
@@ -103,6 +115,8 @@ export default function OnboardingPage() {
   const [percentage, setPercentage] = useState<number | string>(82);
   const [familyIncome, setFamilyIncome] = useState('1-2.5-lakh');
   const [category, setCategory] = useState('OBC');
+  const [marksheetFilename, setMarksheetFilename] = useState('');
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [interests, setInterests] = useState<string[]>([
     'Technology',
@@ -130,10 +144,25 @@ export default function OnboardingPage() {
       setPercentage(profile.percentage || 82);
       setFamilyIncome(profile.family_income || '1-2.5-lakh');
       setCategory(profile.category || 'OBC');
+      if (profile.marksheet_filename) setMarksheetFilename(profile.marksheet_filename);
       if (profile.interests?.length) setInterests(profile.interests);
       if (profile.career_goal_id) setCareerGoalId(profile.career_goal_id);
     }
   }, [profile]);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setMarksheetFilename(file.name);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setMarksheetFilename('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const toggleInterest = (interest: string) => {
     if (interests.includes(interest)) {
@@ -159,6 +188,7 @@ export default function OnboardingPage() {
       family_income: familyIncome,
       category,
       interests,
+      marksheet_filename: marksheetFilename || undefined,
       career_goal_id: careerGoalId,
       career_goal: selectedCareer?.title || 'Software Engineer',
       onboarding_completed: true,
@@ -167,45 +197,62 @@ export default function OnboardingPage() {
     router.push('/dashboard');
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center">
+        <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-sm font-semibold text-slate-500">Loading profile data...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center">
+        <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-sm font-semibold text-slate-500">Redirecting to sign in...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#F7F9FE] text-[#101D35] flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto w-full">
+    <div className="min-h-screen bg-[var(--background)] py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+      <div className="w-full max-w-2xl">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF2FF] border border-[#CCE0FF] text-[#1769FF] text-xs font-bold mb-3">
-            <Compass className="w-3.5 h-3.5" />
-            <span>Personalized Student Onboarding</span>
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#2563EB] text-white shadow-sm mb-3">
+            <Compass className="w-6 h-6" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#101D35]">
-            Set Up Your Career Profile
+          <h1 className="text-2xl sm:text-3xl font-black text-[#0F1B3D] tracking-tight">
+            {t.onboarding.title}
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-slate-500">
-            Tell us about your background so we can recommend the best roadmaps, scholarships, and opportunities for you.
+            {t.onboarding.subtitle}
           </p>
         </div>
 
         {/* Step Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-400 mb-2">
-            <span className={step >= 1 ? 'text-[#1769FF] font-bold' : ''}>1. Personal</span>
-            <span className={step >= 2 ? 'text-[#1769FF] font-bold' : ''}>2. Education</span>
-            <span className={step >= 3 ? 'text-[#1769FF] font-bold' : ''}>3. Interests</span>
-            <span className={step >= 4 ? 'text-[#1769FF] font-bold' : ''}>4. Aspirations</span>
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center justify-between text-[11px] sm:text-xs font-semibold text-slate-400 mb-2 gap-1">
+            <span className={step >= 1 ? 'text-[#2563EB] font-bold' : ''}>{t.onboarding.step1Title}</span>
+            <span className={step >= 2 ? 'text-[#2563EB] font-bold' : ''}>{t.onboarding.step2Title}</span>
+            <span className={step >= 3 ? 'text-[#2563EB] font-bold' : ''}>{t.onboarding.step3Title}</span>
+            <span className={step >= 4 ? 'text-[#2563EB] font-bold' : ''}>{t.onboarding.step4Title}</span>
           </div>
           <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#1769FF] transition-all duration-300"
+              className="h-full bg-[#2563EB] transition-all duration-300"
               style={{ width: `${(step / 4) * 100}%` }}
             />
           </div>
         </div>
 
         {/* Card Container */}
-        <div className="bg-white border border-[#E6EBF5] rounded-3xl p-6 sm:p-8 shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-8 shadow-[var(--shadow-card)]">
           {/* STEP 1: Personal Details */}
           {step === 1 && (
             <div className="space-y-5 animate-in fade-in slide-in-from-right-2">
-              <div className="flex items-center gap-2 text-[#1769FF] font-bold text-sm">
+              <div className="flex items-center gap-2 text-[#2563EB] font-bold text-sm">
                 <User className="w-4 h-4" />
                 <span>Step 1 of 4: Personal Background</span>
               </div>
@@ -220,7 +267,7 @@ export default function OnboardingPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Rahul Sharma"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#0F1B3D] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   />
                 </div>
 
@@ -233,7 +280,7 @@ export default function OnboardingPage() {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="e.g., Nashik / Kolhapur / Pune"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#0F1B3D] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   />
                 </div>
 
@@ -244,7 +291,7 @@ export default function OnboardingPage() {
                   <select
                     value={state}
                     onChange={(e) => setState(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#0F1B3D] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   >
                     {INDIAN_STATES.map((s) => (
                       <option key={s} value={s}>
@@ -261,7 +308,7 @@ export default function OnboardingPage() {
                   <select
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#0F1B3D] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   >
                     <option value="male">Male</option>
                     <option value="female">Female (Eligible for Pragati & Girl Scholarships)</option>
@@ -278,8 +325,8 @@ export default function OnboardingPage() {
                       type="button"
                       onClick={() => setRuralUrban('rural')}
                       className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition ${ruralUrban === 'rural'
-                          ? 'bg-[#1769FF] text-white border-[#1769FF]'
-                          : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
+                          ? 'bg-[#2563EB] text-white border-[#2563EB]'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                         }`}
                     >
                       🌾 Rural / Semi-Urban
@@ -288,8 +335,8 @@ export default function OnboardingPage() {
                       type="button"
                       onClick={() => setRuralUrban('urban')}
                       className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition ${ruralUrban === 'urban'
-                          ? 'bg-[#1769FF] text-white border-[#1769FF]'
-                          : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
+                          ? 'bg-[#2563EB] text-white border-[#2563EB]'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                         }`}
                     >
                       🏙️ Urban / Metro
@@ -319,8 +366,8 @@ export default function OnboardingPage() {
                       type="button"
                       onClick={() => setEducationLevel(lvl.id)}
                       className={`p-3 rounded-xl text-left border transition ${educationLevel === lvl.id
-                          ? 'bg-blue-50 border-[#1769FF] text-[#1769FF] shadow-xs'
-                          : 'bg-slate-50 border-[#E6EBF5] text-slate-700 hover:bg-slate-100'
+                          ? 'bg-blue-50 border-[#2563EB] text-[#2563EB] shadow-xs'
+                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                         }`}
                     >
                       <div className="font-bold text-xs">{lvl.label}</div>
@@ -372,7 +419,7 @@ export default function OnboardingPage() {
                     value={percentage}
                     onChange={(e) => setPercentage(e.target.value)}
                     placeholder="82"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   />
                 </div>
 
@@ -383,7 +430,7 @@ export default function OnboardingPage() {
                   <select
                     value={familyIncome}
                     onChange={(e) => setFamilyIncome(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#101D35] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   >
                     {INCOME_OPTIONS.map((inc) => (
                       <option key={inc.id} value={inc.id}>
@@ -393,14 +440,14 @@ export default function OnboardingPage() {
                   </select>
                 </div>
 
-                <div>
+                <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-[#101D35] mb-1">
                     Category (Optional)
                   </label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-[#E6EBF5] rounded-xl text-[#101D35] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#1769FF] text-sm transition"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#101D35] focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   >
                     <option value="General">General / Open</option>
                     <option value="OBC">OBC</option>
@@ -408,6 +455,72 @@ export default function OnboardingPage() {
                     <option value="ST">ST</option>
                     <option value="EWS">EWS</option>
                   </select>
+                </div>
+
+                {/* Marksheet Document Upload Card */}
+                <div className="sm:col-span-2 p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-1">
+                    <label className="block text-xs font-bold text-[#101D35] flex items-center gap-1.5">
+                      <FileUp className="w-4 h-4 text-[#2563EB]" />
+                      <span>{educationLevel || '12th'} Marksheet</span>
+                    </label>
+                    <span className="text-[10px] font-semibold text-slate-400">PDF, JPG, JPEG or PNG</span>
+                  </div>
+
+                  {marksheetFilename ? (
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-200 gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <FileCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-emerald-900 truncate">
+                            {marksheetFilename}
+                          </div>
+                          <div className="text-[10px] font-medium text-emerald-700">
+                            {educationLevel || '12th'} Marksheet uploaded • Verification pending
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="px-2.5 py-1 text-xs font-bold text-[#2563EB] hover:bg-blue-50 rounded-md border border-blue-200 bg-white cursor-pointer transition"
+                        >
+                          Replace
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleRemoveFile}
+                          className="p-1 text-slate-400 hover:text-rose-600 rounded-md transition cursor-pointer"
+                          title="Remove file"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed border-slate-200 hover:border-blue-400 bg-white hover:bg-blue-50/30 rounded-xl p-4 text-center cursor-pointer transition"
+                    >
+                      <Upload className="w-6 h-6 text-[#2563EB] mx-auto mb-1.5" />
+                      <div className="text-xs font-bold text-slate-700">
+                        Upload {educationLevel || '12th'} Marksheet
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        PDF, JPG or PNG (Grade card / marksheet document)
+                      </p>
+                    </div>
+                  )}
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
                 </div>
               </div>
             </div>
@@ -424,7 +537,7 @@ export default function OnboardingPage() {
                 Choose the subjects and areas you find exciting. This fine-tunes your recommendations and career fit.
               </p>
 
-              <div className="flex flex-wrap gap-2.5 pt-2">
+              <div className="flex flex-wrap gap-2 pt-2">
                 {INTEREST_OPTIONS.map((interest) => {
                   const isSelected = interests.includes(interest);
                   return (
@@ -433,8 +546,8 @@ export default function OnboardingPage() {
                       type="button"
                       onClick={() => toggleInterest(interest)}
                       className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 ${isSelected
-                          ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-xs'
-                          : 'bg-slate-50 text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
+                          ? 'bg-[#2563EB] text-white border-[#2563EB] shadow-xs'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                         }`}
                     >
                       {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
@@ -466,12 +579,12 @@ export default function OnboardingPage() {
                       type="button"
                       onClick={() => setCareerGoalId(career.id)}
                       className={`p-3.5 rounded-xl text-left border transition ${isSelected
-                          ? 'bg-[#EAF2FF] border-[#1769FF] text-[#101D35] shadow-xs ring-1 ring-[#1769FF]'
-                          : 'bg-slate-50 border-[#E6EBF5] text-slate-700 hover:bg-slate-100'
+                          ? 'bg-blue-50 border-[#2563EB] text-[#0F1B3D] shadow-xs ring-1 ring-[#2563EB]'
+                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                         }`}
                     >
                       <div className="text-2xl mb-1">{career.icon}</div>
-                      <div className="font-bold text-xs text-[#101D35]">{career.title}</div>
+                      <div className="font-bold text-xs text-[#0F1B3D]">{career.title}</div>
                       <div className="text-[10px] text-slate-500 mt-1 line-clamp-2">
                         {career.description}
                       </div>
@@ -486,12 +599,12 @@ export default function OnboardingPage() {
           )}
 
           {/* Navigation Controls */}
-          <div className="mt-8 flex items-center justify-between border-t border-[#E6EBF5] pt-5">
+          <div className="mt-8 flex items-center justify-between border-t border-slate-200 pt-5 gap-2">
             {step > 1 ? (
               <button
                 type="button"
                 onClick={() => setStep(step - 1)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-[#E6EBF5] transition"
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back</span>
@@ -504,7 +617,7 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(step + 1)}
-                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-[#1769FF] hover:bg-blue-600 transition shadow-sm cursor-pointer"
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-[#2563EB] hover:bg-blue-700 transition shadow-sm cursor-pointer"
               >
                 <span>Next Step</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -513,10 +626,10 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={handleFinish}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-[#1769FF] hover:bg-blue-600 transition shadow-sm cursor-pointer"
+                className="flex items-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-[#2563EB] hover:bg-blue-700 transition shadow-sm cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>Generate My Career Dashboard</span>
+                <span>Generate Dashboard</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             )}

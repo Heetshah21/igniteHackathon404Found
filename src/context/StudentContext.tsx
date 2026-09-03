@@ -15,8 +15,8 @@ interface StudentContextType {
   authError: string | null;
   setAuthError: (err: string | null) => void;
   updateProfile: (data: Partial<StudentProfile>) => Promise<void>;
-  signIn: (email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
-  signUp: (email: string, password?: string, fullName?: string) => Promise<{ success: boolean; requiresVerification?: boolean; error?: string }>;
+  signIn: (email: string, password?: string) => Promise<{ success: boolean; onboardingCompleted?: boolean; error?: string }>;
+  signUp: (email: string, password?: string, fullName?: string) => Promise<{ success: boolean; requiresVerification?: boolean; onboardingCompleted?: boolean; error?: string }>;
   logout: () => Promise<void>;
   language: 'English' | 'Hindi' | 'Marathi';
   setLanguage: (lang: 'English' | 'Hindi' | 'Marathi') => void;
@@ -41,9 +41,19 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const langStored = localStorage.getItem(LANG_STORAGE_KEY);
       if (langStored === 'Hindi' || langStored === 'Marathi' || langStored === 'English') {
         setLanguageState(langStored);
+        if (typeof document !== 'undefined') {
+          document.documentElement.lang = langStored === 'Hindi' ? 'hi' : langStored === 'Marathi' ? 'mr' : 'en';
+        }
       }
     } catch {}
   }, []);
+
+  // Update html lang when language changes
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = language === 'Hindi' ? 'hi' : language === 'Marathi' ? 'mr' : 'en';
+    }
+  }, [language]);
 
   // Initialize Supabase Auth Session
   useEffect(() => {
@@ -94,19 +104,21 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const loadingProfileUserIdRef = React.useRef<string | null>(null);
 
-  const loadProfileForUser = async (userId: string, email?: string, name?: string) => {
-    if (loadingProfileUserIdRef.current === userId) {
-      return;
+  const loadProfileForUser = async (userId: string, email?: string, name?: string): Promise<StudentProfile | null> => {
+    if (loadingProfileUserIdRef.current === userId && profile) {
+      return profile;
     }
     loadingProfileUserIdRef.current = userId;
     setIsLoading(true);
+    let loaded: StudentProfile | null = null;
     try {
       const dbProfile = await getStudentProfileByUserId(userId);
       if (dbProfile) {
         setProfile(dbProfile);
+        loaded = dbProfile;
       } else {
         // Set in-memory initial profile state without premature database writes
-        setProfile({
+        loaded = {
           id: userId,
           user_id: userId,
           email: email || '',
@@ -114,7 +126,8 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
           interests: [],
           skills: [],
           onboarding_completed: false,
-        });
+        };
+        setProfile(loaded);
       }
     } catch (e) {
       console.error('Failed loading profile for user from Supabase:', e);
@@ -122,6 +135,7 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       loadingProfileUserIdRef.current = null;
       setIsLoading(false);
     }
+    return loaded;
   };
 
   const updateProfile = async (data: Partial<StudentProfile>) => {
@@ -139,7 +153,7 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
-  const signIn = async (email: string, password?: string): Promise<{ success: boolean; error?: string }> => {
+  const signIn = async (email: string, password?: string): Promise<{ success: boolean; onboardingCompleted?: boolean; error?: string }> => {
     setAuthError(null);
 
     if (!isSupabaseConfigured() || !password) {
@@ -167,11 +181,13 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setUser(data.user);
       setIsAuthenticated(true);
 
+      let onboardingCompleted = false;
       if (data.user) {
-        await loadProfileForUser(data.user.id, data.user.email, data.user.user_metadata?.full_name);
+        const loaded = await loadProfileForUser(data.user.id, data.user.email, data.user.user_metadata?.full_name);
+        onboardingCompleted = !!loaded?.onboarding_completed;
       }
 
-      return { success: true };
+      return { success: true, onboardingCompleted };
     } catch (err: any) {
       const errMsg = err?.message || 'Something went wrong. Please try again.';
       setAuthError(errMsg);
@@ -183,7 +199,7 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     email: string,
     password?: string,
     fullName?: string
-  ): Promise<{ success: boolean; requiresVerification?: boolean; error?: string }> => {
+  ): Promise<{ success: boolean; requiresVerification?: boolean; onboardingCompleted?: boolean; error?: string }> => {
     setAuthError(null);
 
     if (!isSupabaseConfigured() || !password) {
@@ -215,18 +231,20 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (data.user && !data.session) {
         // Email confirmation is enabled in Supabase
-        return { success: true, requiresVerification: true };
+        return { success: true, requiresVerification: true, onboardingCompleted: false };
       }
 
       setSession(data.session);
       setUser(data.user);
       setIsAuthenticated(true);
 
+      let onboardingCompleted = false;
       if (data.user) {
-        await loadProfileForUser(data.user.id, data.user.email, fullName);
+        const loaded = await loadProfileForUser(data.user.id, data.user.email, fullName);
+        onboardingCompleted = !!loaded?.onboarding_completed;
       }
 
-      return { success: true, requiresVerification: false };
+      return { success: true, requiresVerification: false, onboardingCompleted };
     } catch (err: any) {
       const errMsg = err?.message || 'Something went wrong. Please try again.';
       setAuthError(errMsg);

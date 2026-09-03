@@ -60,11 +60,14 @@ export const AudioLanguageSelector: React.FC = () => {
               isSpeaking ? 'text-emerald-600 animate-pulse' : 'text-indigo-600'
             }`}
           />
-          <span className="hidden xs:inline text-[11px] text-slate-400 font-medium">
+          <span className="hidden md:inline text-[11px] text-slate-400 font-medium">
             Audio:
           </span>
-          <span className="font-extrabold">
+          <span className="hidden sm:inline font-extrabold">
             {audioLanguage === 'hi-IN' ? 'हिंदी (Hindi)' : 'English'}
+          </span>
+          <span className="inline sm:hidden font-extrabold">
+            {audioLanguage === 'hi-IN' ? 'हिंदी' : 'EN'}
           </span>
           {audioRate !== 1 && (
             <span className="text-[10px] px-1 bg-slate-200 text-slate-700 rounded font-semibold">
