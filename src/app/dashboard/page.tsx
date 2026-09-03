@@ -77,7 +77,7 @@ export default function DashboardPage() {
 
   // Next steps generated dynamically
   const nextSteps = useMemo(() => {
-    return generateNextSteps(profile || {});
+    return generateNextSteps(profile || {}, dbCareers);
   }, [profile]);
 
   // Personalized recommendations

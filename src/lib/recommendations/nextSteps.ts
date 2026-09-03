@@ -1,14 +1,12 @@
-import { StudentProfile, NextStep } from '@/types';
-import { careers } from '@/data/careers';
+import { StudentProfile, NextStep, Career } from '@/types';
 
-export function generateNextSteps(profile?: Partial<StudentProfile>): NextStep[] {
-  const safeProfile = profile ?? {};
+export function generateNextSteps(profile: Partial<StudentProfile>, careersList?: Career[]): NextStep[] {
   const steps: NextStep[] = [];
-  const career = (careers ?? []).find(c => c?.id === safeProfile.career_goal_id);
-  const careerName = career?.title || safeProfile.career_goal || 'your dream career';
+  const career = careersList?.find(c => c.id === profile.career_goal_id);
+  const careerName = career?.title || profile.career_goal || 'your dream career';
 
   // Step 1: Based on education level
-  if (safeProfile.education_level === '10th' || safeProfile.education_level === '12th') {
+  if (profile.education_level === '10th' || profile.education_level === '12th') {
     steps.push({
       id: 'ns-1',
       title: `Explore ${careerName} pathways`,
@@ -21,7 +19,7 @@ export function generateNextSteps(profile?: Partial<StudentProfile>): NextStep[]
   }
 
   // Step 2: Skill development
-  const hasSkills = safeProfile.skills && safeProfile.skills.length > 0;
+  const hasSkills = profile.skills && profile.skills.length > 0;
   if (!hasSkills) {
     steps.push({
       id: 'ns-2',
@@ -36,7 +34,7 @@ export function generateNextSteps(profile?: Partial<StudentProfile>): NextStep[]
     steps.push({
       id: 'ns-2b',
       title: 'Level up your skills',
-      description: `You know ${(safeProfile.skills ?? []).slice(0, 3).join(', ')}. Now explore intermediate and advanced courses.`,
+      description: `You know ${profile.skills?.slice(0, 3).join(', ')}. Now explore intermediate and advanced courses.`,
       action_url: '/resources',
       action_label: 'Find Courses',
       icon: '🚀',

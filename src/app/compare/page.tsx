@@ -1,42 +1,45 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStudent } from '@/context/StudentContext';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { comparisons } from '@/data/comparisons';
+import { getComparisons } from '@/lib/data/comparisons';
+import { ComparisonData } from '@/types';
 import { translations } from '@/lib/translations';
 import { AudioButton } from '@/components/common/AudioButton';
 import {
   GitCompare,
   Sparkles,
   CheckCircle2,
-  HelpCircle,
   Trophy,
-  ArrowRight,
   RotateCcw,
 } from 'lucide-react';
-
 
 export default function ComparePage() {
   const { language } = useStudent();
   const t = translations[language];
 
-  const [activeComparisonId, setActiveComparisonId] = useState<string>(
-    (comparisons && comparisons[0]?.id) || 'aiml-vs-ds'
-  );
-  const activeComparison = useMemo(() => {
-    return (
-      (comparisons ?? []).find((c) => c?.id === activeComparisonId) ||
-      comparisons?.[0] || {
-        id: 'default-comparison',
-        title: 'Comparison',
-        option_a: 'Option A',
-        option_b: 'Option B',
-        categories: [],
-        quiz: [],
+  const [dbComparisons, setDbComparisons] = useState<ComparisonData[]>([]);
+  const [activeComparisonId, setActiveComparisonId] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    getComparisons().then((data) => {
+      setDbComparisons(data);
+      if (data && data.length > 0) {
+        setActiveComparisonId(data[0].id);
       }
+      setIsLoading(false);
+    });
+  }, []);
+
+  const activeComparison = useMemo(() => {
+    if (dbComparisons.length === 0) return null;
+    return (
+      dbComparisons.find((c) => c.id === activeComparisonId) ||
+      dbComparisons[0]
     );
-  }, [activeComparisonId]);
+  }, [dbComparisons, activeComparisonId]);
 
   // Quiz state: stores { questionIndex: 'a' | 'b' }
   const [quizAnswers, setQuizAnswers] = useState<Record<number, 'a' | 'b'>>({});
@@ -68,7 +71,7 @@ export default function ComparePage() {
     const isCompleted = quizList.length > 0 && totalAnswered === quizList.length;
 
     let recommendation = '';
-    if (isCompleted) {
+    if (isCompleted && activeComparison) {
       if (scoreA > scoreB) {
         recommendation = `${activeComparison.option_a} is strongly recommended for your preferences!`;
       } else if (scoreB > scoreA) {
@@ -80,7 +83,6 @@ export default function ComparePage() {
 
     return { scoreA, scoreB, isCompleted, recommendation, totalAnswered };
   }, [activeComparison, quizAnswers]);
-
 
   return (
     <AppLayout>
@@ -107,7 +109,7 @@ export default function ComparePage() {
             Select Pair to Compare:
           </label>
           <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-thin">
-            {comparisons.map((cmp) => {
+            {dbComparisons.map((cmp) => {
               const isSelected = activeComparisonId === cmp.id;
               return (
                 <button
@@ -132,206 +134,214 @@ export default function ComparePage() {
           </div>
         </div>
 
-        {/* Head-to-Head Comparison Table */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-            <div>
-              <div className="flex items-center gap-3">
-                <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
-                  Detailed Parameter Comparison
-                </h2>
-                <AudioButton
-                  id={`cmp-speech-${activeComparison.id}`}
-                  text={{
-                    en: `Comparison between ${activeComparison.option_a} and ${activeComparison.option_b}. ${(activeComparison.categories ?? [])
-                      .map((c) => `${c.label}: ${activeComparison.option_a} is ${c.option_a_value}, while ${activeComparison.option_b} is ${c.option_b_value}`)
-                      .join('. ')}`,
-                    hi: `${activeComparison.option_a} और ${activeComparison.option_b} के बीच तुलना। ${(activeComparison.categories ?? [])
-                      .map((c) => `${c.label}: ${activeComparison.option_a} में ${c.option_a_value}, जबकि ${activeComparison.option_b} में ${c.option_b_value}`)
-                      .join('। ')}`,
-                  }}
-                  label="Listen to Comparison"
-                  variant="secondary"
-                  size="xs"
-                  ariaLabel={`Listen to comparison between ${activeComparison.option_a} and ${activeComparison.option_b}`}
-                />
-              </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Side-by-side analysis of key attributes and industry requirements
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold px-3 py-1 rounded-full bg-purple-100 text-purple-800">
-                {activeComparison.option_a}
-              </span>
-              <span className="text-xs font-bold text-slate-400">VS</span>
-              <span className="text-xs font-bold px-3 py-1 rounded-full bg-indigo-100 text-indigo-800">
-                {activeComparison.option_b}
-              </span>
-            </div>
+        {isLoading && (
+          <div className="py-12 text-center text-slate-500 font-medium">
+            Loading comparisons...
           </div>
+        )}
 
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs sm:text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-400 uppercase text-[11px] font-bold">
-                  <th className="py-3 px-4 w-1/3">Metric / Category</th>
-                  <th className="py-3 px-4 text-purple-700 w-1/3 bg-purple-50/40 rounded-t-xl font-extrabold">
-                    {activeComparison.option_a}
-                  </th>
-                  <th className="py-3 px-4 text-indigo-700 w-1/3 bg-indigo-50/40 rounded-t-xl font-extrabold">
-                    {activeComparison.option_b}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {(activeComparison.categories ?? []).map((cat, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/80 transition">
-                    <td className="py-3.5 px-4 font-bold text-slate-800">
-                      {cat.label}
-                    </td>
-                    <td className="py-3.5 px-4 text-slate-700 font-medium bg-purple-50/20">
-                      {cat.option_a_value}
-                    </td>
-                    <td className="py-3.5 px-4 text-slate-700 font-medium bg-indigo-50/20">
-                      {cat.option_b_value}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-
-        {/* Interactive Fit Quiz: "Which is better for you?" */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5] space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E6EBF5] pb-4">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF2FF] border border-[#CCE0FF] text-[#1769FF] text-xs font-bold mb-1">
-                <Sparkles className="w-3.5 h-3.5 text-[#1769FF]" />
-                <span>Deterministic Scoring Engine</span>
-              </div>
-              <h2 className="text-xl sm:text-2xl font-black text-[#101D35]">
-                Which is better for you?
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500">
-                Answer these 6 quick questions to discover which path aligns best with your strengths and interests.
-              </p>
-            </div>
-
-            {Object.keys(quizAnswers).length > 0 && (
-              <button
-                onClick={handleResetQuiz}
-                className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-xs text-slate-700 font-semibold border border-[#E6EBF5] transition cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset Quiz</span>
-              </button>
-            )}
-          </div>
-
-          {/* Quiz Questions */}
-          <div className="space-y-4">
-            {activeComparison.quiz.map((q, idx) => {
-              const currentAns = quizAnswers[idx];
-              return (
-                <div
-                  key={idx}
-                  className="p-4 rounded-2xl bg-slate-50 border border-[#E6EBF5] space-y-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#1769FF]">
-                      Question #{idx + 1}
-                    </span>
-                    {currentAns && (
-                      <span className="text-[10px] font-bold text-[#0B7A48] bg-[#DDF7EA] px-2 py-0.5 rounded-md flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" />
-                        Answered
-                      </span>
-                    )}
+        {activeComparison && (
+          <>
+            {/* Head-to-Head Comparison Table */}
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
+                      Detailed Parameter Comparison
+                    </h2>
+                    <AudioButton
+                      id={`cmp-speech-${activeComparison.id}`}
+                      text={{
+                        en: `Comparison between ${activeComparison.option_a} and ${activeComparison.option_b}. ${(activeComparison.categories ?? [])
+                          .map((c) => `${c.label}: ${activeComparison.option_a} is ${c.option_a_value}, while ${activeComparison.option_b} is ${c.option_b_value}`)
+                          .join('. ')}`,
+                        hi: `${activeComparison.option_a} और ${activeComparison.option_b} के बीच तुलना। ${(activeComparison.categories ?? [])
+                          .map((c) => `${c.label}: ${activeComparison.option_a} में ${c.option_a_value}, जबकि ${activeComparison.option_b} में ${c.option_b_value}`)
+                          .join('। ')}`,
+                      }}
+                      label="Listen to Comparison"
+                      variant="secondary"
+                      size="xs"
+                      ariaLabel={`Listen to comparison between ${activeComparison.option_a} and ${activeComparison.option_b}`}
+                    />
                   </div>
-                  <p className="text-sm sm:text-base font-bold text-[#101D35]">
-                    {q.question}
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Side-by-side analysis of key attributes and industry requirements
                   </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                    <button
-                      onClick={() => handleAnswer(idx, 'a')}
-                      className={`p-3 rounded-xl text-left text-xs font-bold border transition cursor-pointer ${
-                        currentAns === 'a'
-                          ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-xs'
-                          : 'bg-white text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
-                      }`}
-                    >
-                      👍 Prefer {activeComparison.option_a}
-                    </button>
-                    <button
-                      onClick={() => handleAnswer(idx, 'b')}
-                      className={`p-3 rounded-xl text-left text-xs font-bold border transition cursor-pointer ${
-                        currentAns === 'b'
-                          ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-xs'
-                          : 'bg-white text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
-                      }`}
-                    >
-                      👍 Prefer {activeComparison.option_b}
-                    </button>
-                  </div>
                 </div>
-              );
-            })}
-          </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-purple-100 text-purple-800">
+                    {activeComparison.option_a}
+                  </span>
+                  <span className="text-xs font-bold text-slate-400">VS</span>
+                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-indigo-100 text-indigo-800">
+                    {activeComparison.option_b}
+                  </span>
+                </div>
+              </div>
 
-          {/* Score Result Box */}
-          <div className="p-6 rounded-2xl bg-slate-50 border border-[#E6EBF5] space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                Fit Score Result ({scores.totalAnswered} / {activeComparison.quiz.length} Answered)
-              </span>
-              <div className="flex items-center gap-4 text-xs font-bold">
-                <span className="text-[#1769FF]">
-                  {activeComparison.option_a}: {scores.scoreA} pts
-                </span>
-                <span className="text-purple-600">
-                  {activeComparison.option_b}: {scores.scoreB} pts
-                </span>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs sm:text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-400 uppercase text-[11px] font-bold">
+                      <th className="py-3 px-4 w-1/3">Metric / Category</th>
+                      <th className="py-3 px-4 text-purple-700 w-1/3 bg-purple-50/40 rounded-t-xl font-extrabold">
+                        {activeComparison.option_a}
+                      </th>
+                      <th className="py-3 px-4 text-indigo-700 w-1/3 bg-indigo-50/40 rounded-t-xl font-extrabold">
+                        {activeComparison.option_b}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {(activeComparison.categories ?? []).map((cat, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50/80 transition">
+                        <td className="py-3.5 px-4 font-bold text-slate-800">
+                          {cat.label}
+                        </td>
+                        <td className="py-3.5 px-4 text-slate-700 font-medium bg-purple-50/20">
+                          {cat.option_a_value}
+                        </td>
+                        <td className="py-3.5 px-4 text-slate-700 font-medium bg-indigo-50/20">
+                          {cat.option_b_value}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
 
-            {scores.isCompleted ? (
-              <div className="p-4 rounded-xl bg-[#DDF7EA] border border-emerald-300 text-[#0B7A48] space-y-2 animate-in zoom-in-95">
-                <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <div className="flex items-center gap-2 font-black text-base">
-                    <Trophy className="w-5 h-5 text-emerald-700" />
-                    <span>Recommendation Result:</span>
+            {/* Interactive Fit Quiz: "Which is better for you?" */}
+            <div className="bg-white rounded-3xl p-6 sm:p-8 text-[#101D35] shadow-xs border border-[#E6EBF5] space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E6EBF5] pb-4">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF2FF] border border-[#CCE0FF] text-[#1769FF] text-xs font-bold mb-1">
+                    <Sparkles className="w-3.5 h-3.5 text-[#1769FF]" />
+                    <span>Deterministic Scoring Engine</span>
                   </div>
-                  <AudioButton
-                    id={`quiz-recommendation-${activeComparison.id}`}
-                    text={{
-                      en: `Fit Quiz result: ${scores.recommendation}. Score for ${activeComparison.option_a} was ${scores.scoreA} points, and score for ${activeComparison.option_b} was ${scores.scoreB} points.`,
-                      hi: `फिटनेस क्विज़ परिणाम: ${scores.recommendation}। ${activeComparison.option_a} के लिए ${scores.scoreA} अंक, और ${activeComparison.option_b} के लिए ${scores.scoreB} अंक मिले।`,
-                    }}
-                    label="Listen"
-                    variant="badge"
-                    size="xs"
-                    className="bg-emerald-100 hover:bg-emerald-200 text-[#0B7A48] border-emerald-300"
-                    ariaLabel="Listen to quiz recommendation result"
-                  />
+                  <h2 className="text-xl sm:text-2xl font-black text-[#101D35]">
+                    Which is better for you?
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-500">
+                    Answer these 6 quick questions to discover which path aligns best with your strengths and interests.
+                  </p>
                 </div>
-                <p className="text-sm font-bold text-[#0B7A48]">
-                  {scores.recommendation}
-                </p>
-              </div>
-            ) : (
-              <p className="text-xs text-slate-500 italic">
-                Answer all {activeComparison.quiz.length} questions above to unlock your personalized recommendation result.
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
 
+                {Object.keys(quizAnswers).length > 0 && (
+                  <button
+                    onClick={handleResetQuiz}
+                    className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-xs text-slate-700 font-semibold border border-[#E6EBF5] transition cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Quiz</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Quiz Questions */}
+              <div className="space-y-4">
+                {(activeComparison.quiz ?? []).map((q, idx) => {
+                  const currentAns = quizAnswers[idx];
+                  return (
+                    <div
+                      key={idx}
+                      className="p-4 rounded-2xl bg-slate-50 border border-[#E6EBF5] space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-[#1769FF]">
+                          Question #{idx + 1}
+                        </span>
+                        {currentAns && (
+                          <span className="text-[10px] font-bold text-[#0B7A48] bg-[#DDF7EA] px-2 py-0.5 rounded-md flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Answered
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm sm:text-base font-bold text-[#101D35]">
+                        {q.question}
+                      </p>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                        <button
+                          onClick={() => handleAnswer(idx, 'a')}
+                          className={`p-3 rounded-xl text-left text-xs font-bold border transition cursor-pointer ${
+                            currentAns === 'a'
+                              ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-xs'
+                              : 'bg-white text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
+                          }`}
+                        >
+                          👍 Prefer {activeComparison.option_a}
+                        </button>
+                        <button
+                          onClick={() => handleAnswer(idx, 'b')}
+                          className={`p-3 rounded-xl text-left text-xs font-bold border transition cursor-pointer ${
+                            currentAns === 'b'
+                              ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-xs'
+                              : 'bg-white text-slate-700 border-[#E6EBF5] hover:bg-slate-100'
+                          }`}
+                        >
+                          👍 Prefer {activeComparison.option_b}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Score Result Box */}
+              <div className="p-6 rounded-2xl bg-slate-50 border border-[#E6EBF5] space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    Fit Score Result ({scores.totalAnswered} / {(activeComparison.quiz ?? []).length} Answered)
+                  </span>
+                  <div className="flex items-center gap-4 text-xs font-bold">
+                    <span className="text-[#1769FF]">
+                      {activeComparison.option_a}: {scores.scoreA} pts
+                    </span>
+                    <span className="text-purple-600">
+                      {activeComparison.option_b}: {scores.scoreB} pts
+                    </span>
+                  </div>
+                </div>
+
+                {scores.isCompleted ? (
+                  <div className="p-4 rounded-xl bg-[#DDF7EA] border border-emerald-300 text-[#0B7A48] space-y-2 animate-in zoom-in-95">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex items-center gap-2 font-black text-base">
+                        <Trophy className="w-5 h-5 text-emerald-700" />
+                        <span>Recommendation Result:</span>
+                      </div>
+                      <AudioButton
+                        id={`quiz-recommendation-${activeComparison.id}`}
+                        text={{
+                          en: `Fit Quiz result: ${scores.recommendation}. Score for ${activeComparison.option_a} was ${scores.scoreA} points, and score for ${activeComparison.option_b} was ${scores.scoreB} points.`,
+                          hi: `फिटनेस क्विज़ परिणाम: ${scores.recommendation}। ${activeComparison.option_a} के लिए ${scores.scoreA} अंक, और ${activeComparison.option_b} के लिए ${scores.scoreB} अंक मिले।`,
+                        }}
+                        label="Listen"
+                        variant="badge"
+                        size="xs"
+                        className="bg-emerald-100 hover:bg-emerald-200 text-[#0B7A48] border-emerald-300"
+                        ariaLabel="Listen to quiz recommendation result"
+                      />
+                    </div>
+                    <p className="text-sm font-bold text-[#0B7A48]">
+                      {scores.recommendation}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-500 italic">
+                    Answer all {(activeComparison.quiz ?? []).length} questions above to unlock your personalized recommendation result.
+                  </p>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </AppLayout>
   );
 }
+
