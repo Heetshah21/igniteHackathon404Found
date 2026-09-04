@@ -27,8 +27,8 @@ export default function SignupPage() {
   const [requiresVerification, setRequiresVerification] = useState(false);
 
   React.useEffect(() => {
-    if (!isAuthLoading && isAuthenticated && profile) {
-      if (!profile.onboarding_completed) {
+    if (!isAuthLoading && isAuthenticated) {
+      if (!profile || !profile.onboarding_completed) {
         router.push('/onboarding');
       } else {
         router.push('/dashboard');

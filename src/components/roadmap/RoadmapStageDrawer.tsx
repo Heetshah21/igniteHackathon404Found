@@ -212,13 +212,13 @@ export const RoadmapStageDrawer: React.FC<RoadmapStageDrawerProps> = ({
 
             <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-700 font-medium">
               <span className="px-2 py-0.5 bg-white rounded-md border border-blue-100 font-bold">
-                📍 {profile?.location || 'Nashik'}, {profile?.state || 'Maharashtra'}
+                📍 {profile?.location ? `${profile.location}, ${profile.state || 'India'}` : (profile?.state || 'India')}
               </span>
               <span className="px-2 py-0.5 bg-white rounded-md border border-blue-100 font-bold">
-                🎯 {career?.title || profile?.career_goal || 'Software Engineer'}
+                🎯 {career?.title || profile?.career_goal || 'Career Track'}
               </span>
               <span className="px-2 py-0.5 bg-white rounded-md border border-blue-100 font-bold text-[#0B7A48]">
-                💰 Family Budget: {profile?.family_income ? 'Under ₹2.5L/yr' : 'Subsidized Plan'}
+                💰 Family Budget: {profile?.family_income ? 'Under ₹2.5L/yr' : 'Standard Plan'}
               </span>
             </div>
           </div>

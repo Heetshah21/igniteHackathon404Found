@@ -5,7 +5,16 @@ import { getSafeRedirectUrl } from '@/lib/auth/safe-redirect';
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
+  const token_hash = searchParams.get('token_hash');
+  const type = searchParams.get('type');
   const next = searchParams.get('next');
+
+  // Forward token_hash email confirmation requests to dedicated /auth/confirm route
+  if (token_hash && type) {
+    return NextResponse.redirect(
+      `${origin}/auth/confirm?token_hash=${encodeURIComponent(token_hash)}&type=${encodeURIComponent(type)}`
+    );
+  }
 
   if (code) {
     try {

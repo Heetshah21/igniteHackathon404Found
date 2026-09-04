@@ -46,10 +46,9 @@ export default function DashboardPage() {
 
   // Current student career info
   const currentCareer = useMemo(() => {
-    if (dbCareers.length === 0) return { id: 'software-engineer', title: 'Software Engineer', slug: 'software-engineer', description: '', branch: [], icon: '💻' };
+    if (dbCareers.length === 0) return { id: 'general', title: 'Career Exploration', slug: 'general', description: '', branch: [], icon: '🎯' };
     return (
-      dbCareers.find((c) => c.id === profile?.career_goal_id) ||
-      dbCareers.find((c) => c.slug === 'software-engineer') ||
+      (profile?.career_goal_id ? dbCareers.find((c) => c.id === profile.career_goal_id) : undefined) ||
       dbCareers[0]
     );
   }, [dbCareers, profile?.career_goal_id]);

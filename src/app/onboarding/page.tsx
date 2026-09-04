@@ -112,19 +112,15 @@ export default function OnboardingPage() {
   const [educationLevel, setEducationLevel] = useState('12th');
   const [schoolCollege, setSchoolCollege] = useState('');
   const [branch, setBranch] = useState('science');
-  const [percentage, setPercentage] = useState<number | string>(82);
-  const [familyIncome, setFamilyIncome] = useState('1-2.5-lakh');
-  const [category, setCategory] = useState('OBC');
+  const [percentage, setPercentage] = useState<number | string>('');
+  const [familyIncome, setFamilyIncome] = useState('below-1-lakh');
+  const [category, setCategory] = useState('General');
   const [marksheetFilename, setMarksheetFilename] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const [interests, setInterests] = useState<string[]>([
-    'Technology',
-    'Programming & Coding',
-    'Artificial Intelligence',
-  ]);
+  const [interests, setInterests] = useState<string[]>([]);
 
-  const [careerGoalId, setCareerGoalId] = useState('software-engineer');
+  const [careerGoalId, setCareerGoalId] = useState('');
   const [dbCareers, setDbCareers] = useState<Career[]>([]);
 
   useEffect(() => {
@@ -133,19 +129,19 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     if (profile) {
-      setName(profile.name || '');
-      setLocation(profile.location || 'Nashik');
-      setState(profile.state || 'Maharashtra');
-      setGender(profile.gender || 'male');
-      setRuralUrban(profile.rural_urban || 'rural');
-      setEducationLevel(profile.education_level || '12th');
-      setSchoolCollege(profile.school_college || 'Shivaji Vidya Mandir');
-      setBranch(profile.branch || 'science');
-      setPercentage(profile.percentage || 82);
-      setFamilyIncome(profile.family_income || '1-2.5-lakh');
-      setCategory(profile.category || 'OBC');
+      if (profile.name) setName(profile.name);
+      if (profile.location) setLocation(profile.location);
+      if (profile.state) setState(profile.state);
+      if (profile.gender) setGender(profile.gender);
+      if (profile.rural_urban) setRuralUrban(profile.rural_urban);
+      if (profile.education_level) setEducationLevel(profile.education_level);
+      if (profile.school_college) setSchoolCollege(profile.school_college);
+      if (profile.branch) setBranch(profile.branch);
+      if (profile.percentage !== undefined && profile.percentage !== null) setPercentage(profile.percentage);
+      if (profile.family_income) setFamilyIncome(profile.family_income);
+      if (profile.category) setCategory(profile.category);
       if (profile.marksheet_filename) setMarksheetFilename(profile.marksheet_filename);
-      if (profile.interests?.length) setInterests(profile.interests);
+      if (profile.interests && profile.interests.length > 0) setInterests(profile.interests);
       if (profile.career_goal_id) setCareerGoalId(profile.career_goal_id);
     }
   }, [profile]);
@@ -176,21 +172,21 @@ export default function OnboardingPage() {
     const selectedCareer = dbCareers.find((c: Career) => c.id === careerGoalId);
 
     await updateProfile({
-      name: name.trim() || 'Student',
-      location: location.trim() || 'Maharashtra',
+      name: name.trim() || profile?.name || 'Student',
+      location: location.trim(),
       state,
       gender,
       rural_urban: ruralUrban,
       education_level: educationLevel,
-      school_college: schoolCollege.trim() || 'School / College',
+      school_college: schoolCollege.trim(),
       branch,
-      percentage: Number(percentage) || 75,
+      percentage: percentage !== '' ? Number(percentage) : undefined,
       family_income: familyIncome,
       category,
       interests,
       marksheet_filename: marksheetFilename || undefined,
-      career_goal_id: careerGoalId,
-      career_goal: selectedCareer?.title || 'Software Engineer',
+      career_goal_id: careerGoalId || undefined,
+      career_goal: selectedCareer?.title || undefined,
       onboarding_completed: true,
     });
 
@@ -266,7 +262,7 @@ export default function OnboardingPage() {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Rahul Sharma"
+                    placeholder="e.g., Aarav Sharma"
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#0F1B3D] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   />
                 </div>
@@ -418,7 +414,7 @@ export default function OnboardingPage() {
                     max="100"
                     value={percentage}
                     onChange={(e) => setPercentage(e.target.value)}
-                    placeholder="82"
+                    placeholder="e.g., 75"
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[#101D35] placeholder-slate-400 focus:outline-hidden focus:bg-white focus:ring-2 focus:ring-[#2563EB] text-sm transition"
                   />
                 </div>

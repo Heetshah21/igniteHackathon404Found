@@ -44,6 +44,12 @@ export default function RoadmapPage() {
     profile?.career_goal_id || 'software-engineer'
   );
 
+  useEffect(() => {
+    if (profile?.career_goal_id) {
+      setSelectedCareerId(profile.career_goal_id);
+    }
+  }, [profile?.career_goal_id]);
+
   const selectedCareer = useMemo(() => {
     if (dbCareers.length === 0) return { id: 'software-engineer', title: 'Software Engineer', slug: 'software-engineer', description: '', branch: [], icon: '💻' };
     return dbCareers.find((c) => c.id === selectedCareerId) || dbCareers[0];

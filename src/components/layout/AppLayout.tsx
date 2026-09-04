@@ -333,8 +333,10 @@ export const AppLayout: React.FC<{
     if (!isLoading && !isPublicPage) {
       if (!isAuthenticated) {
         router.push(`/login?next=${encodeURIComponent(pathname)}`);
-      } else if (profile && !profile.onboarding_completed) {
-        router.push('/onboarding');
+      } else if (!profile || !profile.onboarding_completed) {
+        if (pathname !== '/onboarding') {
+          router.push('/onboarding');
+        }
       }
     }
   }, [isLoading, isAuthenticated, profile, pathname, router, isPublicPage]);
@@ -348,11 +350,12 @@ export const AppLayout: React.FC<{
     );
   }
 
-  if (!isPublicPage && (!isAuthenticated || (profile && !profile.onboarding_completed))) {
+  const needsOnboarding = isAuthenticated && (!profile || !profile.onboarding_completed);
+  if (!isPublicPage && (!isAuthenticated || (needsOnboarding && pathname !== '/onboarding'))) {
     return (
       <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center">
         <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-sm font-semibold text-slate-500">Redirecting...</p>
+        <p className="text-sm font-semibold text-slate-500">Redirecting to onboarding...</p>
       </div>
     );
   }

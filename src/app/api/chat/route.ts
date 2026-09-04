@@ -177,15 +177,15 @@ export async function POST(req: NextRequest) {
       const studentContext = `
 Current Student Context:
 - Name: ${profile?.name || 'Student'}
-- Education: ${profile?.education_level || '12th'}
-- Branch: ${profile?.branch || 'Science'}
-- Percentage: ${profile?.percentage || 80}%
-- Location/State: ${profile?.location || 'Nashik'}, ${profile?.state || 'Maharashtra'}
-- Family Income: ${profile?.family_income || '1-2.5 Lakh'}
-- Category: ${profile?.category || 'General'}
-- Career Goal: ${profile?.career_goal || 'Software Engineer'}
-- Interests: ${profile?.interests?.join(', ') || 'Technology'}
-- Skills: ${profile?.skills?.join(', ') || 'Python basics'}
+- Education: ${profile?.education_level || 'Not specified'}
+- Branch: ${profile?.branch || 'Not specified'}
+- Percentage: ${profile?.percentage ? `${profile.percentage}%` : 'Not specified'}
+- Location/State: ${[profile?.location, profile?.state].filter(Boolean).join(', ') || 'Not specified'}
+- Family Income: ${profile?.family_income || 'Not specified'}
+- Category: ${profile?.category || 'Not specified'}
+- Career Goal: ${profile?.career_goal || 'Not specified'}
+- Interests: ${profile?.interests?.length ? profile.interests.join(', ') : 'Not specified'}
+- Skills: ${profile?.skills?.length ? profile.skills.join(', ') : 'Not specified'}
 `;
 
       const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {

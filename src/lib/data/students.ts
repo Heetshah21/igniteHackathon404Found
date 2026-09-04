@@ -1,6 +1,10 @@
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import { StudentProfile } from '@/types';
 
+/**
+ * Fetch a student profile strictly matching the authenticated user's ID.
+ * Never returns another user's profile, the first row, or a static demo fallback.
+ */
 export async function getStudentProfileByUserId(userId: string): Promise<StudentProfile | null> {
   if (!isSupabaseConfigured() || !userId) return null;
 
@@ -10,7 +14,7 @@ export async function getStudentProfileByUserId(userId: string): Promise<Student
     // Verify session user matches requested userId
     const { data: { user } } = await supabase.auth.getUser();
     if (!user || user.id !== userId) {
-      console.warn('Security check: request user does not match authenticated session.');
+      console.warn('Security check: requested userId does not match authenticated session.');
       return null;
     }
 
@@ -37,6 +41,10 @@ export async function getStudentProfileByUserId(userId: string): Promise<Student
   }
 }
 
+/**
+ * Update the active student profile strictly for the authenticated user's ID.
+ * Enforces ownership by tying user_id directly to the session's auth.uid().
+ */
 export async function updateStudentProfile(userId: string, updates: Partial<StudentProfile>): Promise<StudentProfile | null> {
   if (!isSupabaseConfigured() || !userId) return null;
 
@@ -50,16 +58,16 @@ export async function updateStudentProfile(userId: string, updates: Partial<Stud
       return null;
     }
 
-    // Build payload using authenticated user.id and ensure NOT NULL columns are present
+    // Build payload ensuring user_id is ALWAYS the authenticated user's ID
     const payload: Record<string, any> = {
-      user_id: user.id,
+      ...updates,
+      user_id: user.id, // Strictly overwrite user_id with auth user.id
       email: user.email || updates.email || '',
       name: updates.name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Student',
-      ...updates,
       updated_at: new Date().toISOString(),
     };
 
-    // Remove primary key 'id' if passed to avoid ID conflict
+    // Remove primary key 'id' to let DB handle it or preserve existing
     delete payload.id;
 
     // Clean undefined keys
@@ -79,7 +87,7 @@ export async function updateStudentProfile(userId: string, updates: Partial<Stud
       return updateData as StudentProfile;
     }
 
-    // If update returned no row (e.g. initial profile creation), perform upsert
+    // If update returned no row (e.g. initial profile creation before trigger), perform upsert
     const { data, error } = await supabase
       .from('profiles')
       .upsert(payload, { onConflict: 'user_id' })

@@ -40,7 +40,7 @@ export default function ResumePage() {
         degree: profile?.education_level ? `${profile.education_level} ${profile.branch ? `(${profile.branch})` : ''}` : 'Secondary / Higher Secondary Education',
         institution: profile?.school_college || 'School / Institution Name',
         year: '2024 - 2026',
-        score: profile?.percentage ? `${profile.percentage}%` : '80%',
+        score: profile?.percentage ? `${profile.percentage}%` : '',
       },
     ],
     skills: profile?.skills && profile.skills.length > 0 ? profile.skills : [

@@ -16,6 +16,7 @@ const ALLOWED_PREFIXES = [
   '/resume',
   '/opportunities',
   '/chat',
+  '/auth/confirm',
 ];
 
 const DEFAULT_REDIRECT = '/dashboard';
