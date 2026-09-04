@@ -15,14 +15,19 @@ import {
   XCircle,
   ExternalLink,
   Search,
-  Filter,
   Sparkles,
   Calendar,
   Building,
   AlertCircle,
-  HelpCircle,
 } from 'lucide-react';
 
+const glassCard: React.CSSProperties = {
+  background: 'rgba(255,255,255,0.07)',
+  backdropFilter: 'blur(20px) saturate(180%)',
+  WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+  border: '1px solid rgba(255,255,255,0.13)',
+  boxShadow: '0 8px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.15)',
+};
 
 export default function ScholarshipsPage() {
   const { profile, language } = useStudent();
@@ -38,16 +43,13 @@ export default function ScholarshipsPage() {
     getScholarships().then(setDbScholarships);
   }, []);
 
-  // Evaluate all scholarships against current student profile
   const evaluatedScholarships = useMemo(() => {
     return matchScholarships(dbScholarships, profile || {});
   }, [dbScholarships, profile]);
 
-  // Filter list
   const filteredList = useMemo(() => {
     return evaluatedScholarships.filter(({ item, eligibilityResult }) => {
       if (!item) return false;
-      // Search
       if (searchTerm.trim()) {
         const term = searchTerm.toLowerCase();
         const matchesName = item.name?.toLowerCase().includes(term) ?? false;
@@ -55,61 +57,63 @@ export default function ScholarshipsPage() {
         const matchesTags = (item.tags ?? []).some((t) => t?.toLowerCase().includes(term));
         if (!matchesName && !matchesProvider && !matchesTags) return false;
       }
-
-      // State
       if (filterState !== 'all') {
-        if (item.states && item.states.length > 0 && !item.states.includes(filterState)) {
-          return false;
-        }
+        if (item.states && item.states.length > 0 && !item.states.includes(filterState)) return false;
       }
-
-      // Education Level
       if (filterEducation !== 'all') {
-        if (
-          item.education_levels &&
-          item.education_levels.length > 0 &&
-          !item.education_levels.includes(filterEducation)
-        ) {
-          return false;
-        }
+        if (item.education_levels && item.education_levels.length > 0 && !item.education_levels.includes(filterEducation)) return false;
       }
-
-      // Eligible toggle
-      if (showOnlyEligible && (!eligibilityResult || !eligibilityResult.eligible)) {
-        return false;
-      }
-
+      if (showOnlyEligible && (!eligibilityResult || !eligibilityResult.eligible)) return false;
       return true;
     });
   }, [evaluatedScholarships, searchTerm, filterState, filterEducation, showOnlyEligible]);
 
-
   const eligibleCount = evaluatedScholarships.filter((s) => s.eligibilityResult?.eligible).length;
 
+  const inputStyle: React.CSSProperties = {
+    background: 'rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,0.14)',
+    color: 'white',
+  };
 
   return (
     <AppLayout>
-      <div className="space-y-8 pb-12">
+      {/* Ambient orb */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+        <div className="glow-orb w-80 h-80 top-0 right-1/4" style={{ background: '#FCD34D', opacity: 0.06 }} />
+      </div>
+
+      <div className="relative z-10 space-y-8 pb-12">
         {/* Header Banner */}
-        <div className="rounded-2xl bg-white p-6 sm:p-8 text-[#0F1B3D] shadow-[var(--shadow-card)] border border-slate-200">
+        <div className="rounded-2xl p-6 sm:p-8" style={glassCard}>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
+              <div
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold"
+                style={{ background: 'rgba(252,211,77,0.15)', border: '1px solid rgba(252,211,77,0.35)', color: '#FCD34D' }}
+              >
                 <GraduationCap className="w-3.5 h-3.5" />
                 <span>{t.scholarships.badge}</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#0F1B3D]">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
                 {t.scholarships.title}
               </h1>
-              <p className="text-slate-600 text-xs sm:text-sm max-w-2xl">
+              <p className="text-white/55 text-xs sm:text-sm max-w-2xl">
                 {t.scholarships.subtitle}
               </p>
             </div>
 
             <div className="flex items-center gap-3 self-start md:self-auto">
-              <div className="px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200 text-center">
-                <span className="text-2xl font-black text-amber-700">{eligibleCount}</span>
-                <span className="block text-[11px] text-amber-800 font-bold uppercase">
+              <div
+                className="px-4 py-3 rounded-2xl text-center"
+                style={{
+                  background: 'rgba(252,211,77,0.15)',
+                  border: '1px solid rgba(252,211,77,0.35)',
+                  boxShadow: '0 0 20px rgba(252,211,77,0.10)',
+                }}
+              >
+                <span className="text-2xl font-black" style={{ color: '#FCD34D' }}>{eligibleCount}</span>
+                <span className="block text-[11px] font-bold uppercase" style={{ color: 'rgba(252,211,77,0.70)' }}>
                   {t.scholarships.eligibleBadge}
                 </span>
               </div>
@@ -118,37 +122,47 @@ export default function ScholarshipsPage() {
         </div>
 
         {/* Filters and Search Bar */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs space-y-4">
+        <div className="rounded-2xl p-4 sm:p-5 space-y-4" style={glassCard}>
           <div className="flex flex-col md:flex-row gap-3">
             {/* Search Input */}
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+              <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-white/40" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={t.scholarships.searchPlaceholder}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-400 focus:bg-white transition"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm placeholder-white/30 focus:outline-none transition"
+                style={inputStyle}
+                onFocus={e => {
+                  e.currentTarget.style.borderColor = 'rgba(252,211,77,0.50)';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(252,211,77,0.12)';
+                }}
+                onBlur={e => {
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               />
             </div>
 
-            {/* State Filter */}
+            {/* Dropdowns */}
             <div className="flex gap-2">
               <select
                 value={filterState}
                 onChange={(e) => setFilterState(e.target.value)}
-                className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                className="px-3 py-2 rounded-xl text-xs font-semibold focus:outline-none transition"
+                style={inputStyle}
               >
                 <option value="all">{t.scholarships.allStates}</option>
                 <option value="Maharashtra">Maharashtra</option>
                 <option value="Karnataka">Karnataka</option>
               </select>
 
-              {/* Education Level Filter */}
               <select
                 value={filterEducation}
                 onChange={(e) => setFilterEducation(e.target.value)}
-                className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-amber-400"
+                className="px-3 py-2 rounded-xl text-xs font-semibold focus:outline-none transition"
+                style={inputStyle}
               >
                 <option value="all">{t.scholarships.allLevels}</option>
                 <option value="10th">10th Standard</option>
@@ -160,17 +174,18 @@ export default function ScholarshipsPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
-            <label className="flex items-center gap-2 font-semibold text-slate-700 cursor-pointer">
+          <div className="flex items-center justify-between pt-1" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <label className="flex items-center gap-2 font-semibold text-white/70 cursor-pointer text-xs">
               <input
                 type="checkbox"
                 checked={showOnlyEligible}
                 onChange={(e) => setShowOnlyEligible(e.target.checked)}
-                className="rounded text-amber-600 focus:ring-amber-500 w-4 h-4"
+                className="rounded w-4 h-4"
+                style={{ accentColor: 'var(--lime-green)' }}
               />
               <span>{t.scholarships.onlyEligible}</span>
             </label>
-            <span className="text-slate-500 font-medium">
+            <span className="text-xs text-white/40 font-medium">
               Showing {filteredList.length} of {dbScholarships.length}
             </span>
           </div>
@@ -186,69 +201,70 @@ export default function ScholarshipsPage() {
             return (
               <div
                 key={sch.id}
-                className={`bg-white rounded-3xl p-6 border transition space-y-4 shadow-xs hover:shadow-md ${
-                  isEligible
-                    ? 'border-emerald-300 ring-1 ring-emerald-400/30'
-                    : 'border-slate-200'
-                }`}
+                className="rounded-3xl p-6 space-y-4 transition"
+                style={{
+                  background: isEligible ? 'rgba(163,230,53,0.06)' : 'rgba(255,255,255,0.06)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: isEligible ? '1px solid rgba(163,230,53,0.30)' : '1px solid rgba(255,255,255,0.11)',
+                  boxShadow: isEligible
+                    ? '0 8px 32px rgba(0,0,0,0.25), 0 0 20px rgba(163,230,53,0.08)'
+                    : '0 4px 16px rgba(0,0,0,0.20)',
+                }}
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                   <div className="space-y-1.5 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-black uppercase px-2.5 py-1 rounded-md bg-amber-100 text-amber-900 border border-amber-200">
+                      <span
+                        className="text-xs font-black uppercase px-2.5 py-1 rounded-md"
+                        style={{ background: 'rgba(252,211,77,0.15)', color: '#FCD34D', border: '1px solid rgba(252,211,77,0.30)' }}
+                      >
                         💰 {sch.amount || 'Financial Assistance'}
                       </span>
                       {isEligible ? (
-                        <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span
+                          className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1"
+                          style={{ background: 'rgba(163,230,53,0.18)', color: 'var(--lime-green)', border: '1px solid rgba(163,230,53,0.35)' }}
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>{t.scholarships.eligibleBadge}</span>
                         </span>
                       ) : (
-                        <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                        <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-white/10 text-white/50">
                           Partial Match
                         </span>
                       )}
                       {sch.states && sch.states.length > 0 && (
-                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md"
+                          style={{ background: 'rgba(129,140,248,0.15)', color: '#A78BFA', border: '1px solid rgba(129,140,248,0.30)' }}>
                           📍 {sch.states.join(', ')}
                         </span>
                       )}
                     </div>
 
                     <div className="flex items-center justify-between gap-3 flex-wrap">
-                      <h3 className="text-base sm:text-lg font-extrabold text-slate-900">
-                        {sch.name}
-                      </h3>
+                      <h3 className="text-base sm:text-lg font-extrabold text-white">{sch.name}</h3>
                       <AudioButton
                         id={`sch-audio-${sch.id}`}
-                        text={getScholarshipSpeech(
-                          sch.name,
-                          sch.provider,
-                          sch.amount,
-                          sch.deadline,
-                          matchedRules.map((r) => r.label)
-                        )}
+                        text={getScholarshipSpeech(sch.name, sch.provider, sch.amount, sch.deadline, matchedRules.map((r) => r.label))}
                         label={t.common.listen}
                         variant="secondary"
                         size="xs"
                         ariaLabel={`Listen to scholarship details for ${sch.name}`}
                       />
                     </div>
-                    <p className="text-xs text-slate-500 font-semibold flex items-center gap-1">
+                    <p className="text-xs text-white/50 font-semibold flex items-center gap-1">
                       <Building className="w-3.5 h-3.5" />
                       <span>{t.common.provider}: {sch.provider}</span>
                     </p>
-                    <p className="text-xs text-slate-600 leading-relaxed mt-1">
-                      {sch.description}
-                    </p>
+                    <p className="text-xs text-white/55 leading-relaxed mt-1">{sch.description}</p>
                   </div>
-
 
                   {/* Apply Button & Deadline */}
                   <div className="flex sm:flex-col items-center sm:items-end justify-between gap-3 shrink-0">
                     {sch.deadline && (
-                      <div className="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                      <div className="text-[11px] font-semibold text-white/40 flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5" />
                         <span>{t.common.deadline}: {sch.deadline}</span>
                       </div>
                     )}
@@ -256,7 +272,7 @@ export default function ScholarshipsPage() {
                       href={sch.application_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-5 py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition flex items-center gap-1.5"
+                      className="px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 btn-lime transition"
                     >
                       <span>{t.scholarships.applyOnline}</span>
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -264,34 +280,37 @@ export default function ScholarshipsPage() {
                   </div>
                 </div>
 
-                {/* Why You May Qualify / Rule Evaluation Box */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-                  <div className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                {/* Why You May Qualify Box */}
+                <div
+                  className="p-4 rounded-2xl space-y-2"
+                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+                >
+                  <div className="text-xs font-bold flex items-center justify-between text-white">
                     <span className="flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      <Sparkles className="w-3.5 h-3.5" style={{ color: '#FCD34D' }} />
                       <span>{t.scholarships.whyQualify}</span>
                     </span>
-                    <span className="text-[11px] font-semibold text-slate-500">
-                      {t.common.basedOnProfile}
-                    </span>
+                    <span className="text-[11px] font-semibold text-white/40">{t.common.basedOnProfile}</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
                     {matchedRules.map((rule, rIdx) => (
                       <div
                         key={rIdx}
-                        className="flex items-center gap-2 p-2 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-900 font-medium"
+                        className="flex items-center gap-2 p-2 rounded-xl font-medium"
+                        style={{ background: 'rgba(163,230,53,0.10)', border: '1px solid rgba(163,230,53,0.22)', color: 'rgba(163,230,53,0.90)' }}
                       >
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: 'var(--lime-green)' }} />
                         <span>{rule.label}</span>
                       </div>
                     ))}
                     {failedRules.map((rule, rIdx) => (
                       <div
                         key={rIdx}
-                        className="flex items-center gap-2 p-2 rounded-xl bg-rose-50/80 border border-rose-200 text-rose-900 font-medium"
+                        className="flex items-center gap-2 p-2 rounded-xl font-medium"
+                        style={{ background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.22)', color: '#FCA5A5' }}
                       >
-                        <XCircle className="w-4 h-4 text-rose-500 shrink-0" />
+                        <XCircle className="w-4 h-4 shrink-0 text-red-400" />
                         <span>{rule.label} ({t.scholarships.missingCriteria})</span>
                       </div>
                     ))}
@@ -301,16 +320,16 @@ export default function ScholarshipsPage() {
             );
           })}
 
-
           {filteredList.length === 0 && (
-            <div className="text-center py-12 bg-white rounded-3xl border border-slate-200 p-8 space-y-3">
-              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
-                <AlertCircle className="w-6 h-6" />
+            <div className="text-center py-12 rounded-3xl p-8 space-y-3" style={glassCard}>
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center mx-auto"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)' }}
+              >
+                <AlertCircle className="w-6 h-6 text-white/40" />
               </div>
-              <h3 className="font-bold text-slate-800 text-base">{t.scholarships.noScholarshipsFound}</h3>
-              <p className="text-xs text-slate-500 max-w-md mx-auto">
-                {t.common.tryRemovingFilter}
-              </p>
+              <h3 className="font-bold text-white text-base">{t.scholarships.noScholarshipsFound}</h3>
+              <p className="text-xs text-white/45 max-w-md mx-auto">{t.common.tryRemovingFilter}</p>
             </div>
           )}
         </div>

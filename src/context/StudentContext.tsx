@@ -1,7 +1,20 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+export interface User {
+  id: string;
+  email?: string;
+  user_metadata?: Record<string, any>;
+  app_metadata?: Record<string, any>;
+}
+
+export interface Session {
+  access_token: string;
+  refresh_token?: string;
+  user: User;
+}
+
+export type AuthChangeEvent = 'INITIAL_SESSION' | 'SIGNED_IN' | 'SIGNED_OUT' | 'TOKEN_REFRESHED' | 'USER_UPDATED' | 'PASSWORD_RECOVERY' | string;
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import { StudentProfile } from '@/types';
 import { getStudentProfileByUserId, updateStudentProfile } from '@/lib/data/students';
@@ -55,53 +68,6 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [language]);
 
-  // Initialize Supabase Auth Session
-  useEffect(() => {
-    if (!isSupabaseConfigured()) {
-      setIsLoading(false);
-      return;
-    }
-
-    const supabase = createClient();
-
-    // Fetch initial session
-    supabase.auth.getSession().then(({ data: { session: initSession } }) => {
-      setSession(initSession);
-      setUser(initSession?.user ?? null);
-      setIsAuthenticated(!!initSession);
-
-      if (initSession?.user) {
-        loadProfileForUser(initSession.user.id, initSession.user.email, initSession.user.user_metadata?.full_name);
-      } else {
-        setProfile(null);
-        setIsLoading(false);
-      }
-    });
-
-    // Subscribe to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
-      setIsAuthenticated(!!currentSession);
-
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
-        if (currentSession?.user) {
-          await loadProfileForUser(currentSession.user.id, currentSession.user.email, currentSession.user.user_metadata?.full_name);
-        }
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setSession(null);
-        setIsAuthenticated(false);
-        setProfile(null);
-      }
-      setIsLoading(false);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
   const loadingProfileUserIdRef = React.useRef<string | null>(null);
 
   const loadProfileForUser = async (userId: string, email?: string, name?: string): Promise<StudentProfile | null> => {
@@ -137,6 +103,53 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     return loaded;
   };
+
+  // Initialize Supabase Auth Session
+  useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setIsLoading(false);
+      return;
+    }
+
+    const supabase = createClient();
+
+    // Fetch initial session
+    supabase.auth.getSession().then(({ data: { session: initSession } }: { data: { session: Session | null } }) => {
+      setSession(initSession);
+      setUser(initSession?.user ?? null);
+      setIsAuthenticated(!!initSession);
+
+      if (initSession?.user) {
+        loadProfileForUser(initSession.user.id, initSession.user.email, initSession.user.user_metadata?.full_name);
+      } else {
+        setProfile(null);
+        setIsLoading(false);
+      }
+    });
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, currentSession: Session | null) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      setIsAuthenticated(!!currentSession);
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        if (currentSession?.user) {
+          await loadProfileForUser(currentSession.user.id, currentSession.user.email, currentSession.user.user_metadata?.full_name);
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setSession(null);
+        setIsAuthenticated(false);
+        setProfile(null);
+      }
+      setIsLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const updateProfile = async (data: Partial<StudentProfile>) => {
     if (user && isSupabaseConfigured()) {
