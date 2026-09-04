@@ -28,7 +28,7 @@ import {
 import { AudioLanguageSelector } from '@/components/common/AudioLanguageSelector';
 
 export const Navbar: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSidebar }) => {
-  const { profile, language, setLanguage } = useStudent();
+  const { profile, language, setLanguage, isAuthenticated } = useStudent();
   const t = translations[language];
   const [langMenuOpen, setLangMenuOpen] = useState(false);
 
@@ -44,7 +44,7 @@ export const Navbar: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSid
           >
             <Menu className="w-5 h-5" />
           </button>
-          <Link href="/dashboard" className="flex items-center gap-2 group">
+          <Link href={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2 group">
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#2563EB] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform shrink-0">
               <Compass className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
@@ -100,8 +100,8 @@ export const Navbar: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSid
             )}
           </div>
 
-          {/* Student Profile Quick View Badge */}
-          {profile && (
+          {/* Student Profile Quick View Badge or Auth Actions */}
+          {isAuthenticated && profile ? (
             <Link
               href="/profile"
               className="flex items-center gap-2 p-1 sm:pl-2 sm:pr-3 sm:py-1 rounded-full border border-slate-200 bg-white hover:bg-slate-50 transition text-left shrink-0"
@@ -120,7 +120,22 @@ export const Navbar: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSid
                 </div>
               </div>
             </Link>
-          )}
+          ) : !isAuthenticated ? (
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Link
+                href="/login"
+                className="px-2.5 sm:px-3 py-1.5 text-xs font-bold text-slate-700 hover:text-[#1769FF] transition"
+              >
+                {t.nav.login || 'Sign In'}
+              </Link>
+              <Link
+                href="/signup"
+                className="hidden sm:inline-flex px-3 py-1.5 text-xs font-bold text-white bg-[#1769FF] hover:bg-blue-600 rounded-xl shadow-xs transition"
+              >
+                Sign Up
+              </Link>
+            </div>
+          ) : null}
         </div>
       </div>
     </header>
@@ -129,7 +144,7 @@ export const Navbar: React.FC<{ onToggleSidebar?: () => void }> = ({ onToggleSid
 
 export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
-  const { language, profile, logout } = useStudent();
+  const { language, profile, isAuthenticated, logout } = useStudent();
   const t = translations[language];
 
   // Handle ESC key to close mobile drawer
@@ -158,94 +173,76 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
   const navItems = [
     { href: '/dashboard', label: t.nav.dashboard, icon: LayoutDashboard, color: 'text-blue-600' },
     { href: '/simulator', label: (t.nav as Record<string, string>).simulator || 'Try Simulator', icon: Briefcase, color: 'text-indigo-600', badge: 'NEW' },
-    { href: '/roadmap', label: t.nav.roadmap, icon: Compass, color: 'text-emerald-600', badge: 'P0' },
-    { href: '/scholarships', label: t.nav.scholarships, icon: GraduationCap, color: 'text-amber-600', badge: 'Eligible' },
-    { href: '/resources', label: t.nav.resources, icon: BookOpen, color: 'text-sky-600' },
+    { href: '/roadmap', label: t.nav.roadmap, icon: Compass, color: 'text-emerald-600' },
+    { href: '/scholarships', label: t.nav.scholarships, icon: GraduationCap, color: 'text-amber-600' },
+    { href: '/resources', label: t.nav.resources, icon: BookOpen, color: 'text-blue-600' },
     { href: '/compare', label: t.nav.compare, icon: GitCompare, color: 'text-purple-600' },
-    { href: '/resume', label: t.nav.resume, icon: FileText, color: 'text-teal-600', badge: 'ATS' },
     { href: '/opportunities', label: t.nav.opportunities, icon: Trophy, color: 'text-orange-600' },
+    { href: '/resume', label: t.nav.resume, icon: FileText, color: 'text-teal-600' },
     { href: '/chat', label: t.nav.chat, icon: Bot, color: 'text-pink-600', highlight: true },
   ];
 
   return (
     <>
-      {/* Mobile Backdrop */}
+      {/* Mobile backdrop */}
       {isOpen && (
         <div
           onClick={onClose}
-          className="fixed inset-0 bg-slate-900/30 z-40 lg:hidden backdrop-blur-xs"
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 lg:hidden animate-in fade-in duration-200"
+          aria-hidden="true"
         />
       )}
 
+      {/* Sidebar Drawer */}
       <aside
-        className={`fixed top-16 bottom-0 left-0 z-40 w-64 bg-white border-r border-slate-200/80 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0 shadow-xl' : '-translate-x-full'
+        className={`fixed top-16 bottom-0 left-0 z-40 w-64 bg-white border-r border-slate-200 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
           }`}
       >
-        <div className="p-3 space-y-1 overflow-y-auto">
-          {/* Student Status Summary Card */}
-          {profile && (
-            <div className="mb-3 p-3 rounded-xl bg-blue-50/60 border border-blue-100 text-xs">
-              <div className="flex items-center justify-between text-slate-500 font-medium mb-1">
-                <span>Current Goal:</span>
-                <span className="text-[10px] font-bold text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded">Active</span>
-              </div>
-              <p className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
-                🎯 {profile.career_goal || 'Set Goal'}
-              </p>
-              <div className="mt-2 text-[11px] text-slate-600 flex flex-wrap gap-1">
-                {profile.education_level && (
-                  <span className="px-1.5 py-0.5 bg-white rounded border border-slate-200">
-                    {profile.education_level} {profile.branch ? `• ${profile.branch}` : ''}
-                  </span>
-                )}
-                {profile.state && (
-                  <span className="px-1.5 py-0.5 bg-white rounded border border-slate-200">
-                    📍 {profile.state}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 px-3 py-2">
-            Navigation
+        <div className="p-4 space-y-4 overflow-y-auto flex-1">
+          {/* Mobile drawer header */}
+          <div className="flex items-center justify-between pb-2 border-b border-slate-100 lg:hidden">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Navigation</span>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+              aria-label="Close menu"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
 
-          <nav className="space-y-0.5">
+          {/* Navigation links */}
+          <nav className="space-y-1">
             {navItems.map((item) => {
-              const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
               const Icon = item.icon;
+              const isActive = pathname === item.href;
+
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={onClose}
-                  className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all group ${isActive
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200/80'
-                      : item.highlight
-                        ? 'bg-gradient-to-r from-pink-50/60 to-indigo-50/60 text-slate-700 hover:from-pink-50 hover:to-indigo-50 border border-transparent'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${isActive
+                    ? 'bg-blue-50 text-blue-700 font-bold shadow-xs border border-blue-100'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
                     }`}
                 >
                   <div className="flex items-center gap-3">
                     <Icon
-                      className={`w-[18px] h-[18px] transition-transform group-hover:scale-105 ${isActive ? 'text-blue-600' : item.color
+                      className={`w-4 h-4 transition-transform group-hover:scale-110 ${isActive ? 'text-blue-700' : item.color
                         }`}
                     />
                     <span>{item.label}</span>
                   </div>
                   {item.badge && (
                     <span
-                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${isActive
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-slate-100 text-slate-600'
+                      className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${isActive
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'bg-slate-100 text-slate-600'
                         }`}
                     >
                       {item.badge}
                     </span>
-                  )}
-                  {item.highlight && !isActive && (
-                    <Sparkles className="w-3.5 h-3.5 text-pink-400" />
                   )}
                 </Link>
               );
@@ -254,68 +251,95 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
         </div>
 
         {/* Bottom profile / onboarding settings & Sign Out */}
-        <div className="p-3 border-t border-slate-100 bg-slate-50/30 space-y-1">
-          <Link
-            href="/profile"
-            onClick={onClose}
-            className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition ${
-              pathname === '/profile'
-                ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                : 'text-slate-600 hover:bg-white hover:text-blue-700 border border-transparent hover:border-slate-200'
-            }`}
-          >
-            <User className="w-4 h-4 text-blue-600" />
-            <div>
-              <div className="font-bold text-slate-700">{t.nav.profile || 'Your Profile'}</div>
-              <div className="text-[10px] text-slate-400">View personal data & status</div>
-            </div>
-          </Link>
+        {isAuthenticated ? (
+          <div className="p-3 border-t border-slate-100 bg-slate-50/30 space-y-1">
+            <Link
+              href="/profile"
+              onClick={onClose}
+              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition ${
+                pathname === '/profile'
+                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                  : 'text-slate-600 hover:bg-white hover:text-blue-700 border border-transparent hover:border-slate-200'
+              }`}
+            >
+              <User className="w-4 h-4 text-blue-600" />
+              <div>
+                <div className="font-bold text-slate-700">{t.nav.profile || 'Your Profile'}</div>
+                <div className="text-[10px] text-slate-400">View personal data & status</div>
+              </div>
+            </Link>
 
-          <Link
-            href="/onboarding"
-            onClick={onClose}
-            className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-white hover:text-blue-700 border border-transparent hover:border-slate-200 transition"
-          >
-            <UserCheck className="w-4 h-4 text-slate-500" />
-            <div>
-              <div className="font-bold text-slate-700">Edit Student Profile</div>
-              <div className="text-[10px] text-slate-400">Change branch, state, marks</div>
-            </div>
-          </Link>
+            <Link
+              href="/onboarding"
+              onClick={onClose}
+              className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-white hover:text-blue-700 border border-transparent hover:border-slate-200 transition"
+            >
+              <UserCheck className="w-4 h-4 text-slate-500" />
+              <div>
+                <div className="font-bold text-slate-700">Edit Student Profile</div>
+                <div className="text-[10px] text-slate-400">Change branch, state, marks</div>
+              </div>
+            </Link>
 
-          <button
-            onClick={() => {
-              onClose();
-              logout();
-            }}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition cursor-pointer"
-          >
-            <LogOut className="w-4 h-4 text-rose-500" />
-            <span className="font-bold">{t.nav.logout}</span>
-          </button>
-        </div>
+            <button
+              onClick={() => {
+                onClose();
+                logout();
+              }}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition cursor-pointer"
+            >
+              <LogOut className="w-4 h-4 text-rose-500" />
+              <span className="font-bold">{t.nav.logout}</span>
+            </button>
+          </div>
+        ) : (
+          <div className="p-3 border-t border-slate-100 bg-slate-50/30 space-y-2">
+            <Link
+              href="/login"
+              onClick={onClose}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-blue-600 transition"
+            >
+              <User className="w-4 h-4 text-[#2563EB]" />
+              <span>{t.nav.login || 'Sign In'}</span>
+            </Link>
+            <Link
+              href="/signup"
+              onClick={onClose}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-white bg-[#2563EB] hover:bg-blue-600 transition shadow-xs"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>Sign Up</span>
+            </Link>
+          </div>
+        )}
       </aside>
     </>
   );
 };
 
-export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AppLayout: React.FC<{
+  children: React.ReactNode;
+  requireAuth?: boolean;
+}> = ({ children, requireAuth = true }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated, isLoading, profile } = useStudent();
 
+  // Root landing page is public and never forces redirect
+  const isPublicPage = !requireAuth || pathname === '/';
+
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && !isPublicPage) {
       if (!isAuthenticated) {
         router.push(`/login?next=${encodeURIComponent(pathname)}`);
       } else if (profile && !profile.onboarding_completed) {
         router.push('/onboarding');
       }
     }
-  }, [isLoading, isAuthenticated, profile, pathname, router]);
+  }, [isLoading, isAuthenticated, profile, pathname, router, isPublicPage]);
 
-  if (isLoading) {
+  if (isLoading && !isPublicPage) {
     return (
       <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center">
         <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4" />
@@ -324,7 +348,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
     );
   }
 
-  if (!isAuthenticated || (profile && !profile.onboarding_completed)) {
+  if (!isPublicPage && (!isAuthenticated || (profile && !profile.onboarding_completed))) {
     return (
       <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center">
         <div className="w-10 h-10 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4" />

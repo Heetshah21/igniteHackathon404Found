@@ -47,6 +47,8 @@ export async function middleware(request: NextRequest) {
   // List of protected routes that require authentication
   const protectedRoutes = [
     '/dashboard',
+    '/profile',
+    '/simulator',
     '/onboarding',
     '/resume',
     '/roadmap',

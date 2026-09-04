@@ -66,7 +66,7 @@ export default function HomePage() {
   ];
 
   return (
-    <AppLayout>
+    <AppLayout requireAuth={false}>
       <div className="space-y-12 sm:space-y-16 pb-12">
 
         {/* ============================================================ */}
