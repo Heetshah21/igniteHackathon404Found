@@ -24,6 +24,7 @@ export const institutions: Institution[] = [
     website_url: 'https://kthmcollege.ac.in',
     rating: 4.6,
     admission_process: 'State 11th Centralized Online Admission (CAP round after 10th Board results).',
+    entrance_exam_exempt: true,
   },
   {
     id: 'inst-2',
@@ -47,6 +48,7 @@ export const institutions: Institution[] = [
     website_url: 'https://bykcollege.com',
     rating: 4.5,
     admission_process: 'State FYJC centralized online merit list.',
+    entrance_exam_exempt: true,
   },
   {
     id: 'inst-3',
@@ -70,6 +72,7 @@ export const institutions: Institution[] = [
     website_url: 'https://hptrykcollege.com',
     rating: 4.4,
     admission_process: 'FYJC Centralized portal with reservation quotas for rural / OBC / EWS categories.',
+    entrance_exam_exempt: true,
   },
   {
     id: 'inst-4',
@@ -93,6 +96,7 @@ export const institutions: Institution[] = [
     website_url: 'https://gpnashik.ac.in',
     rating: 4.7,
     admission_process: 'DTE Maharashtra Centralized Admission Process (CAP) based strictly on 10th percentage.',
+    entrance_exam_exempt: true,
   },
   {
     id: 'inst-5',
@@ -116,6 +120,7 @@ export const institutions: Institution[] = [
     website_url: 'https://gppune.ac.in',
     rating: 4.8,
     admission_process: 'DTE Maharashtra Online CAP (Girls Quota + General merit).',
+    entrance_exam_exempt: true,
   },
   {
     id: 'inst-6',
@@ -139,6 +144,7 @@ export const institutions: Institution[] = [
     website_url: 'https://fergusson.edu',
     rating: 4.9,
     admission_process: 'Pune Division FYJC Online Merit cutoff ranking.',
+    entrance_exam_exempt: true,
   },
 
   // ── Undergraduate / B.Tech / BCA / Degree Colleges ──────────────────
@@ -164,6 +170,12 @@ export const institutions: Institution[] = [
     website_url: 'https://engg.kkwagh.edu.in',
     rating: 4.6,
     admission_process: 'MHT-CET or JEE Main via State CET Cell Centralized Counseling; direct DSE admission for Diploma holders.',
+    entrance_exam: {
+      exam_name: 'MHT-CET / JEE Main',
+      required_for: 'B.Tech First Year Admission (or DSE merit for Diploma)',
+      admission_route: 'State CET Cell Centralized Admission Process (CAP)',
+      status: 'Required',
+    },
   },
   {
     id: 'inst-8',
@@ -187,6 +199,12 @@ export const institutions: Institution[] = [
     website_url: 'https://kbtcoe.org',
     rating: 4.3,
     admission_process: 'State CET Cell CAP round through MHT-CET score.',
+    entrance_exam: {
+      exam_name: 'MHT-CET',
+      required_for: 'B.Tech Engineering Admission',
+      admission_route: 'State CET Cell CAP round counselling',
+      status: 'Required',
+    },
   },
   {
     id: 'inst-9',
@@ -210,6 +228,12 @@ export const institutions: Institution[] = [
     website_url: 'https://coep.org.in',
     rating: 4.9,
     admission_process: 'MHT-CET top ranks via Maharashtra CET Cell or DSE for top diploma merit holders.',
+    entrance_exam: {
+      exam_name: 'MHT-CET (99+ percentile) / JEE Main',
+      required_for: 'B.Tech Admission (State Quota & All-India Seats)',
+      admission_route: 'State CET Cell Centralized Admission Process (CAP)',
+      status: 'Required',
+    },
   },
   {
     id: 'inst-10',
@@ -233,6 +257,12 @@ export const institutions: Institution[] = [
     website_url: 'https://vjti.ac.in',
     rating: 4.9,
     admission_process: 'MHT-CET cutoff through State CAP portal.',
+    entrance_exam: {
+      exam_name: 'MHT-CET / JEE Main',
+      required_for: 'B.Tech First Year Admission',
+      admission_route: 'Maharashtra State CAP Counseling Portal',
+      status: 'Required',
+    },
   },
   {
     id: 'inst-11',
@@ -256,6 +286,12 @@ export const institutions: Institution[] = [
     website_url: 'https://sndt.ac.in',
     rating: 4.7,
     admission_process: 'Direct university admission based on 12th percentage or MAH-BCA CET.',
+    entrance_exam: {
+      exam_name: 'MAH-B-BCA CET (or 12th Board Merit)',
+      required_for: 'BCA / Technical Degree Admission',
+      admission_route: 'State CET Cell or Direct University Merit Form',
+      status: 'Accepted',
+    },
   },
   {
     id: 'inst-12',
@@ -279,6 +315,12 @@ export const institutions: Institution[] = [
     website_url: 'https://sicsr.ac.in',
     rating: 4.6,
     admission_process: 'SET (Symbiosis Entrance Test) followed by personal interview.',
+    entrance_exam: {
+      exam_name: 'SET (Symbiosis Entrance Test)',
+      required_for: 'BCA Program Admission',
+      admission_route: 'Symbiosis Entrance Test (SET) + Personal Interview',
+      status: 'Required',
+    },
   },
 
   // ── Commerce, Chartered Accountancy & Competitive Exam Training ─────
@@ -304,6 +346,7 @@ export const institutions: Institution[] = [
     website_url: 'https://bmcc.ac.in',
     rating: 4.8,
     admission_process: 'Merit-based admission on 12th Board marks through online portal.',
+    entrance_exam_exempt: true,
   },
   {
     id: 'inst-14',
@@ -327,6 +370,7 @@ export const institutions: Institution[] = [
     website_url: 'https://gisaurangabad.org',
     rating: 4.5,
     admission_process: 'Direct merit list based on 12th marks.',
+    entrance_exam_exempt: true,
   },
   {
     id: 'inst-15',
@@ -350,5 +394,11 @@ export const institutions: Institution[] = [
     website_url: 'https://siac.maharashtra.gov.in',
     rating: 4.9,
     admission_process: 'State-wide Common Entrance Test (CET) conducted by Higher Education Dept Maharashtra.',
+    entrance_exam: {
+      exam_name: 'SIAC State-wide Entrance Test (CET)',
+      required_for: 'Free Residential IAS/MPSC Foundation Batch',
+      admission_route: 'Higher Education Dept Maharashtra State CET',
+      status: 'Required',
+    },
   },
 ];

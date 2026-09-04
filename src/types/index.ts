@@ -208,6 +208,15 @@ export interface ScoredItem<T> {
   eligibilityResult?: EligibilityResult;
 }
 
+// Entrance Examination Requirement
+export interface EntranceExamRequirement {
+  exam_name: string;
+  required_for?: string;
+  admission_route?: string;
+  status?: 'Required' | 'Optional' | 'Accepted' | string;
+  notes?: string;
+}
+
 // Educational Institution & College
 export interface Institution {
   id: string;
@@ -231,6 +240,8 @@ export interface Institution {
   website_url?: string;
   rating?: number;
   admission_process?: string;
+  entrance_exam?: EntranceExamRequirement;
+  entrance_exam_exempt?: boolean;
 }
 
 export interface InstitutionPreferenceFilter {
