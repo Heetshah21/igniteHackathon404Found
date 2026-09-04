@@ -208,18 +208,15 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     try {
       const supabase = createClient();
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-
       const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName || email.split('@')[0],
-          },
-          emailRedirectTo: `${origin}/auth/callback`,
-        },
-      });
+  email,
+  password,
+  options: {
+    data: {
+      full_name: fullName || email.split('@')[0],
+    },
+  },
+});
 
       if (error) {
         const errMsg = error.message.includes('User already registered')
