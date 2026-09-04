@@ -1,7 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { StudentProfile } from '@/types';
 
-// Mock Knowledge Base fallback when no Gemini/OpenAI API key is configured
+const SYSTEM_PROMPT = `You are CareerMitra, an AI career consultant for students in India, especially students from rural and underserved areas.
+
+Your purpose is to help students understand their career and education options and answer their doubts in a simple, practical and encouraging way.
+
+You can help with:
+- Career choices
+- Career paths and roadmaps
+- College and course choices
+- Skills to learn
+- Internships and opportunities
+- Scholarships
+- Government education schemes
+- Resume and interview guidance
+- Higher education
+- Entrance exams
+- Learning resources
+- General education and career doubts
+
+Communication style:
+- Use simple language.
+- Be clear and practical.
+- Avoid unnecessarily complicated technical terms.
+- Give step-by-step guidance when useful.
+- Be supportive but do not make unrealistic promises.
+- If the user asks a simple question, give a concise answer.
+- If the user asks for detailed guidance, provide a structured answer.
+- If appropriate, ask a small number of relevant follow-up questions to personalize the advice.
+
+IMPORTANT ACCURACY RULES:
+- Do not invent scholarships, government schemes, colleges, courses, deadlines, eligibility criteria, salaries, opportunities, or statistics.
+- Do not claim that a student is eligible for a scholarship unless the required eligibility information is available.
+- If you do not know something or the information may have changed, clearly say that the user should verify it from the official source.
+- Never pretend that you have access to information that was not provided to you.
+- Do not present uncertain information as a confirmed fact.
+
+The chatbot is intended to provide career guidance, not professional legal, financial, medical, or other regulated advice.`;
+
+// Mock Knowledge Base fallback when Groq API key is not configured or API fails
 function generateMockResponse(query: string, profile?: Partial<StudentProfile>): string {
   const q = query.toLowerCase();
   const name = profile?.name || 'Student';
@@ -128,12 +165,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
+    const groqApiKey = process.env.GROQ_API_KEY;
+
+    if (!groqApiKey) {
+      console.warn('GROQ_API_KEY not set, using mock response engine.');
+      const reply = generateMockResponse(message, profile);
+      return NextResponse.json({ reply });
+    }
+
     try {
       const studentContext = `
-You are CAREERMitra AI, a compassionate, highly knowledgeable educational and career guidance assistant dedicated to helping rural, Tier-2/3, and underserved students in India (especially Maharashtra and Bharat).
-Your tone is friendly, inspiring, structured, clear, and easy to understand.
-Always provide realistic timelines, state-specific entrance paths (like DSE lateral entry in Maharashtra), and mention free learning resources when relevant.
-
 Current Student Context:
 - Name: ${profile?.name || 'Student'}
 - Education: ${profile?.education_level || '12th'}
@@ -147,36 +188,43 @@ Current Student Context:
 - Skills: ${profile?.skills?.join(', ') || 'Python basics'}
 `;
 
-      const ollamaResponse = await fetch(
-        `${process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434'}/api/chat`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: process.env.OLLAMA_MODEL || 'qwen2.5:7b',
-            stream: false,
-            messages: [
-              {
-                role: 'system',
-                content: `${studentContext}
-Answer clearly and practically. Focus on Indian education, careers, scholarships, exams, and Maharashtra pathways.`,
-              },
-              { role: 'user', content: message },
-            ],
-          }),
-        }
-      );
+      const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${groqApiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-oss-120b',
+          messages: [
+            {
+              role: 'system',
+              content: `${SYSTEM_PROMPT}\n\n${studentContext}`,
+            },
+            {
+              role: 'user',
+              content: message,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 2048,
+          reasoning_format: 'hidden',
+        }),
+      });
 
-      if (!ollamaResponse.ok) {
-        throw new Error(`Ollama request failed: ${ollamaResponse.status}`);
+      if (!groqResponse.ok) {
+        const errorBody = await groqResponse.text();
+        throw new Error(`Groq API request failed (${groqResponse.status}): ${errorBody}`);
       }
 
-      const data = await ollamaResponse.json();
-      const reply = data?.message?.content || generateMockResponse(message, profile);
+      const data = await groqResponse.json();
+      const reply =
+        data?.choices?.[0]?.message?.content ||
+        generateMockResponse(message, profile);
 
       return NextResponse.json({ reply });
     } catch (aiErr) {
-      console.warn('Ollama API failed, falling back to mock response engine', aiErr);
+      console.warn('Groq API call failed, falling back to mock response engine:', aiErr);
       const reply = generateMockResponse(message, profile);
       return NextResponse.json({ reply });
     }
