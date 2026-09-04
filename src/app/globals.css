@@ -2,50 +2,82 @@
 @import "tailwindcss";
 
 /* ============================================================
-   CAREERMitra — Design Token System
+   CAREERMitra — Deep Royal Blue × Lime-Green × 3D Glassmorphism
+   Design Token System
    ============================================================ */
 :root {
-  /* Core palette */
-  --background: #F8FAFC;
-  --foreground: #0F1B3D;
+  /* ── Core Palette ──────────────────────────────────────────── */
+  --royal-blue:          #0033AD;
+  --royal-blue-deep:     #001E7C;
+  --royal-blue-mid:      #0040D0;
+  --royal-blue-light:    #1A4ED8;
+  --royal-blue-muted:    rgba(0, 51, 173, 0.6);
 
-  /* Primary */
-  --primary-blue: #2563EB;
-  --primary-blue-hover: #1D4FD7;
-  --primary-blue-light: #EFF6FF;
-  --primary-blue-50: #EFF6FF;
-  --primary-blue-100: #DBEAFE;
-  --primary-blue-200: #BFDBFE;
+  --lime-green:          #A3E635;
+  --lime-green-hover:    #BEF264;
+  --lime-green-deep:     #84CC16;
+  --lime-green-glow:     rgba(163, 230, 53, 0.4);
 
-  /* Navy */
-  --navy: #0F1B3D;
-  --navy-light: #1E293B;
+  --white:               #FFFFFF;
+  --white-95:            rgba(255, 255, 255, 0.95);
+  --white-80:            rgba(255, 255, 255, 0.80);
+  --white-60:            rgba(255, 255, 255, 0.60);
+  --white-30:            rgba(255, 255, 255, 0.30);
+  --white-15:            rgba(255, 255, 255, 0.15);
+  --white-08:            rgba(255, 255, 255, 0.08);
 
-  /* Success / Mint */
-  --success: #10B981;
-  --success-light: #ECFDF5;
-  --success-border: #A7F3D0;
+  /* ── Background ────────────────────────────────────────────── */
+  --background:          #00258A;
+  --background-deep:     #001166;
+  --foreground:          #FFFFFF;
 
-  /* Warning / Amber */
-  --amber: #D97706;
-  --amber-light: #FFFBEB;
-  --amber-border: #FDE68A;
+  /* ── Legacy aliases (keep existing component refs working) ─── */
+  --primary-blue:        #0033AD;
+  --primary-blue-hover:  #0040D0;
+  --primary-blue-light:  rgba(0, 51, 173, 0.15);
+  --primary-blue-50:     rgba(0, 51, 173, 0.08);
+  --primary-blue-100:    rgba(0, 51, 173, 0.15);
+  --primary-blue-200:    rgba(0, 51, 173, 0.25);
+  --navy:                #000D4A;
+  --navy-light:          #001166;
+  --success:             #A3E635;
+  --success-light:       rgba(163, 230, 53, 0.15);
+  --success-border:      rgba(163, 230, 53, 0.35);
+  --amber:               #FCD34D;
+  --amber-light:         rgba(252, 211, 77, 0.15);
+  --amber-border:        rgba(252, 211, 77, 0.35);
+  --purple:              #818CF8;
+  --purple-light:        rgba(129, 140, 248, 0.15);
+  --orange:              #FB923C;
+  --orange-light:        rgba(251, 146, 60, 0.15);
+  --border-subtle:       rgba(255, 255, 255, 0.12);
+  --border-card:         rgba(255, 255, 255, 0.15);
 
-  /* Purple accent */
-  --purple: #7C3AED;
-  --purple-light: #F5F3FF;
+  /* ── 3D Glassmorphism Shadows ───────────────────────────────── */
+  --glass-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    0 2px 8px  rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 
-  /* Orange accent */
-  --orange: #EA580C;
-  --orange-light: #FFF7ED;
+  --glass-shadow-hover:
+    0 16px 48px rgba(0, 0, 0, 0.45),
+    0 4px 12px  rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.10);
 
-  /* Borders */
-  --border-subtle: #E2E8F0;
-  --border-card: #E2E8F0;
+  --glass-shadow-card:
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 1px 4px  rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.20),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.10);
 
-  /* Shadows */
-  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
-  --shadow-card-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-card:         var(--glass-shadow-card);
+  --shadow-card-hover:   var(--glass-shadow-hover);
+
+  --lime-glow:
+    0 0 20px rgba(163, 230, 53, 0.5),
+    0 0 40px rgba(163, 230, 53, 0.25);
 }
 
 @theme inline {
@@ -63,40 +95,192 @@ html {
 
 body {
   max-width: 100vw;
-  background: var(--background);
+  background: linear-gradient(
+    145deg,
+    #001166 0%,
+    #0033AD 35%,
+    #001E7C 65%,
+    #000D4A 100%
+  );
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
+  min-height: 100vh;
 }
 
 /* ============================================================
-   Scrollbar Polish (thin, subtle)
+   Scrollbar Polish
    ============================================================ */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: rgba(0, 51, 173, 0.15); }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: rgba(163, 230, 53, 0.5);
   border-radius: 999px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+::-webkit-scrollbar-thumb:hover { background: rgba(163, 230, 53, 0.8); }
+
+/* ============================================================
+   Focus Ring Utility
+   ============================================================ */
+.focus-ring { outline: none; }
+.focus-ring:focus-visible {
+  outline: 2px solid var(--lime-green);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 /* ============================================================
-   Focus ring utility
+   3D Glassmorphism Utility Classes
    ============================================================ */
-.focus-ring {
-  outline: none;
+
+/* Primary frosted glass container */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: var(--glass-shadow);
 }
-.focus-ring:focus-visible {
-  outline: 2px solid var(--primary-blue);
-  outline-offset: 2px;
-  border-radius: 8px;
+
+/* Deeper glass for cards */
+.glass-card {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.30),
+    0 2px 8px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(163, 230, 53, 0.30);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.40),
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    0 0 24px rgba(163, 230, 53, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.30),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Light glass for inputs / secondary surfaces */
+.glass-light {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Lime-green glowing CTA */
+.btn-lime {
+  background: var(--lime-green);
+  color: #0A1F00;
+  font-weight: 800;
+  box-shadow:
+    0 4px 14px rgba(163, 230, 53, 0.45),
+    0 1px 3px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.30);
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.btn-lime:hover {
+  background: var(--lime-green-hover);
+  box-shadow:
+    0 8px 28px rgba(163, 230, 53, 0.60),
+    0 2px 6px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.40);
+  transform: translateY(-1px);
+}
+.btn-lime:active { transform: translateY(0); }
+
+/* Floating glow orb (background decoration) */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.25;
+  animation: orb-drift 12s ease-in-out infinite alternate;
+}
+@keyframes orb-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(30px, -20px) scale(1.08); }
+  100% { transform: translate(-15px, 15px) scale(0.95); }
+}
+
+/* Sparkle pulse animation */
+@keyframes sparkle-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.25); }
+}
+.sparkle-animate { animation: sparkle-pulse 2.5s ease-in-out infinite; }
+
+/* Floating card animation */
+@keyframes float-up {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+.float-animate { animation: float-up 4s ease-in-out infinite; }
+
+/* Slide-in fade-in animation */
+@keyframes slide-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.slide-in { animation: slide-fade-in 0.5s ease forwards; }
+
+/* ============================================================
+   Navbar glass override
+   ============================================================ */
+.navbar-glass {
+  background: rgba(0, 17, 102, 0.85);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.30),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ============================================================
+   Sidebar glass
+   ============================================================ */
+.sidebar-glass {
+  background: rgba(0, 13, 74, 0.90);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================================
+   Text utilities
+   ============================================================ */
+.text-lime    { color: var(--lime-green); }
+.text-royal   { color: var(--royal-blue); }
+.text-glass   { color: var(--white-80); }
+.text-glass-muted { color: var(--white-60); }
+
+/* ============================================================
+   Badge
+   ============================================================ */
+.badge-lime {
+  background: rgba(163, 230, 53, 0.18);
+  color: var(--lime-green);
+  border: 1px solid rgba(163, 230, 53, 0.35);
+  box-shadow: 0 0 12px rgba(163, 230, 53, 0.15);
+}
+
+.badge-white {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.90);
+  border: 1px solid rgba(255, 255, 255, 0.20);
 }

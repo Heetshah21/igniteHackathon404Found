@@ -87,16 +87,27 @@ export default function RoadmapPage() {
     );
   }, [selectedCareer?.title, activeRoadmap]);
 
+  const glassCard: React.CSSProperties = {
+    background: 'rgba(255,255,255,0.07)',
+    backdropFilter: 'blur(20px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+    border: '1px solid rgba(255,255,255,0.13)',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.15)',
+  };
+
   return (
     <AppLayout>
       <div className="space-y-8 pb-12">
         {/* Header Banner */}
-        <div className="rounded-2xl bg-white p-6 sm:p-8 text-[#0F1B3D] shadow-[var(--shadow-card)] border border-slate-200">
+        <div className="rounded-2xl p-6 sm:p-8" style={glassCard}>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-[#2563EB] text-xs font-bold">
-                  <Compass className="w-3.5 h-3.5 text-[#2563EB]" />
+                <div
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold"
+                  style={{ background: 'rgba(163,230,53,0.15)', border: '1px solid rgba(163,230,53,0.35)', color: 'var(--lime-green)' }}
+                >
+                  <Compass className="w-3.5 h-3.5" style={{ color: 'var(--lime-green)' }} />
                   <span>{t.roadmap.badge}</span>
                 </div>
                 <AudioButton
@@ -105,14 +116,14 @@ export default function RoadmapPage() {
                   label={t.roadmap.listenToCareer}
                   variant="badge"
                   size="xs"
-                  className="bg-blue-50 hover:bg-blue-100 text-[#2563EB] border-blue-200"
+                  className="bg-white/10 hover:bg-white/15 text-white/80 border-white/20"
                   ariaLabel={`Listen to ${selectedCareer?.title || 'career'} overview`}
                 />
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#0F1B3D]">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
                 {t.roadmap.title}: {selectedCareer?.title || 'Career'}
               </h1>
-              <p className="text-slate-600 text-xs sm:text-sm max-w-2xl">
+              <p className="text-white/55 text-xs sm:text-sm max-w-2xl">
                 {t.roadmap.subtitle}
               </p>
             </div>
@@ -120,7 +131,7 @@ export default function RoadmapPage() {
             {profile?.career_goal_id !== selectedCareer.id && (
               <button
                 onClick={handleSetPrimary}
-                className="self-start md:self-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition cursor-pointer"
+                className="self-start md:self-auto flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer btn-lime"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>{t.roadmap.setPrimaryGoal}</span>
@@ -131,10 +142,10 @@ export default function RoadmapPage() {
 
         {/* Career Selector Horizontal Scroll */}
         <div className="space-y-2">
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+          <label className="block text-xs font-bold uppercase tracking-wider text-white/40">
             {t.roadmap.selectCareerLabel}
           </label>
-          <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-thin">
+          <div className="flex gap-2.5 overflow-x-auto pb-2">
             {dbCareers.map((career: Career) => {
               const isSelected = selectedCareerId === career.id;
               return (
@@ -145,10 +156,17 @@ export default function RoadmapPage() {
                     setActivePathwayIndex(0);
                     setSelectedStep(null);
                   }}
-                  className={`px-3.5 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 border shrink-0 ${isSelected
-                    ? 'bg-[#1769FF] text-white border-[#1769FF] shadow-sm'
-                    : 'bg-white text-slate-700 border-[#E6EBF5] hover:bg-slate-50 hover:border-slate-300'
-                    }`}
+                  className="px-3.5 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 shrink-0"
+                  style={isSelected ? {
+                    background: 'rgba(163,230,53,0.20)',
+                    border: '1px solid rgba(163,230,53,0.45)',
+                    color: 'var(--lime-green)',
+                    boxShadow: '0 0 12px rgba(163,230,53,0.15)',
+                  } : {
+                    background: 'rgba(255,255,255,0.07)',
+                    border: '1px solid rgba(255,255,255,0.13)',
+                    color: 'rgba(255,255,255,0.70)',
+                  }}
                 >
                   <span className="text-base">{career.icon}</span>
                   <span>{career.title}</span>
@@ -159,39 +177,51 @@ export default function RoadmapPage() {
         </div>
 
         {/* Career Quick Overview Card */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-4">
+        <div className="rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4" style={glassCard}>
           <div className="flex items-center gap-3">
-            <span className="text-3xl p-2.5 rounded-2xl bg-emerald-50 border border-emerald-100">
+            <span
+              className="text-3xl p-2.5 rounded-2xl"
+              style={{ background: 'rgba(163,230,53,0.12)', border: '1px solid rgba(163,230,53,0.25)' }}
+            >
               {selectedCareer.icon}
             </span>
             <div>
-              <h3 className="font-extrabold text-slate-900 text-base">{selectedCareer.title}</h3>
-              <p className="text-xs text-slate-500">{selectedCareer.description}</p>
+              <h3 className="font-extrabold text-white text-base">{selectedCareer.title}</h3>
+              <p className="text-xs text-white/50">{selectedCareer.description}</p>
             </div>
           </div>
           <div className="flex items-center gap-4 text-xs font-semibold">
-            <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-center">
-              <span className="text-[10px] text-slate-400 uppercase block font-bold">{t.roadmap.avgPackage}</span>
-              <span className="text-emerald-700 font-extrabold">{selectedCareer.avg_salary}</span>
+            <div
+              className="p-2 rounded-xl text-center"
+              style={{ background: 'rgba(163,230,53,0.10)', border: '1px solid rgba(163,230,53,0.20)' }}
+            >
+              <span className="text-[10px] text-white/40 uppercase block font-bold">{t.roadmap.avgPackage}</span>
+              <span className="font-extrabold" style={{ color: 'var(--lime-green)' }}>{selectedCareer.avg_salary}</span>
             </div>
-            <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-center">
-              <span className="text-[10px] text-slate-400 uppercase block font-bold">{t.roadmap.jobGrowth}</span>
-              <span className="text-indigo-700 font-extrabold">{selectedCareer.growth}</span>
+            <div
+              className="p-2 rounded-xl text-center"
+              style={{ background: 'rgba(129,140,248,0.10)', border: '1px solid rgba(129,140,248,0.20)' }}
+            >
+              <span className="text-[10px] text-white/40 uppercase block font-bold">{t.roadmap.jobGrowth}</span>
+              <span className="font-extrabold text-violet-400">{selectedCareer.growth}</span>
             </div>
-            <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-center">
-              <span className="text-[10px] text-slate-400 uppercase block font-bold">{t.roadmap.difficulty}</span>
-              <span className="text-amber-700 font-extrabold">{selectedCareer.difficulty}</span>
+            <div
+              className="p-2 rounded-xl text-center"
+              style={{ background: 'rgba(252,211,77,0.10)', border: '1px solid rgba(252,211,77,0.20)' }}
+            >
+              <span className="text-[10px] text-white/40 uppercase block font-bold">{t.roadmap.difficulty}</span>
+              <span className="font-extrabold text-amber-400">{selectedCareer.difficulty}</span>
             </div>
           </div>
         </div>
 
-        {/* Pathway Tabs (e.g., B.Tech Path vs Diploma DSE vs BCA/MCA) */}
+        {/* Pathway Tabs */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-base sm:text-lg font-extrabold text-slate-900">
+            <h2 className="text-base sm:text-lg font-extrabold text-white">
               {t.roadmap.availablePathways} ({(careerRoadmaps ?? []).length} {t.roadmap.options})
             </h2>
-            <span className="text-xs text-slate-500">{t.roadmap.clickPathwayHint}</span>
+            <span className="text-xs text-white/40">{t.roadmap.clickPathwayHint}</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -204,24 +234,35 @@ export default function RoadmapPage() {
                     setActivePathwayIndex(idx);
                     setSelectedStep(null);
                   }}
-                  className={`p-4 rounded-2xl text-left border transition ${isActive
-                    ? 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-400 ring-2 ring-emerald-500/20 shadow-sm'
-                    : 'bg-white border-slate-200 hover:bg-slate-50'
-                    }`}
+                  className="p-4 rounded-2xl text-left transition"
+                  style={isActive ? {
+                    background: 'rgba(163,230,53,0.15)',
+                    border: '1px solid rgba(163,230,53,0.40)',
+                    boxShadow: '0 4px 20px rgba(163,230,53,0.12)',
+                  } : {
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.11)',
+                  }}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span
-                      className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${isActive ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'
-                        }`}
+                      className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md"
+                      style={isActive ? {
+                        background: 'rgba(163,230,53,0.25)',
+                        color: 'var(--lime-green)',
+                      } : {
+                        background: 'rgba(255,255,255,0.10)',
+                        color: 'rgba(255,255,255,0.55)',
+                      }}
                     >
                       Pathway #{idx + 1}
                     </span>
-                    <span className="text-xs font-semibold text-slate-500">
+                    <span className="text-xs font-semibold text-white/40">
                       {r?.steps?.length || 0} {t.roadmap.steps}
                     </span>
                   </div>
-                  <h4 className="font-bold text-sm text-slate-900 mt-1">{r?.title || 'Pathway'}</h4>
-                  <p className="text-xs text-slate-500 mt-1 line-clamp-2">{r?.description || ''}</p>
+                  <h4 className="font-bold text-sm text-white mt-1">{r?.title || 'Pathway'}</h4>
+                  <p className="text-xs text-white/45 mt-1 line-clamp-2">{r?.description || ''}</p>
                 </button>
               );
             })}
@@ -229,18 +270,21 @@ export default function RoadmapPage() {
         </div>
 
         {/* Active Pathway Detailed Timeline */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+        <div className="rounded-3xl p-6 sm:p-8 space-y-8" style={glassCard}>
+          <div
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4"
+            style={{ borderBottom: '1px solid rgba(255,255,255,0.10)' }}
+          >
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xl">🗺️</span>
-                <h3 className="text-lg font-extrabold text-slate-900">
+                <h3 className="text-lg font-extrabold text-white">
                   {activeRoadmap?.title || 'Career Pathway'}
                 </h3>
               </div>
-
-              <p className="text-xs text-slate-500 mt-1">
-                {activeRoadmap?.description || 'Detailed steps for your career roadmap'} • <span className="font-semibold text-[#1769FF]">{t.roadmap.clickStageHint}</span>
+              <p className="text-xs text-white/45 mt-1">
+                {activeRoadmap?.description || 'Detailed steps for your career roadmap'} •{' '}
+                <span className="font-semibold" style={{ color: 'var(--lime-green)' }}>{t.roadmap.clickStageHint}</span>
               </p>
             </div>
 
@@ -254,8 +298,15 @@ export default function RoadmapPage() {
             />
           </div>
 
-          {/* Vertical Timeline with visual connectors */}
-          <div className="relative pl-6 sm:pl-10 space-y-8 before:absolute before:left-3 sm:before:left-5 before:top-3 before:bottom-3 before:w-0.5 before:bg-gradient-to-b before:from-emerald-500 before:via-teal-400 before:to-indigo-600">
+          {/* Vertical Timeline */}
+          <div
+            className="relative pl-6 sm:pl-10 space-y-8"
+            style={{ '--tw-gradient-from': '#A3E635' } as React.CSSProperties}
+          >
+            <div
+              className="absolute left-3 sm:left-5 top-3 bottom-3 w-0.5"
+              style={{ background: 'linear-gradient(to bottom, #A3E635, #06B6D4, #818CF8)' }}
+            />
             {(activeRoadmap?.steps ?? []).map((step, idx) => {
               const stepsCount = activeRoadmap?.steps?.length || 0;
               const isLast = idx === stepsCount - 1;
@@ -266,16 +317,30 @@ export default function RoadmapPage() {
                 hi: `चरण ${idx + 1}: ${step?.title || ''}। ${step?.duration ? `समय: ${step.duration}।` : ''} ${step?.description || ''}। ${step?.requirements?.length ? `योग्यता: ${step.requirements.join(', ')}।` : ''} ${step?.tips?.length ? `सुझाव: ${step.tips[0]}` : ''}`,
               };
 
+              const cardStyle: React.CSSProperties = isLast ? {
+                background: 'rgba(163,230,53,0.15)',
+                border: '1px solid rgba(163,230,53,0.40)',
+                boxShadow: '0 8px 32px rgba(163,230,53,0.12)',
+              } : {
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.11)',
+              };
+
               return (
                 <div key={step?.id || idx} className="relative group">
                   {/* Timeline bullet node */}
                   <div
-                    className={`absolute -left-6 sm:-left-10 top-0.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-bold text-xs border-2 shadow-xs transition-transform group-hover:scale-110 ${isLast
-                      ? 'bg-emerald-600 text-white border-white ring-4 ring-emerald-100'
-                      : isFirst
-                        ? 'bg-teal-500 text-white border-white ring-2 ring-teal-100'
-                        : 'bg-white text-slate-700 border-slate-300'
-                      }`}
+                    className="absolute -left-6 sm:-left-10 top-0.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-bold text-xs transition-transform group-hover:scale-110"
+                    style={isLast ? {
+                      background: 'var(--lime-green)',
+                      color: '#0A1F00',
+                      boxShadow: '0 0 14px rgba(163,230,53,0.50)',
+                      border: '2px solid rgba(255,255,255,0.30)',
+                    } : {
+                      background: 'rgba(255,255,255,0.12)',
+                      color: 'white',
+                      border: '2px solid rgba(255,255,255,0.20)',
+                    }}
                   >
                     {idx + 1}
                   </div>
@@ -286,23 +351,25 @@ export default function RoadmapPage() {
                       setSelectedStep(step);
                       setSelectedStepIndex(idx);
                     }}
-                    className={`p-5 rounded-2xl border transition cursor-pointer group/card hover:scale-[1.01] hover:shadow-md ${isLast
-                      ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-emerald-400 shadow-lg'
-                      : 'bg-slate-50/80 border-slate-200/80 hover:bg-white hover:border-[#1769FF] hover:ring-2 hover:ring-[#1769FF]/20 shadow-xs'
-                      }`}
+                    className="p-5 rounded-2xl transition cursor-pointer group/card hover:scale-[1.005] hover:-translate-y-0.5"
+                    style={cardStyle}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${isLast ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800'
-                            }`}
+                          className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full"
+                          style={isLast ? {
+                            background: 'rgba(255,255,255,0.20)',
+                            color: 'var(--lime-green)',
+                          } : {
+                            background: 'rgba(163,230,53,0.12)',
+                            color: 'var(--lime-green)',
+                            border: '1px solid rgba(163,230,53,0.25)',
+                          }}
                         >
                           {t.roadmap.stage} {idx + 1}
                         </span>
-                        <h4
-                          className={`font-extrabold text-base sm:text-lg ${isLast ? 'text-white' : 'text-slate-900 group-hover/card:text-[#1769FF] transition-colors'
-                            }`}
-                        >
+                        <h4 className="font-extrabold text-base sm:text-lg text-white group-hover/card:opacity-90 transition-opacity">
                           {step?.title}
                         </h4>
                       </div>
@@ -312,10 +379,7 @@ export default function RoadmapPage() {
                         onClick={(e) => e.stopPropagation()}
                       >
                         {step?.duration && (
-                          <div
-                            className={`inline-flex items-center gap-1 text-xs font-semibold ${isLast ? 'text-emerald-100' : 'text-slate-500'
-                              }`}
-                          >
+                          <div className="inline-flex items-center gap-1 text-xs font-semibold text-white/45">
                             <Clock className="w-3.5 h-3.5" />
                             <span>{step.duration}</span>
                           </div>
@@ -327,39 +391,25 @@ export default function RoadmapPage() {
                           label={t.common.listen}
                           variant={isLast ? 'badge' : 'ghost'}
                           size="xs"
-                          className={
-                            isLast
-                              ? 'bg-white/20 text-white border-white/30 hover:bg-white/30'
-                              : 'text-slate-600 hover:bg-slate-200/60'
-                          }
+                          className="text-white/60 hover:bg-white/10"
                           ariaLabel={`Listen to Stage ${idx + 1}: ${step?.title || ''}`}
                         />
                       </div>
                     </div>
 
-                    <p
-                      className={`text-xs sm:text-sm mt-2 leading-relaxed ${isLast ? 'text-emerald-50' : 'text-slate-600'
-                        }`}
-                    >
+                    <p className="text-xs sm:text-sm mt-2 leading-relaxed text-white/60">
                       {step?.description}
                     </p>
 
                     {/* Requirements */}
                     {step?.requirements && step.requirements.length > 0 && (
                       <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                        <span
-                          className={`text-[11px] font-bold ${isLast ? 'text-emerald-100' : 'text-slate-500'
-                            }`}
-                        >
-                          {t.common.prerequisites}
-                        </span>
+                        <span className="text-[11px] font-bold text-white/40">{t.common.prerequisites}</span>
                         {step.requirements.map((req, rIdx) => (
                           <span
                             key={rIdx}
-                            className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${isLast
-                              ? 'bg-white/15 text-white'
-                              : 'bg-slate-200 text-slate-800'
-                              }`}
+                            className="text-[11px] font-semibold px-2 py-0.5 rounded-md"
+                            style={{ background: 'rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.75)' }}
                           >
                             {req}
                           </span>
@@ -370,29 +420,25 @@ export default function RoadmapPage() {
                     {/* Pro Tips */}
                     {step?.tips && step.tips.length > 0 && (
                       <div
-                        className={`mt-3 p-3 rounded-xl text-xs space-y-1 ${isLast
-                          ? 'bg-black/15 text-emerald-100 border border-white/10'
-                          : 'bg-emerald-50/70 text-emerald-900 border border-emerald-200/60'
-                          }`}
+                        className="mt-3 p-3 rounded-xl text-xs space-y-1"
+                        style={{
+                          background: 'rgba(163,230,53,0.08)',
+                          border: '1px solid rgba(163,230,53,0.18)',
+                        }}
                       >
-                        <div className="font-bold flex items-center gap-1.5">
+                        <div className="font-bold flex items-center gap-1.5" style={{ color: 'var(--lime-green)' }}>
                           <span>{t.common.proTipsForRural}</span>
                         </div>
                         {step.tips.map((tip, tIdx) => (
-                          <div key={tIdx} className="font-medium pl-2">
-                            • {tip}
-                          </div>
+                          <div key={tIdx} className="font-medium pl-2 text-white/60">• {tip}</div>
                         ))}
                       </div>
                     )}
 
                     {/* Click CTA Indicator */}
                     <div
-                      className={`mt-3.5 pt-2.5 border-t flex items-center justify-between text-xs font-bold transition-all ${
-                        isLast
-                          ? 'border-white/20 text-white hover:text-emerald-100'
-                          : 'border-slate-200/60 text-[#1769FF] group-hover/card:text-blue-700'
-                      }`}
+                      className="mt-3.5 pt-2.5 flex items-center justify-between text-xs font-bold"
+                      style={{ borderTop: '1px solid rgba(255,255,255,0.08)', color: 'var(--lime-green)' }}
                     >
                       <span className="flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5" />

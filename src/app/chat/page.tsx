@@ -145,24 +145,35 @@ How can I help guide your journey today? Click any suggested question below or t
     <AppLayout>
       <div className="space-y-6 pb-12">
         {/* Header Banner */}
-        <div className="rounded-2xl bg-white p-6 text-[#0F1B3D] shadow-[var(--shadow-card)] border border-slate-200">
+        <div
+          className="rounded-2xl p-6"
+          style={{
+            background: 'rgba(255,255,255,0.07)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.13)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.15)',
+          }}
+        >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-50 border border-pink-200 text-pink-700 text-xs font-bold">
+              <div
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold"
+                style={{ background: 'rgba(244,114,182,0.15)', border: '1px solid rgba(244,114,182,0.35)', color: '#F472B6' }}
+              >
                 <Bot className="w-3.5 h-3.5" />
                 <span>{t.chat.badge}</span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#0F1B3D]">
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
                 {t.chat.title}
               </h1>
-              <p className="text-slate-600 text-xs">
-                {t.chat.subtitle}
-              </p>
+              <p className="text-white/55 text-xs">{t.chat.subtitle}</p>
             </div>
 
             <button
               onClick={handleClear}
-              className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-xs text-slate-700 font-semibold border border-slate-200 transition cursor-pointer"
+              className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer"
+              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)', color: 'rgba(255,255,255,0.65)' }}
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>{t.common.reset}</span>
@@ -172,22 +183,37 @@ How can I help guide your journey today? Click any suggested question below or t
 
         {/* Active Context Indicator Bar */}
         {profile && (
-          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-2 text-emerald-900 font-bold">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div
+            className="p-3 rounded-2xl flex flex-wrap items-center justify-between gap-2 text-xs"
+            style={{
+              background: 'rgba(163,230,53,0.10)',
+              border: '1px solid rgba(163,230,53,0.25)',
+            }}
+          >
+            <div className="flex items-center gap-2 font-bold" style={{ color: 'var(--lime-green)' }}>
+              <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: 'var(--lime-green)' }} />
               <span>Personalized Context Active:</span>
-              <span className="font-normal text-emerald-800">
+              <span className="font-normal text-white/65">
                 {profile.name} • {profile.education_level} ({profile.branch}) • {profile.state} • Goal: {profile.career_goal}
               </span>
             </div>
-            <span className="text-[11px] text-emerald-700 font-semibold">
+            <span className="text-[11px] font-semibold" style={{ color: 'rgba(163,230,53,0.70)' }}>
               AI uses this to customize answers
             </span>
           </div>
         )}
 
         {/* Chat Canvas */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-[var(--shadow-card)] flex flex-col h-[520px] sm:h-[580px] overflow-hidden">
+        <div
+          className="rounded-2xl flex flex-col h-[520px] sm:h-[580px] overflow-hidden"
+          style={{
+            background: 'rgba(255,255,255,0.06)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.28)',
+          }}
+        >
           {/* Messages Scroll Area */}
           <div className="flex-1 p-3.5 sm:p-6 overflow-y-auto space-y-4">
             {messages.map((msg) => {
@@ -198,27 +224,37 @@ How can I help guide your journey today? Click any suggested question below or t
                   className={`flex items-start gap-2.5 sm:gap-3 ${isUser ? 'flex-row-reverse' : ''}`}
                 >
                   <div
-                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-xs shadow-xs ${isUser
-                        ? 'bg-[#2563EB]'
-                        : 'bg-gradient-to-tr from-pink-600 to-indigo-600'
-                      }`}
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 font-bold text-xs"
+                    style={isUser ? {
+                      background: 'var(--lime-green)',
+                      color: '#0A1F00',
+                      boxShadow: '0 0 10px rgba(163,230,53,0.40)',
+                    } : {
+                      background: 'linear-gradient(135deg, #EC4899, #6366F1)',
+                      color: 'white',
+                    }}
                   >
                     {isUser ? <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                   </div>
 
                   <div
-                    className={`max-w-[88%] sm:max-w-[75%] rounded-2xl p-3 sm:p-4 text-xs sm:text-sm leading-relaxed space-y-2 break-words ${isUser
-                        ? 'bg-[#2563EB] text-white shadow-xs rounded-tr-none'
-                        : 'bg-slate-50 border border-slate-200/80 text-slate-800 rounded-tl-none shadow-xs'
-                      }`}
+                    className="max-w-[88%] sm:max-w-[75%] rounded-2xl p-3 sm:p-4 text-xs sm:text-sm leading-relaxed space-y-2 break-words"
+                    style={isUser ? {
+                      background: 'rgba(163,230,53,0.20)',
+                      border: '1px solid rgba(163,230,53,0.35)',
+                      color: 'white',
+                      borderRadius: '1rem 0 1rem 1rem',
+                    } : {
+                      background: 'rgba(255,255,255,0.08)',
+                      border: '1px solid rgba(255,255,255,0.12)',
+                      color: 'rgba(255,255,255,0.85)',
+                      borderRadius: '0 1rem 1rem 1rem',
+                    }}
                   >
                     <div className="whitespace-pre-wrap font-sans break-words">
                       {msg.content}
                     </div>
-                    <div
-                      className={`flex items-center justify-between text-[10px] font-medium pt-1 ${isUser ? 'text-emerald-200' : 'text-slate-400'
-                        }`}
-                    >
+                    <div className={`flex items-center justify-between text-[10px] font-medium pt-1 ${isUser ? 'text-lime-300/70' : 'text-white/35'}`}>
                       {!isUser ? (
                         <AudioButton
                           id={`chat-msg-${msg.id}`}
@@ -226,7 +262,7 @@ How can I help guide your journey today? Click any suggested question below or t
                           label="Listen"
                           variant="ghost"
                           size="xs"
-                          className="text-slate-500 hover:text-slate-800 p-0 text-[10px]"
+                          className="text-white/40 hover:text-white p-0 text-[10px]"
                           ariaLabel="Listen to AI mentor message"
                         />
                       ) : (
@@ -242,11 +278,17 @@ How can I help guide your journey today? Click any suggested question below or t
 
             {isLoading && (
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-pink-600 to-indigo-600 flex items-center justify-center text-white text-xs">
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs"
+                  style={{ background: 'linear-gradient(135deg, #EC4899, #6366F1)' }}
+                >
                   <Bot className="w-4 h-4" />
                 </div>
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-500 font-medium flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
+                <div
+                  className="p-4 rounded-2xl text-xs font-medium flex items-center gap-2"
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.65)' }}
+                >
+                  <span className="w-2 h-2 rounded-full animate-ping" style={{ background: '#F472B6' }}></span>
                   <span>CAREERMitra AI is thinking...</span>
                 </div>
               </div>
@@ -255,15 +297,27 @@ How can I help guide your journey today? Click any suggested question below or t
           </div>
 
           {/* Quick Question Chips */}
-          <div className="p-3 bg-slate-50/80 border-t border-slate-200/80 flex gap-2 overflow-x-auto scrollbar-thin">
+          <div
+            className="p-3 flex gap-2 overflow-x-auto"
+            style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.12)' }}
+          >
             {SUGGESTED_QUESTIONS.map((q, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleSendMessage(q)}
-                className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-pink-300 hover:bg-pink-50/40 text-slate-700 text-xs font-semibold whitespace-nowrap transition shrink-0 flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition shrink-0 flex items-center gap-1.5 cursor-pointer"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.13)', color: 'rgba(255,255,255,0.70)' }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(163,230,53,0.40)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--lime-green)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.13)';
+                  (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.70)';
+                }}
               >
-                <Sparkles className="w-3 h-3 text-pink-500" />
+                <Sparkles className="w-3 h-3" style={{ color: '#F472B6' }} />
                 <span>{q}</span>
               </button>
             ))}
@@ -275,19 +329,21 @@ How can I help guide your journey today? Click any suggested question below or t
               e.preventDefault();
               handleSendMessage();
             }}
-            className="p-3 bg-white border-t border-slate-200 flex gap-2 items-center"
+            className="p-3 flex gap-2 items-center"
+            style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.15)' }}
           >
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your education or career question here..."
-              className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-pink-400 focus:bg-white transition"
+              className="flex-1 px-4 py-3 rounded-2xl text-xs sm:text-sm text-white placeholder-white/30 focus:outline-none transition"
+              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)' }}
             />
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="p-3 bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 disabled:opacity-50 text-white rounded-2xl shadow-md transition cursor-pointer"
+              className="p-3 rounded-2xl disabled:opacity-50 cursor-pointer btn-lime transition"
             >
               <Send className="w-4 h-4" />
             </button>
